@@ -3,12 +3,11 @@ title: Kotlin 으로 지구 타원체 활용하기
 categories: [Geotools]
 date: 2022-03-23 17:34:00 +0900
 tags: [geotools, geometry, kotlin, java, ellipsoid]
-img_path: /assets/img/
 ---
 
 ## Background
 
-![earth](2022-03-23-ellipsoid.webp)
+![earth](/img/2022-03-23-ellipsoid.webp)
 _image reference[^footnote]_
 
 지구는 평평하지도 완벽한 구형(Sphere)도 아닌 비표준 타원체(Ellipsoid)임을 고려하면 서로 다른 경도 및 위도 위치에 있는 두 점 사이의 거리를 빠르고 정확하게 계산하는 완벽한 공식은 없습니다.
@@ -96,8 +95,9 @@ distance 의 결과는 미터(m) 로 출력되므로 km 로 변환해보면 328k
 
 이 외에도 다양한 기능이 존재하는데요. 이 포스팅에서 모두 다루기에는 너무 방대해서 필요하다면 다른 포스팅에서 다뤄보겠습니다.
 
-> 오차의 범위는 비즈니스 요구사항에 따라서 만족스럽지 못할 수 있기 때문에 실제 적용하시기 전에 geotools 의 다른 method 들도 충분히 테스트해보시기 바랍니다.
-{: .prompt-info}
+:::info
+
+오차의 범위는 비즈니스 요구사항에 따라서 만족스럽지 못할 수 있기 때문에 실제 적용하시기 전에 geotools 의 다른 method 들도 충분히 테스트해보시기 바랍니다.
 
 ---
 
