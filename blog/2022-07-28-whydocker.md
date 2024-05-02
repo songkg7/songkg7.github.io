@@ -5,15 +5,18 @@ tags: [Infra, docker]
 categories: [DevOps]
 ---
 
-> 이 글은 사내 정보 공유를 위해 작성되었기 때문에 Java 개발환경을 기준으로 설명합니다.
-{: .prompt-info }
+:::info
+
+이 글은 사내 정보 공유를 위해 작성되었기 때문에 Java 개발환경을 기준으로 설명합니다.
+
+:::
 
 ## Docker 는 무엇일까?
 
 Docker
 : Linux 컨테이너를 만들고 사용할 수 있도록 하는 컨테이너화 기술, 그리고 그 기술을 지원하는 가장 큰 회사의 이름이자 오픈소스 프로젝트의 이름
 
-![deploy-history](/assets/img/whydocker/deploy-history.webp)
+![deploy-history](/img/whydocker/deploy-history.webp)
 _누구나 docker 에 대해 검색하면 한번쯤 봤을 그 그림_
 
 2013년에 등장한 돜는 인프라 세계를 컨테이너 세상으로 바꿔버렸다. 수많은 애플리케이션이 컨테이너로 배포하고 도커파일을 만들어 이미지를 빌드하고 컨테이너를 배포하는게 흔한 개발 프로세스가 되었다. 2019년 DockerCon 발표에선 무려 1052억번의 컨테이너 image pull 이 발생했다고 한다.
@@ -105,6 +108,8 @@ http localhost/ping
 
 80 port 를 container 의 8080 port 와 매핑했기 때문에 컨테이너와 잘 통신되는 것을 볼 수 있다.
 
+:::tip
+
 > **자주 사용하는 docker run options**
 >
 > `--name`
@@ -124,7 +129,8 @@ http localhost/ping
 >
 > `-v`
 > : Bind mount a volume
-{: .prompt-tip }
+
+:::
 
 ## Conclusion
 

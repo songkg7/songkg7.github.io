@@ -70,7 +70,7 @@ dashboard 를 보기 위한 명령어를 실행하면 가끔씩 hang 이 걸려�
 
 Docker desktop 의 메뉴에서 kubernetes 를 활성화해주면 끝.
 
-![enable](/assets/img/kubernetes/enable-kube.webp)
+![enable](/img/kubernetes/enable-kube.webp)
 
 ### Dashboard
 
@@ -88,9 +88,9 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.0/a
 kubectl proxy
 ```
 
-이제 <http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/> 를 통해 dashboard 에 접근할 수 있다.
+이제 [link](http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/) 를 통해 dashboard 에 접근할 수 있다.
 
-![dashboard](/assets/img/kubernetes/dashboard-login.webp)
+![dashboard](/img/kubernetes/dashboard-login.webp)
 
 로그인을 위해 token 이 필요하다. 다음은 생성 방법을 확인해보자.
 
@@ -102,8 +102,9 @@ kubectl proxy
 mkdir kubernetes && cd kubernetes
 ```
 
-> 이 챕터에서 생성되는 토큰은 admin 권한을 가지게 된다. dashboard 계정이 admin 권한을 갖는 것은 보안상 위험할 수 있으므로 실제 운영시에는 본인의 행동을 명확하게 인지해야 한다.
-{: .prompt-warning }
+:::warning
+
+dashboard 계정이 admin 권한을 갖는 것은 보안상 위험할 수 있으므로 실제 운영시에는 본인의 행동을 명확하게 인지해야 한다.
 
 #### dashboard-adminuser.yaml
 
@@ -152,7 +153,7 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6IjVjQjhWQVdpeWdLTlJYeXVKSUpxZndQUkoxdzU3eXFvM2dtMHJQ
 
 생성된 token 을 사용하여 로그인한다.
 
-![welcome-view](/assets/img/kubernetes/welcome.webp)
+![welcome-view](/img/kubernetes/welcome.webp)
 _접속 성공!_
 
 ### deployment 생성
@@ -165,7 +166,7 @@ kubectl create deployment rest-server --image=songkg7/rest-server
 
 명령이 성공적으로 수행되면 dashboard 에 바로 변화가 생기기 때문에 쉽게 모니터링할 수 있다.
 
-![create-deployment](/assets/img/kubernetes/create-deployment.webp)
+![create-deployment](/img/kubernetes/create-deployment.webp)
 _deployment 를 생성하면 dashboard 에 바로 변화가 생긴다._
 
 하지만 CLI(근본...!) 를 통해서 확인하는 법 또한 알아보자.
@@ -176,7 +177,7 @@ _deployment 를 생성하면 dashboard 에 바로 변화가 생긴다._
 kubectl get deployments
 ```
 
-![get-deployment](/assets/img/kubernetes/get-deployment.webp)
+![get-deployment](/img/kubernetes/get-deployment.webp)
 
 deployment 의 생성과 동시에 pod 또한 생성된다.
 
@@ -184,7 +185,7 @@ deployment 의 생성과 동시에 pod 또한 생성된다.
 kubectl get pods -o wide
 ```
 
-![get-pods](/assets/img/kubernetes/get-pods.webp)
+![get-pods](/img/kubernetes/get-pods.webp)
 
 정상적으로 실행되고 있음을 확인했으니 이제 우리의 웹서버에 요청을 보내보자.
 명령은 `curl` 대신 `httpie`[^footnote] 를 사용하는데, `curl` 이 더 익숙하다면 `curl` 을 사용해도 무방하다.
@@ -193,7 +194,7 @@ kubectl get pods -o wide
 http localhost:8080/ping
 ```
 
-![error](/assets/img/kubernetes/http-error.webp)
+![error](/img/kubernetes/http-error.webp)
 
 분명히 정상동작 중인데 왜 응답을 받을 수 없을까? 🤔
 
@@ -213,13 +214,13 @@ kubectl expose deployment rest-server --type=LoadBalancer --port=8080
 http localhost:8080/ping
 ```
 
-![200](/assets/img/kubernetes/rest-server-200.webp)
+![200](/img/kubernetes/rest-server-200.webp)
 
 성공적으로 응답을 받을 수 있는 것을 확인할 수 있다.
 
 ### Reference
 
-- <https://kubernetes.io/ko/docs/tasks/access-application-cluster/web-ui-dashboard/>
+- [web-ui-dashboard](https://kubernetes.io/ko/docs/tasks/access-application-cluster/web-ui-dashboard/)
 
 ---
 

@@ -118,5 +118,9 @@ class StudentTest {
 
 좋은 설계는 언제나 트레이드오프(trade-off)의 과정 속에서 구체화된다.
 
-> 모든 예제 코드는 [GitHub](https://github.com/songkg7/java-practice/blob/main/basic-syntax/src/main/java/basicsyntax/getterandsetter/Student.java)에 있습니다.
-{: .prompt-info}
+:::info
+
+모든 예제 코드는 [GitHub](https://github.com/songkg7/java-practice/blob/main/basic-syntax/src/main/java/basicsyntax/getterandsetter/Student.java)에 있습니다.
+
+:::
+

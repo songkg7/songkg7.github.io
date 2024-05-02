@@ -78,8 +78,11 @@ docker run -it -d --name one busybox
 
 컨테이너를 실행할 때 `--network` 옵션을 명시해주지 않으면, 기본적으로 `bridge` 라는 이름의 디폴트 네트워크에 붙게 된다.
 
-> `busybox` 는 테스트용으로 사용하기 좋은 가벼운 명령어 라이브러리이다. 도커에서 공식적으로 제공된다.
-{: .prompt-info }
+:::info
+
+`busybox` 는 테스트용으로 사용하기 좋은 가벼운 명령어 라이브러리이다. 도커에서 공식적으로 제공된다.
+
+:::
 
 ```bash
 docker network inspect bridge

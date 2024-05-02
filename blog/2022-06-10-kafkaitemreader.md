@@ -5,8 +5,11 @@ tags: [kafka, spring-batch, kafkaItemReader, java]
 categories: [Spring Batch]
 ---
 
-> 저는 Docker 를 사용하여 Kafka 설치 후 이번 글을 작성했지만 해당 내용은 이번 글에서 다루지 않습니다.
-{: .prompt-info }
+:::info
+
+저는 Docker 를 사용하여 Kafka 설치 후 이번 글을 작성했지만 해당 내용은 이번 글에서 다루지 않습니다.
+
+:::
 
 ## KafkaItemReader..?
 
@@ -86,8 +89,11 @@ public class KafkaSubscribeJobConfig {
 3. KafkaItemReader 는 **offset 을 지정하지 않으면 0번 offset** 부터 읽습니다. 빈 맵을 넣어주면 마지막 offset 부터 데이터를 읽어옵니다.
 4. 실행에 필수적인 property 들을 설정합니다.
 
-> `KafkaProperties` 는 Spring 에서 kafka 를 편리하게 사용할 수 있도록 다양한 public interface 를 제공합니다.
-{: .prompt-tip }
+:::tip
+
+`KafkaProperties` 는 Spring 에서 kafka 를 편리하게 사용할 수 있도록 다양한 public interface 를 제공합니다.
+
+:::
 
 ## 실행해보기
 
@@ -99,11 +105,11 @@ public class KafkaSubscribeJobConfig {
 kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test
 ```
 
-![produce-topic](/assets/img/kafka-item-reader/1.webp)
+![produce-topic](/img/kafka-item-reader/1.webp)
 
 배치가 topic 을 정상적으로 구독하고 있는 모습을 확인할 수 있습니다.
 
-![subscribe-batch](/assets/img/kafka-item-reader/2.webp)
+![subscribe-batch](/img/kafka-item-reader/2.webp)
 
 `chunkSize` 를 5로 설정했기 때문에 5개씩 데이터를 묶어서 처리하게 됩니다.
 
