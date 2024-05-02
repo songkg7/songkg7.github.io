@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Haril\'s Devlog',
-  tagline: 'More information, better developer',
+  tagline: 'Dinosaurs are cool',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -33,15 +33,15 @@ const config: Config = {
     [
       'classic',
       {
-        docs: false,
+        docs: {
+          sidebarPath: './sidebars.ts',
+          // Please change this to your repo.
+          // Remove this to remove the "edit this page" links.
+          editUrl:
+            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+        },
         blog: {
-          routeBasePath: '/',
           showReadingTime: true,
-          blogTitle: 'Haril\'s Devlog',
-          blogDescription: "A blog about software development, programming, and computer science.",
-          blogSidebarTitle: 'All posts',
-          blogSidebarCount: 'ALL',
-
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
@@ -64,6 +64,13 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
+        {
+          type: 'docSidebar',
+          sidebarId: 'tutorialSidebar',
+          position: 'left',
+          label: 'Tutorial',
+        },
+        {to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/facebook/docusaurus',
           label: 'GitHub',
