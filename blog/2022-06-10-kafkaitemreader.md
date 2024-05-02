@@ -3,6 +3,7 @@ title: "[Spring Batch] KafkaItemReader"
 date: 2022-06-10 16:11:00 +0900
 tags: [kafka, spring-batch, kafkaItemReader, java]
 categories: [Spring Batch]
+authors: haril
 ---
 
 :::info

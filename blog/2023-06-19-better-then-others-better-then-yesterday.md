@@ -5,6 +5,7 @@ aliases:
 published: false
 tags: [essay]
 categories: Essay
+authors: haril
 ---
 
 ![image](/img/2023-06-19-better-then-others-better-then-yesterday/globe-3441673_1280.webp)

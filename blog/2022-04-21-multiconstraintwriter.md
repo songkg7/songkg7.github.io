@@ -3,6 +3,7 @@ title: "[Spring Batch] Custom constraint writer 구현"
 date: 2022-04-21 15:35:00 +0900
 tags: [spring-batch, item-writer, postgresql, partial-index, multi-constraint]
 categories: [Spring Batch]
+authors: haril
 ---
 
 ## 문제 상황 🧐

@@ -5,6 +5,7 @@ aliases: null
 tags: [testing, test, fixture, naver, opensource]
 image: /assets/img/fixture-monkey-banner.png
 categories: null
+authors: haril
 ---
 
 > "Write once, Test anywhere"

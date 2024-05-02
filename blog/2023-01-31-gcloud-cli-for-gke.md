@@ -4,6 +4,7 @@ date: 2023-01-31 10:38:00 +0900
 aliases: 
 tags: [gcp, kubernetes, cli, gcloud]
 categories: DevOps
+authors: haril
 ---
 
 ## Overview

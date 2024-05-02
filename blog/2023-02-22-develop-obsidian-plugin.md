@@ -5,6 +5,7 @@ aliases:
 tags: [obsidian, plugin, side-project, typescript, o2]
 categories: 
 image: /assets/img/banner/og-image.webp
+authors: haril
 ---
 
 ## Overview

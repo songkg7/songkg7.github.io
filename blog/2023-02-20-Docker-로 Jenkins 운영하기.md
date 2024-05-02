@@ -4,6 +4,7 @@ date: 2022-11-17 00:47:00 +0900
 aliases: 
 tags: [ci, cd, devops, jenkins]
 categories: DevOps
+authors: haril
 ---
 
 ## Overview

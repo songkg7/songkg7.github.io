@@ -4,6 +4,7 @@ date: 2023-03-06 16:46:00 +0900
 aliases: 
 tags: [postgresql, rdb, spring, batch]
 categories: 
+authors: haril
 ---
 
 PostgreSQL에서  대용량 데이터를 조회하며 겪었던 문제에 대해 공유합니다.

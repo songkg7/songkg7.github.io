@@ -3,6 +3,7 @@ title: "'sitemap.xml 을 찾을 수 없습니다' 해결하기"
 date: 2022-06-20 20:11:00 +0900
 tags: [google-search-console, sitemap]
 categories: [ETC]
+authors: haril
 ---
 
 블로그 글이 구글에 노출될 수 있도록 `sitemap.xml` 을 등록했으나, '사이트맵을 찾을 수 없음' 이라는 에러 메세지만 휑하게 나왔었는데 드디어 해결하게 되어 제가 사용한 방법을 공유합니다.

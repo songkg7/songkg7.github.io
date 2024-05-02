@@ -5,6 +5,7 @@ aliases: 안정 해시
 tags: [hash, algorithm, consistent, system-design, consistent-hashing, architecture]
 categories: [System Design]
 image: /assets/img/2023-06-04-Consistent-Hashing/consistent-hash.webp
+authors: haril
 ---
 
 대규모 시스템을 설계하는데 필요한 구성 요소에는 어떤 것들이 있을까요?

@@ -3,6 +3,7 @@ title: "Vimium shortcut 변경하는 법"
 date: 2022-09-02 14:52:00 +0900
 tags: [vim, chrome, vimium]
 categories: [ETC]
+authors: haril
 ---
 
 ## Overview

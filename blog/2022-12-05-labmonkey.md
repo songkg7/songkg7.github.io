@@ -4,6 +4,7 @@ date: 2022-12-05 17:14:00 +0900
 aliases:
 tags: [fixture, test, naver, open-source]
 categories:
+authors: haril
 ---
 
 ## Overview

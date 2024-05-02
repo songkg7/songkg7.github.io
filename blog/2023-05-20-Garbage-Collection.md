@@ -4,6 +4,7 @@ date: 2023-05-20 10:12:00 +0900
 aliases: GC
 tags: [gc, jvm, garbage-collection]
 categories: 
+authors: haril
 ---
 
 ## Overview

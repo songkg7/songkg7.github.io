@@ -5,6 +5,7 @@ tags: [webp, imagemin, obsidian, jekyll, seo, javascript]
 categories: 
 date: 2023-04-26 16:28:55 +0900
 mermaid: true
+authors: haril
 ---
 
 블로그 포스팅 자동화 과정 중 SEO 를 위한 이미지 최적화에 대해 이야기합니다. 성공이 아닌 실패에 대한, Plan B 로 돌아가야만 했던 이야기입니다.

@@ -4,6 +4,7 @@ date: 2022-11-09 12:53:00 +0900
 aliases:
 tags: [tool, git, diff, difftastic]
 categories: [Tools]
+authors: haril
 ---
 
 ## Overview

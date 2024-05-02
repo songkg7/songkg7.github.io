@@ -4,6 +4,7 @@ date: 2023-04-08 18:26:00 +0900
 aliases: 
 tags: [chezmoi, dotfiles]
 categories: 
+authors: haril
 ---
 
 [지난 글](https://songkg7.github.io/posts/chezmoi-awesome-dotfile-manager/)에 이어 좀 더 편리하게 활용할 수 있는 방법들에 대해 공유합니다.

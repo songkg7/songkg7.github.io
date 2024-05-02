@@ -10,6 +10,7 @@ categories:
 mermaid: true
 image: /assets/img/banner/PostgreSQL-banner.webp
 updated: 2024-04-20 22:14:06 +0900
+authors: haril
 ---
 
 ## SELECT FOR UPDATE 구문의 동작 방식

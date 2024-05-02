@@ -6,6 +6,7 @@ fc-date: 2022-08-25
 aliases:
 tags: [vim, mac, configuration]
 categories:
+authors: haril
 ---
 
 mac 에서는 특정 키를 길게 입력할 경우 움라우트 등 특수 알파벳 입력창이 뜨게 되는데 만약 vim 같은 에디터를 사용한다면 코드 navigation 에 상당히 방해가 될 수 있다.

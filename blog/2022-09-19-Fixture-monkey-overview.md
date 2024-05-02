@@ -3,6 +3,7 @@ title: "Fixture monkey 객체 생성 전략"
 date: 2022-09-19 18:34:00 +0900
 tags: [test, naver, open-source]
 categories:
+authors: haril
 ---
 
 :::info

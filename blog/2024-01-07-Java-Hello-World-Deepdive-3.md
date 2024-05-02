@@ -5,6 +5,7 @@ aliases: null
 tags: [java, jvm]
 image: /assets/img/hello-world-programmer.webp
 categories: null
+authors: haril
 ---
 
 앞선 챕터에서는 Java 를 컴파일해보며 바이트코드 구조에 대해 살펴봤다. 이번 챕터에서는 JVM 이 실행되면서 'Hello World' 코드 블록을 어떻게 동작시키는지 살펴본다.

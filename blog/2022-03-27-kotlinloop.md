@@ -3,6 +3,7 @@ title: "[Kotlin] 향상된 반복문(Loop)"
 date: 2022-03-26 10:22:00 +0900
 tags: [kotlin, loop]
 categories: [Kotlin]
+authors: haril
 ---
 
 Kotlin 에서는 Java 보다 훨씬 심플하고 편리한 반복문을 작성할 수 있다. 어떻게 사용할 수 있는지 살펴보자.

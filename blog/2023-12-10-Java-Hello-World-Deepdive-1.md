@@ -5,6 +5,7 @@ aliases: null
 tags: [java, compile, jvm]
 categories: null
 image: /assets/img/hello-world-programmer.webp
+authors: haril
 ---
 
 프로그래밍 세계에서는 항상 `Hello World` 라는 문장을 출력하면서 시작한다. 그게 ~~국룰~~ 암묵적인 규칙이다.

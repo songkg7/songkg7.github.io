@@ -3,6 +3,7 @@ title: "Why Docker?"
 date: 2022-07-28 19:29:00 +0900
 tags: [Infra, docker]
 categories: [DevOps]
+authors: haril
 ---
 
 :::info

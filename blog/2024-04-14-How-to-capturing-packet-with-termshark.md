@@ -11,6 +11,7 @@ tags:
 categories: 
 image: /assets/img/banner/termshark-banner.webp
 updated: 2024-04-14 14:33:15 +0900
+authors: haril
 ---
 
 ## 네트워크 패킷이란

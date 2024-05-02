@@ -3,6 +3,7 @@ title: Kotlin 으로 지구 타원체 활용하기
 categories: [Geotools]
 date: 2022-03-23 17:34:00 +0900
 tags: [geotools, geometry, kotlin, java, ellipsoid]
+authors: haril
 ---
 
 ## Background

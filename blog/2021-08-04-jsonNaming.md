@@ -3,6 +3,7 @@ title: "@JsonNaming 사용 방법"
 categories: [Java, SpringBoot]
 date: 2021-08-04 12:17:00 +0900
 tags: [java, json, json-naming]
+authors: haril
 ---
 
 API 에서 제공하는 json naming 방식과 어플리케이션 내의 naming 전략이 다를 경우가 있습니다.

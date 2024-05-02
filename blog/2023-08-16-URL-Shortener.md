@@ -6,6 +6,7 @@ tags: [url, system-architecture, kotlin]
 categories: null
 mermaid: true
 image: /assets/img/2023-08-16-URL-Shortener/banner.webp
+authors: haril
 ---
 
 :::info

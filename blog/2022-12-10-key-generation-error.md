@@ -4,6 +4,7 @@ date: 2022-09-11 11:36:00 +0900
 aliases:
 tags: [gpg, keybase, security]
 categories:
+authors: haril
 ---
 
 :::info

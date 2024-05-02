@@ -3,6 +3,7 @@ title: "[Jacoco] 멀티 모듈의 Jacoco report 를 하나로 합치기"
 date: 2022-07-29 23:04:00 +0900
 tags: [jacoco, java, gradle, test, aggregation-report]
 categories: [Java]
+authors: haril
 ---
 
 ## Overview

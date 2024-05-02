@@ -4,6 +4,7 @@ date: 2023-07-27 14:28:05 +0900
 aliases: 
 tags: [docker, springboot]
 categories: 
+authors: haril
 ---
 
 Spring Boot 3.1 부터 추가된 Docker Compose Support 에 대해서 간단하게 소개합니다.

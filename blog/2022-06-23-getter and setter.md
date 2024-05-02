@@ -3,6 +3,7 @@ title: getter/setter 에 대한 사실과 오해
 date: 2022-06-23 10:22:00 +0900
 tags: [java, getter, setter, oop, encapsulation]
 categories: [Java]
+authors: haril
 ---
 
 구글에 `getter/setter` 에 대해 검색해보면 정말 많은 게시글이 나온다. 대부분 `getter/setter` 를 사용하는 이유에 대해서 작성되어 있고 그 이유 중 하나로 캡슐화, 정보 은닉 같은 키워드를 중심으로 설명하고 있다.

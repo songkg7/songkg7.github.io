@@ -3,6 +3,7 @@ title: "Qodana 로 간단하게 코드 정적 분석하기"
 date: 2022-05-11 16:42:00 +0900
 tags: [qodana, jetbrains]
 categories: [Tools]
+authors: haril
 ---
 
 ## Qodana?

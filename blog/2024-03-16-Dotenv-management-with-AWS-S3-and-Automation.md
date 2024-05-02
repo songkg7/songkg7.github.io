@@ -10,6 +10,7 @@ tags:
 categories:
 image: /assets/img/banner/aws-banner.png
 updated: 2024-03-16 18:05:53 +0900
+authors: haril
 ---
 
 ## Situation

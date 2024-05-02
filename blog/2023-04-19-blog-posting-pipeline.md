@@ -5,6 +5,7 @@ aliases:
 tags: [blog, posting]
 categories: 
 mermaid: true
+authors: haril
 ---
 
 저는 대부분의 글은 마크다운 에디터인 Obsidian 을 사용하고, GitHub page 로 블로그를 호스팅하고 있습니다. 두 가지 서로 다른 플랫폼에서 흐름이 끊기지 않고 글 쓰는 습관을 유지하려면 어떻게 해야하는지, 제가 사용하고 있는 방법을 소개합니다.

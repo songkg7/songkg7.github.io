@@ -5,6 +5,7 @@ aliases:
 tags: [jenkins, aws, ec2, edd]
 categories: 
 mermaid: true
+authors: haril
 ---
 
 특정 시간, 특정 조건에서만 실행되야하는 배치성 애플리케이션이 존재할 때 리소스 비용을 최적화하는 아주 간단한 방법에 대해서 공유합니다.

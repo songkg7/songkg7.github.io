@@ -4,6 +4,7 @@ date: 2022-11-21 16:51:00 +0900
 aliases:
 tags: [java, zoneddatetime, equals, compare, assertj]
 categories: Java
+authors: haril
 ---
 
 ## Overview
