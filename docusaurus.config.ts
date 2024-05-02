@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Haril\'s Devlog',
-  tagline: 'Dinosaurs are cool',
+  tagline: 'More information, better developer',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -42,6 +42,10 @@ const config: Config = {
         },
         blog: {
           showReadingTime: true,
+          blogTitle: 'Haril\'s Devlog',
+          blogDescription: 'A blog about software development, programming, and computer science.',
+          blogSidebarTitle: 'All posts',
+          blogSidebarCount: 'ALL',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
