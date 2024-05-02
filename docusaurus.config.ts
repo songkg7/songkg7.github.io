@@ -70,7 +70,7 @@ const config: Config = {
       title: 'Haril\'s Devlog',
       logo: {
         alt: 'My Site Logo',
-        src: 'img/logo.svg',
+        src: 'img/avatar.png',
       },
       items: [
         {
