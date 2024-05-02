@@ -154,7 +154,7 @@ public class WebFluxConfig implements WebFluxConfigurer {
 }
 ```
 
-:::dange
+:::danger
 
 `@EnableWebFlux` 를 사용하게되면 mapper 를 override 하기 때문에 애플리케이션이 의도한대로 동작하지 않을 수 있습니다.[^footnote]
 
