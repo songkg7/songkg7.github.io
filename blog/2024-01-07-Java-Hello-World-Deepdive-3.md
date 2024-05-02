@@ -43,8 +43,11 @@ java -verbose:class VerboseLanguage
 
 'Hello World' 가 출력되기 전에 `VerboseLanguage` 클래스가 먼저 로드되는걸 확인할 수 있다.
 
-> Java 1.8 과 Java 21 은 컴파일 결과물부터 로그 출력 포맷도 다르다. 버전이 올라감에 따라 최적화가 많이 이루어지고 컴파일러 동작도 약간씩 변하므로, 버전을 잘 확인하자. 이 글에서는 Java21 을 기본으로 사용하고 다른 버전의 경우 별도로 명시한다.
-{: .prompt-info}
+:::info
+
+Java 1.8 과 Java 21 은 컴파일 결과물부터 로그 출력 포맷도 다르다. 버전이 올라감에 따라 최적화가 많이 이루어지고 컴파일러 동작도 약간씩 변하므로, 버전을 잘 확인하자. 이 글에서는 Java21 을 기본으로 사용하고 다른 버전의 경우 별도로 명시한다.
+
+:::
 
 ### Runtime Data Area
 
@@ -141,8 +144,11 @@ assertThat(greeting).isEqualTo("Hello World"); // true
 4. Per-Thread Date Area 중 Stack 에 있을 경우는 다른 스레드에서 재활용할 수 없고, 크기가 크면 할당 공간을 찾기 어렵다
 5. Shared Date Area 에 있는게 합리적 + Heap 에 있어야 하지만 JVM 레벨에서 불변으로 다뤄야하므로 전용 Constant Pool 을 Heap 내부에 별도로 생성하여 관리하게 되었다
 
-> 생성자 내부의 문자열 리터럴은 String Constant Pool 에서 가져오지만 `new` 키워드는 독립된 문자열 생성을 보장한다. 결국, String Constant Pool 에 하나, Heap 영역에 하나씩 총 2개의 문자열이 존재하게 된다.
-{: .prompt-tip}
+:::tip
+
+생성자 내부의 문자열 리터럴은 String Constant Pool 에서 가져오지만 `new` 키워드는 독립된 문자열 생성을 보장한다. 결국, String Constant Pool 에 하나, Heap 영역에 하나씩 총 2개의 문자열이 존재하게 된다.
+
+:::
 
 #### Per-thread Data Areas
 
@@ -240,9 +246,9 @@ _음... 🤔 Hello World 정도요._
 ## Reference
 
 - [inpa blog](https://inpa.tistory.com/entry/JAVA-%E2%98%95-%ED%81%B4%EB%9E%98%EC%8A%A4%EB%8A%94-%EC%96%B8%EC%A0%9C-%EB%A9%94%EB%AA%A8%EB%A6%AC%EC%97%90-%EB%A1%9C%EB%94%A9-%EC%B4%88%EA%B8%B0%ED%99%94-%EB%90%98%EB%8A%94%EA%B0%80-%E2%9D%93#jvm%EC%9D%98_%ED%81%B4%EB%9E%98%EC%8A%A4_%EB%A1%9C%EB%8D%94_class_loader)
-- <https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.5>
-- <https://www.baeldung.com/java-jvm-run-time-data-areas>
-- <https://sgcomputer.tistory.com/64>
-- <https://johngrib.github.io/wiki/java/run-time-constant-pool/>
-- <https://johngrib.github.io/wiki/jvm-stack/>
-- <https://code-run.tistory.com/8>
+- https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.5
+- https://www.baeldung.com/java-jvm-run-time-data-areas
+- https://sgcomputer.tistory.com/64
+- https://johngrib.github.io/wiki/java/run-time-constant-pool/
+- https://johngrib.github.io/wiki/jvm-stack/
+- https://code-run.tistory.com/8

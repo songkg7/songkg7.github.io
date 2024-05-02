@@ -24,8 +24,11 @@ categories: null
 
 아래 같은 코드를 보면서 기존 방식에서 어떤 점이 문제인지 살펴보자.
 
-> Java 개발자들에게 익숙한 JUnit5 를 사용하여 예제를 작성했다. 하지만 개인적으로 Kotlin 환경에서는 [Kotest](https://kotest.io/)를 사용하는 것을 추천한다.
-{: .prompt-info}
+:::info
+
+Java 개발자들에게 익숙한 JUnit5 를 사용하여 예제를 작성했다. 하지만 개인적으로 Kotlin 환경에서는 [Kotest](https://kotest.io/)를 사용하는 것을 추천한다.
+
+:::
 
 ```kotlin
 data class Product (

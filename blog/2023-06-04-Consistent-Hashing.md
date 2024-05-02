@@ -11,8 +11,11 @@ image: /assets/img/2023-06-04-Consistent-Hashing/consistent-hash.webp
 
 이번 글에서는 라우팅 시스템 등에서 자주 사용되는 안정 해시(Consistent Hash)를 직접 구현해보고 데이터를 기반으로 이야기해봅니다.
 
-> 전체 코드는 [Github](https://github.com/songkg7/consistent-hashing-sample)에서 확인하실 수 있습니다.
-{: .prompt-info}
+:::info
+
+전체 코드는 [Github](https://github.com/songkg7/consistent-hashing-sample)에서 확인하실 수 있습니다.
+
+:::
 
 글이 다소 길기 때문에 이후로는 편의상 '~한다.' 체로 설명합니다. 🙏
 
@@ -34,7 +37,7 @@ image: /assets/img/2023-06-04-Consistent-Hashing/consistent-hash.webp
 
 > hash(key) % n
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230523203910.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230523203910.webp)
 
 이 방식은 단순하면서도 매우 효율적으로 트래픽을 분산해준다.
 
@@ -42,7 +45,7 @@ image: /assets/img/2023-06-04-Consistent-Hashing/consistent-hash.webp
 
 만약 특정 노드에 캐시를 해두는 방식으로 트래픽을 관리하고 있다면, 모종의 이유에 의해 **노드가 그룹에서 이탈했을 경우 대량의 캐시 미스**를 일으켜 서비스의 장애를 야기할 수 있다.
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230523204056.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230523204056.webp)
 
 4개의 노드로 실험해본 결과 **1개 노드만 이탈해도 캐시 적중률이 27% 로 급격히 하락**하는걸 확인할 수 있었다. 실험 방식은 이후 문단에서 자세히 살펴본다.
 
@@ -50,16 +53,19 @@ image: /assets/img/2023-06-04-Consistent-Hashing/consistent-hash.webp
 
 안정 해시는 대량의 캐시 미스 발생 가능성을 최대한 낮추기 위해 고안된 개념이다.
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601132426.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601132426.webp)
 
 아이디어는 간단하다. 해시 공간의 시작과 끝을 이어서 일종의 고리(ring)을 만든 후, 해시 공간 위에 노드들을 배치한다. 노드들은 각각의 해시 공간을 할당받고 트래픽을 기다리게 된다.
 
-> 노드들을 배치하기 위해 사용하는 해시 함수는 나머지 연산과는 무관하다.
-{: .prompt-info}
+:::info
+
+노드들을 배치하기 위해 사용하는 해시 함수는 나머지 연산과는 무관하다.
+
+:::
 
 이제 안정 해시로 구현된 이 라우터로 트래픽이 들어오는 상황을 가정해보자.
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601133003.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601133003.webp)
 
 해시 함수를 통과한 트래픽은 링 위에서 가장 가까운 노드를 향해 라우팅된다. B 노드는 이후 같은 요청이 들어올 때를 대비해서 `key1` 을 캐시해둔다.
 
@@ -71,13 +77,13 @@ image: /assets/img/2023-06-04-Consistent-Hashing/consistent-hash.webp
 
 E 노드가 추가된 상황을 가정해보자.
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601133345.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601133345.webp)
 
 이전에 들어왔던 키는 이전과 같은 지점에 배치된다. D 와 C 노드 사이에 배치되던 키 중 일부는 새로운 E 노드로 향하게 되면서 캐시가 미스하게 되지만, 나머지 노드들은 캐시 미스가 발생하지 않는다.
 
 네트워크에 에러가 발생하여 C 노드가 사라진 상황을 가정해도 결과는 비슷하다.
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601133814.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601133814.webp)
 
 C 노드로 향했던 키들이 D 노드로 향하여 캐시 미스가 발생하지만 그 외 공간에 배치된 키들은 캐시 미스가 발생하지 않는다.
 
@@ -89,14 +95,14 @@ C 노드로 향했던 키들이 D 노드로 향하여 캐시 미스가 발생하
 
 ##### 파티션을 균일하게 유지하기 어렵다
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230523204228.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230523204228.webp)
 _서로 다른 크기의 해시 공간을 갖게 된 노드들_
 
 어떤 key 가 생성될지 모르는 이상, 해시 함수의 결과값을 정확히 예측하는 것은 매우 어렵다. 그러므로 해시 결과에 의해 링 위 포지션이 정해지는 안정 해시는 노드가 균등한 해시 공간을 가지고 링 위에 분포할 것이라고 보장할 수 없다.
 
 ##### 균등 분포를 달성하기 어렵다
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230523204258.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230523204258.webp)
 _D 노드가  담당하는 해시공간이 너무 넓으면 트래픽이 쏠릴 수 있다._
 
 노드가 해시 링 위에 균등한 파티션을 가지고 배치되지 않기 때문에 생기는 문제이다. 운이 없으면 위 예처럼 D 노드가 담당하는 해시 공간이 다른 노드에 비해 비정상적으로 크게 설정될 수 있다. 이 상태는 특정 노드에 트래픽이 쏠리면서 전체적인 장애를 유발하는, 핫스팟이라고 하는 문제를 초래할 수 있다.
@@ -107,7 +113,7 @@ _D 노드가  담당하는 해시공간이 너무 넓으면 트래픽이 쏠릴 
 
 그래서 물리 노드(Physical node)를 모방하는 가상 노드(Virtual node)를 구현하여 이를 영리하게 해결한다.
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230523204810.webp)
+![image](//img/2023-06-04-Consistent-Hashing/Pasted-image-20230523204810.webp)
 
 가상 노드는 내부적으로 물리 노드의 해시값을 가리키고 있다. 일종의 분신술(...?)이라고 생각하면 된다. 본체인 물리 노드는 해시 링 위에 배치되지 않고, 복제된 가상 노드들만이 해시 링 위에서 트래픽을 기다리고 있다. 트래픽이 가상 노드에 할당되면 내부에 존재하는 실제 노드의 해시 값으로 라우팅되는 원리이다.
 
@@ -151,8 +157,11 @@ public class MD5Hash implements HashAlgorithm {
 }
 ```
 
-> Java 에서는 `MessageDigest` 를 통해서 MD5 알고리즘을 사용하는 해시 함수를 편리하게 구현할 수 있다.
-{: .prompt-tip}
+:::tip
+
+Java 에서는 `MessageDigest` 를 통해서 MD5 알고리즘을 사용하는 해시 함수를 편리하게 구현할 수 있다.
+
+:::
 
 ### Hash Ring
 
@@ -177,8 +186,11 @@ public T routeNode(String businessKey) {
 
 hash ring 은 `TreeMap` 을 사용하여 구현했다. `TreeMap` 은 저장과 동시에 key(해시값)의 오름차순으로 정렬을 유지하기 때문에 `tailMap(key)` 메서드를 통해서 key(해시값)보다 큰 값들을 찾아올 수 있고, 큰 key 를 찾을 수 없다면 `firstKey` 로 가장 작은 key 와 연결하여 링을 구현한다.
 
-> `TreeMap` 이 익숙하지 않다면, 이 [링크](https://coding-factory.tistory.com/557)를 참조해주기 바란다.
-{: .prompt-info}
+:::info
+
+`TreeMap` 이 익숙하지 않다면, 이 [링크](https://coding-factory.tistory.com/557)를 참조해주기 바란다.
+
+:::
 
 ### 테스트
 
@@ -191,27 +203,33 @@ hash ring 은 `TreeMap` 을 사용하여 구현했다. `TreeMap` 은 저장과 �
 
 #### Case 1. Simple Hash, Node 변화없음
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601150740.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601150740.webp)
 
 1M 건의 요청을 보내고 이어서 다시 1M 의 같은 요청을 보냈다. 노드의 변화가 없기 때문에 두 번째 요청부터는 100%의 캐시 히트율을 기록하는 것을 확인할 수 있다.
 
-> 낮은 수치지만 첫번째 요청에서도 캐시가 히트할 수 있었던 것(회색 그래프)은 테스트를 설계할 때 랜덤한 문자열을 키로 사용했기 때문에 낮은 확률로 중복된 키 값이 존재했기 때문이다.
-{: .prompt-info}
+:::info
+
+낮은 수치지만 첫번째 요청에서도 캐시가 히트할 수 있었던 것(회색 그래프)은 테스트를 설계할 때 랜덤한 문자열을 키로 사용했기 때문에 낮은 확률로 중복된 키 값이 존재했기 때문이다.
+
+:::
 
 노드들의 그래프 높이가 비슷한 것을 보아 `hash % N` 을 사용한 라우팅은 예상대로 모든 트래픽이 아주 잘 분산되는 것 또한 확인할 수 있다.
 
 #### Case 2. Simple Hash, 1대의 노드 이탈
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601150807.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601150807.webp)
 
 캐시 히트를 표시해주는 초록색 그래프가 확연히 낮아진 것을 볼 수 있다. 1번 Node 가 이탈하면서 2, 3, 4번 노드로 트래픽이 분산되었는데 운이 좋아서 이전과 같은 노드로 향한 트래픽은 캐시가 적중할 수 있었지만, 대부분은 다른 노드로 향하게 되면서 캐시가 적중하지 못하는 것이다.
 
 #### Case 3. Consistent Hash, Node 변화 없음, 가상 노드 없음
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601153047.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601153047.webp)
 
-> 물리 노드는 해시 링 위에 배치되지 않음을 생각해볼 때, 가상 노드가 물리 노드의 수를 증가시키는 역할을 하려면 가상 노드가 적어도 2개 이상 존재해야 한다. 그러므로 1개의 가상 노드를 사용한다는 것은 사실상 가상 노드를 사용하지 않는 상태이다.
-{: .prompt-info}
+:::info
+
+물리 노드는 해시 링 위에 배치되지 않음을 생각해볼 때, 가상 노드가 물리 노드의 수를 증가시키는 역할을 하려면 가상 노드가 적어도 2개 이상 존재해야 한다. 그러므로 1개의 가상 노드를 사용한다는 것은 사실상 가상 노드를 사용하지 않는 상태이다.
+
+:::
 
 Case 1 과 마찬가지로, 첫 번째 요청에서 캐시가 바로 히트할 수는 없으므로 붉은 그래프가 먼저 상승하며 두 번째 요청에서는 100% 캐시 적중하므로 녹색 그래프와 붉은 그래프의 높이가 같게 된다.
 
@@ -219,7 +237,7 @@ Case 1 과 마찬가지로, 첫 번째 요청에서 캐시가 바로 히트할 �
 
 #### Case 4. Consistent Hash, 1대의 노드 이탈, 가상 노드 없음
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/SCR-20230601-nxtx.webp)
+![image](/img/2023-06-04-Consistent-Hashing/SCR-20230601-nxtx.webp)
 
 1번 노드를 이탈시킨 이후, Case 2 와 비교해보면 캐시 적중률이 압도적으로 뛰어난 것을 확인할 수 있다.
 
@@ -229,13 +247,13 @@ Case 1 과 마찬가지로, 첫 번째 요청에서 캐시가 바로 히트할 �
 
 이번에는 파티션 균등 배분 및 핫스팟 현상 해소를 위해 가상 노드를 적용해보자.
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601155340.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601155340.webp)
 
 전체적으로 그래프에 변화가 일어난다. 1번 노드로 향할 예정이었던 트래픽들은 2, 3, 4번 노드들로 나눠진 것으로 보인다. 여전히 균등하게 나눠진 파티션은 아닌 것 같지만 Case 4와 비교했을 때 핫스팟 문제는 점점 해결되고 있다. 가상 노드 10대로는 부족한 것 같으니 충분히 늘려보자.
 
 #### Case 6. Consistent Hash, 1대의 노드 이탈, 100대의 가상 노드
 
-![image](/assets/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601160256.webp)
+![image](/img/2023-06-04-Consistent-Hashing/Pasted-image-20230601160256.webp)
 
 드디어 2, 3, 4번 노드의 그래프가 비슷해졌다. 1번 노드 이탈 후 해시 링 위에는 물리 노드당 100대의 가상 노드, 즉 300대의 가상 노드가 존재하고 있다. 정리해보면 다음과 같다.
 

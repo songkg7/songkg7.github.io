@@ -8,8 +8,11 @@ mermaid: true
 image: /assets/img/2023-08-16-URL-Shortener/banner.webp
 ---
 
-> 코드는 [GitHub](https://github.com/songkg7/url-shortener-sample) 에서 확인하실 수 있습니다.
-{: .prompt-info}
+:::info
+
+코드는 [GitHub](https://github.com/songkg7/url-shortener-sample) 에서 확인하실 수 있습니다.
+
+:::
 
 ## Overview
 
@@ -40,7 +43,7 @@ curl -X POST --location "http://localhost:8080/api/v1/shorten" \
 
 이제 웹페이지에서 `http://localhost:8080/tN47tML` 로 접근해보면,
 
-![image](/assets/img/2023-08-16-URL-Shortener/Pasted-image-20230701200237.webp)
+![image](/img/2023-08-16-URL-Shortener/Pasted-image-20230701200237.webp)
 
 기존 url 로 잘 접근하는 것을 볼 수 있습니다.
 

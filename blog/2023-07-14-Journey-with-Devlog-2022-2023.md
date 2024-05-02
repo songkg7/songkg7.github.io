@@ -29,7 +29,7 @@ updated: 2023-07-15 12:49:40 +0900
 
 다만 관련 분야를 공부하게 되는 계기가 되었고, 인내심이 필요하다는 것도 알게 되었습니다.
 
-![image](/assets/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230623112820.webp)
+![image](/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230623112820.webp)
 _그래프의 중간에 생긴 함정(?)은 robot.txt 실험 결과물_
 
 그래도 페이지가 발견되긴 했으니, '유입을 늘리다보면 자연스럽게 인덱싱되겠지' 하며 기다리고 있습니다. 실제로 조금씩 인덱싱된 페이지 수가 늘긴 하더라구요. ~~인덱싱 속도보다 빠르게 글을 발행하고 있지만...~~ 원하는 페이지가 인덱싱되서 검색에 노출이 될 때까지 걸리는 시간을 임의로 조절하기 어려운 점은 아쉽지만, 구글의 크롤링 정책을 바꿀 순 없으니 어쩔 수 없을 것 같습니다.
@@ -38,14 +38,14 @@ _그래프의 중간에 생긴 함정(?)은 robot.txt 실험 결과물_
 
 사실 저는 티스토리에서 처음 블로그를 시작했는데요, 알고리즘 공부를 한창 시작하던 때여서 문제풀이 위주로 글을 썼었습니다.
 
-![image](/assets/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230714183142.webp)
+![image](/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230714183142.webp)
 _취준생 시절 티스토리 블로그_
 
 실무를 하다보니, 알고리즘 해법은 알고리즘 문제 사이트에서 더 잘 설명되어 있고, 단순한 지식의 나열은 그냥 공식 문서를 보는게 더 낫겠다는 생각이 들기 시작했습니다. 제 블로그도 그런 심심한 블로그가 되기를 원하지는 않았습니다.
 
 다른 사람과는 **차별화되는, 개성적인 블로그를 만들고 싶다**는 마음이 지금까지 이어지면서 컨텐츠의 질을 높이고 차별화하기 위해 글을 써나가고 있습니다. 개인적으로 만족하는 컨텐츠로는 [직접 오픈소스를 만들어가는 이야기](https://songkg7.github.io/posts/develop-obsidian-plugin/), [읽지만 말고 구현하기](https://songkg7.github.io/posts/Consistent-Hashing/) 등이 있습니다.
 
-![image](/assets/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230714184733.webp)
+![image](/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230714184733.webp)
 _현재 블로그_
 
 ## Obsidian 플러그인 오픈소스로 공개
@@ -54,11 +54,11 @@ _현재 블로그_
 
 감사하게도, 대략 400명 정도의 사용자가 저와 함께 하고 있네요(23년 7월 기준). ~~대부분 10분 안에 삭제하셨을 것 같지만... DAU 1..~~
 
-![image](/assets/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230714182237.webp)
+![image](/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230714182237.webp)
 
 초기에는 버그도 많았지만, 현재는 자잘한 이슈를 많이 처리해서 안정화 단계에 진입해있습니다. 만약 Obsidian 을 즐겨 쓰시면서 블로그 플랫폼으로 Jekyll 을 사용하고 계시다면 한 번 쯤 관심가져주시면 감사하겠습니다!
 
-![image](/assets/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230714192108.webp){: w="300"}
+![image](/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230714192108.webp)
 
 Obsidian Discord Community 에서 `plugin dev` role 도 획득해서 활동 중이니 Obsidian 관련 질문이 있으시면 언제든지 환영합니다!
 
@@ -68,7 +68,7 @@ Obsidian Discord Community 에서 `plugin dev` role 도 획득해서 활동 중�
 
 아래는 제 블로그의 1년간의 성장률입니다.
 
-![image](/assets/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230623111947.webp)
+![image](/img/2023-07-14-Journey-with-Devlog-2022-2023/Pasted-image-20230623111947.webp)
 
 그래프만 다이나믹할 뿐 사실 많은 파워블로거 분들에 비하면 아직 그렇게 많은 수치는 아닙니다. 이게 바로 통계의 함정이라는거겠지요... 그래도 결과적으로는 우상향을 그리고 있어서 좋네요.
 

@@ -74,8 +74,11 @@ chezmoi edit ~/.zshrc
 
 이 명령어는 `~/.local/share/chezmoi/dot_zshrc` 를 `$EDITOR` 로 열어줍니다. 테스트를 위해 몇가지를 수정해주고 저장합니다.
 
-> `$EDITOR` 가 env 목록에 없다면 기본값인 `vi` 를 사용합니다.
-{: .prompt-info}
+:::info
+
+`$EDITOR` 가 env 목록에 없다면 기본값인 `vi` 를 사용합니다.
+
+:::
 
 working directory 에서 어떤 내용이 변경되었는지는 아래 명령어로 확인합니다.
 
@@ -101,8 +104,11 @@ git remote add origin https://github.com/$GITHUB_USERNAME/dotfiles.git
 git push
 ```
 
-> `chezmoi.toml` 파일을 통해 관련 설정을 작성해주면 repository 동기화 과정을 자동화하여 조금 더 편리하게 사용할 수 있습니다.
-{: .prompt-tip}
+:::tip
+
+`chezmoi.toml` 파일을 통해 관련 설정을 작성해주면 repository 동기화 과정을 자동화하여 조금 더 편리하게 사용할 수 있습니다.
+
+:::
 
 **chezmoi** 의 working directory 에서 빠져나오기 위해서는 아래 명령을 사용합니다.
 
@@ -112,7 +118,7 @@ exit
 
 여기까지의 과정을 시각적으로 살펴보면 아래와 같습니다.
 
-![image](/assets/img/2023-03-26-chezmoi-awesome-dotfile-manager/chezmoi-workflow.webp)
+![image](/img/2023-03-26-chezmoi-awesome-dotfile-manager/chezmoi-workflow.webp)
 
 ## 다른 기기에서 **chezmoi** 설정 사용하기
 
@@ -148,8 +154,11 @@ chezmoi edit $FILE
 chezmoi merge $FILE
 ```
 
-> `chezmoi merge-all` 을 사용하면 병합이 필요한 모든 파일을 대상으로 merge 가 동작합니다.
-{: .prompt-tip}
+:::tip
+
+`chezmoi merge-all` 을 사용하면 병합이 필요한 모든 파일을 대상으로 merge 가 동작합니다.
+
+:::
 
 아래 명령어를 사용하면 이 모든 과정을 한 번에 수행합니다.
 
@@ -159,7 +168,9 @@ chezmoi update -v
 
 역시 시각적으로 살펴보면 아래와 같습니다.
 
-![image](/assets/img/2023-03-26-chezmoi-awesome-dotfile-manager/using-chezmoi-second-machine.webp)두 번째 기기에서 수행해야했던 모든 과정을 초기화 시점에 한 번에 적용할 수도 있습니다...! 만약 두 번째 기기가 이제 막 새로 산 기기라면 굉장히 유용할 것 같네요.
+![image](/img/2023-03-26-chezmoi-awesome-dotfile-manager/using-chezmoi-second-machine.webp)
+
+두 번째 기기에서 수행해야했던 모든 과정을 초기화 시점에 한 번에 적용할 수도 있습니다...! 만약 두 번째 기기가 이제 막 새로 산 기기라면 굉장히 유용할 것 같네요.
 
 ```bash
 chezmoi init --apply https://github.com/$GITHUB_USERNAME/dotfiles.git
@@ -171,7 +182,9 @@ chezmoi init --apply https://github.com/$GITHUB_USERNAME/dotfiles.git
 chezmoi init --apply $GITHUB_USERNAME
 ```
 
-![image](/assets/img/2023-03-26-chezmoi-awesome-dotfile-manager/shorten-init.webp)정말이지.. 굉장히 편리합니다...🥹 가히 23년에 알게된 오픈소스 중 최고의 오픈소스가 될 것이라고 말할 수 있을 것 같네요.
+![image](/img/2023-03-26-chezmoi-awesome-dotfile-manager/shorten-init.webp)
+
+정말이지.. 굉장히 편리합니다...🥹 가히 23년에 알게된 오픈소스 중 최고의 오픈소스가 될 것이라고 말할 수 있을 것 같네요.
 
 ## Conclusion
 
@@ -179,8 +192,11 @@ chezmoi init --apply $GITHUB_USERNAME
 
 이번 글에서는 기본적인 사용법에 대해 적어보았으니, 다음 글에서는 기본적인 **chezmoi** 의 설정 파일 관리 및 보안성 유지에 대해서 살펴보겠습니다.
 
-> 제 설정이 궁금하시다면 [여기](https://github.com/songkg7/dotfiles) 에서 확인하실 수 있습니다.
-{: .prompt-info}
+:::info
+
+제 설정이 궁금하시다면 [여기](https://github.com/songkg7/dotfiles) 에서 확인하실 수 있습니다.
+
+:::
 
 ## Reference
 

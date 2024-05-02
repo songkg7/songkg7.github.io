@@ -9,8 +9,11 @@ mermaid: true
 
 저는 대부분의 글은 마크다운 에디터인 Obsidian 을 사용하고, GitHub page 로 블로그를 호스팅하고 있습니다. 두 가지 서로 다른 플랫폼에서 흐름이 끊기지 않고 글 쓰는 습관을 유지하려면 어떻게 해야하는지, 제가 사용하고 있는 방법을 소개합니다.
 
-> 이 글은 글또에서 진행한 [성윤](https://github.com/zzsza)님의 프레젠테이션에서 영감을 받아 작성하였습니다.
-{: .prompt-info}
+:::info
+
+이 글은 글또에서 진행한 [성윤](https://github.com/zzsza)님의 프레젠테이션에서 영감을 받아 작성하였습니다.
+
+:::
 
 ## 소재 수집
 
@@ -35,8 +38,11 @@ inbox 에는 글들이 쌓여만 갑니다... 좀 쳐내야겠죠?
 
 이렇게 작성된 초안은 나름의 평가를 거쳐, 블로그에 올릴만한 주제인가 아닌가를 판단합니다. 저는 다른 커뮤니티 혹은 블로그에서 너무 많이 생산된 주제의 글이라면 나름의 차별화를 위해서 따로 포스팅하지 않는 편입니다.
 
-> 다만 기술적 내용이 아닌, 어떤 문제에 대한 해결과정 소개 등 개인적 경험에 관한 내용은 타 블로그에 내용이 중복되는 포스팅이 있더라도 느낀 점이 다를 수 있으므로 되도록이면 작성합니다.
-{: .prompt-info}
+:::info
+
+다만 기술적 내용이 아닌, 어떤 문제에 대한 해결과정 소개 등 개인적 경험에 관한 내용은 타 블로그에 내용이 중복되는 포스팅이 있더라도 느낀 점이 다를 수 있으므로 되도록이면 작성합니다.
+
+:::
 
 정리된 글은 backlog 디렉토리로 옮깁니다.
 
@@ -61,10 +67,13 @@ flowchart LR
 
 업로드를 위한 모든 준비가 끝났다면, O2 를 사용하여 ready 에 있는 파일들을 Jekyll 프로젝트 폴더로 옮깁니다.
 
-> [O2](https://github.com/songkg7/o2) 는 Obsidian 을 사용하여 작성한 노트를 마크다운 포맷으로 변환해주는 Obsidian 의 커뮤니티 플러그인입니다.
-{: .prompt-info}
+:::info
 
-![gif](/assets/img/2023-04-19-blog-posting-pipeline/ezgif.com-video-to-gif.gif)
+[O2](https://github.com/songkg7/o2) 는 Obsidian 을 사용하여 작성한 노트를 마크다운 포맷으로 변환해주는 Obsidian 의 커뮤니티 플러그인입니다.
+
+:::
+
+![gif](/img/2023-04-19-blog-posting-pipeline/ezgif.com-video-to-gif.gif)
 _image link 들이 자동으로 변환되는 모습을 확인할 수 있습니다._
 
 ready 에 있던 노트들은 Jekyll 프로젝트로 옮겨지기 전 published 디렉토리로 복사되고, 백업을 위해 보관됩니다. Obsidian 고유 문법을 모두 기본 마크다운 문법으로 변환하고, 첨부파일이 있다면 Jekyll 프로젝트 폴더로 노트와 함께 복사합니다. 첨부파일 경로가 변하면서, Obsidian 에서는 잘 되었던 마크다운 링크가 깨지겠지만 걱정할 필요는 없습니다. 이 모든 과정은 O2 에 의해 자동화[^fn-nth-2]되어 있으므로, 어떤 수작업도 필요하지 않습니다. 😄 [^fn-nth-3]
@@ -87,8 +96,11 @@ flowchart TB
 
 대략적으로 문법 및 문맥을 다시 한 번 검수해주고, `npm run publish` 를 실행하면 블로그 글 발행 과정이 마무리됩니다.
 
-> publish 에 관해서는 [이 글](https://songkg7.github.io/posts/Image-optimazation-for-SEO/)에서 확인하실 수 있습니다.
-{: .prompt-info}
+:::info
+
+publish 에 관해서는 [이 글](https://songkg7.github.io/posts/Image-optimazation-for-SEO/)에서 확인하실 수 있습니다.
+
+:::
 
 ## 퇴고
 
@@ -100,7 +112,7 @@ flowchart TB
 
 Obsidian 은 graph view 기능을 제공합니다. 해당 기능을 활용하면 작성한 노트들이 서로 어떻게 유기적으로 연결되어 있는지를 가시화하여 데이터 분석에 활용할 수 있습니다.
 
-![image](/assets/img/2023-04-19-blog-posting-pipeline/obsidian-graph-view-20230417.webp)
+![image](/img/2023-04-19-blog-posting-pipeline/obsidian-graph-view-20230417.webp)
 _위 그래프에서 밝은 초록색만이 블로그에 발행된 글_
 
 대부분의 노트는 여전히 공부 중인 주제이거나, 블로그 발행 적합성 심사(...)에서 탈락한 글입니다. 이 그래프를 보면 제가 발행한 글들은 어느 정도 안쪽에 위치하며 간선이 많은 것을 볼 수 있는데, 제가 관련 내용을 복합적으로 이해하고 다른 주제의 노트들과 연관시키며 작성한 글을 주로 발행했다는 의미로 해석할 수 있습니다.
@@ -122,8 +134,11 @@ _위 그래프에서 밝은 초록색만이 블로그에 발행된 글_
 - 블로그 발행 과정은 분명히 귀찮은 일이므로, 최대한 자동화하여 워크플로우를 단순하게 유지하자. 글 쓰기에만 집중하자!
 - 스스로 얼마나 알고 있고, 어떤 걸 모르고 있는지를 파악(자기 객관화)하자. 블로그 글 주제 선정이나, 학습 방향을 정하는 것에 큰 도움이 된다.
 
-> 제가 작성하는 모든 글(블로그에 포스팅되지 않는 초안 포함)은 [GitHub](https://github.com/songkg7/haril-vault) 를 통해 Public 으로 관리되고 있습니다.
-{: .prompt-info}
+:::info
+
+제가 작성하는 모든 글(블로그에 포스팅되지 않는 초안 포함)은 [GitHub](https://github.com/songkg7/haril-vault) 를 통해 Public 으로 관리되고 있습니다.
+
+:::
 
 ---
 

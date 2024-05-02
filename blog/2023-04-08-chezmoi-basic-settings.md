@@ -8,8 +8,11 @@ categories:
 
 [지난 글](https://songkg7.github.io/posts/chezmoi-awesome-dotfile-manager/)에 이어 좀 더 편리하게 활용할 수 있는 방법들에 대해 공유합니다.
 
-> 제가 현재 사용하고 있는 설정은 [여기](https://github.com/songkg7/dotfiles) 에서 확인하실 수 있습니다.
-{: .prompt-info}
+:::info
+
+제가 현재 사용하고 있는 설정은 [여기](https://github.com/songkg7/dotfiles) 에서 확인하실 수 있습니다.
+
+:::
 
 ## 어떻게 사용해야 할까
 

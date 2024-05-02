@@ -173,8 +173,11 @@ _Demo_
 
 이후에는 현재 디렉토리로 복사된 `.env` 파일을 먼저 소개했던 방식으로 인텔리제이에 적용해주면 됩니다.
 
-> [direnv](https://direnv.net/) 와 인텔리제이의 direnv plugin 을 활용하면 더 편하게 적용이 가능합니다.
-{: .prompt-tip}
+:::tip
+
+[direnv](https://direnv.net/) 와 인텔리제이의 direnv plugin 을 활용하면 더 편하게 적용이 가능합니다.
+
+:::
 
 ![](https://i.imgur.com/NSIiPwn.jpeg)
 
