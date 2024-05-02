@@ -5,7 +5,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
-  title: 'Haril\'s Devlog',
+  title: 'Haril Devlog',
   tagline: 'More information, better developer',
   favicon: 'img/avatar.png',
 
@@ -65,7 +65,7 @@ const config: Config = {
         },
         blog: {
           showReadingTime: true,
-          blogTitle: 'Haril\'s Devlog',
+          blogTitle: 'Haril Devlog',
           blogDescription: 'A blog about software development, programming, and computer science.',
           blogSidebarTitle: 'All posts',
           blogSidebarCount: 'ALL',
@@ -87,7 +87,7 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'Haril\'s Devlog',
+      title: 'Haril Devlog',
       logo: {
         alt: 'Haril profile Logo',
         src: 'img/avatar.png',
