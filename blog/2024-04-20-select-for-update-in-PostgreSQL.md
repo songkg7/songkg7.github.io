@@ -13,6 +13,8 @@ updated: 2024-04-20 22:14:06 +0900
 authors: haril
 ---
 
+![banner](/img/banner/PostgreSQL-banner.webp)
+
 ## SELECT FOR UPDATE 구문의 동작 방식
 
 PostgreSQL의 FOR UPDATE 잠금은 트랜잭션 내에서 SELECT 쿼리를 수행하는 동안 테이블의 행을 명시적으로 잠그는 데 사용됩니다. 이 잠금 모드는 일반적으로 트랜잭션이 완료될 때까지 선택한 행이 변경되지 않도록 하여 다른 트랜잭션이 충돌하는 방식으로 해당 행을 수정하거나 잠그지 못하도록 하려는 경우에 사용합니다.
@@ -24,6 +26,8 @@ PostgreSQL의 FOR UPDATE 잠금은 트랜잭션 내에서 SELECT 쿼리를 수�
 - 잠금을 사용하는 읽기와 잠금을 사용하지 않는 읽기를 혼용하게 된다면 `select for update` 는 어떻게 동작할까요?
 - 애초에 잠금을 사용했는데 다른 트랜잭션에서 읽기가 가능하긴 한 걸까요?
 - 읽기 방식을 혼용해도 데이터의 일관된 읽기를 보장할 수 있을까요?
+
+<!-- truncate -->
 
 PostgreSQL 에서 `select for update` 구문은 **트랜잭션 격리레벨에 따라서 다르게 동작**합니다. 따라서 격리레벨 별로 살펴봐야 해요.
 
