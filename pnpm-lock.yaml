@@ -23,9 +23,6 @@ importers:
       clsx:
         specifier: ^2.0.0
         version: 2.1.1
-      pnpm:
-        specifier: ^9.0.6
-        version: 9.0.6
       prism-react-renderer:
         specifier: ^2.3.0
         version: 2.3.1(react@18.3.1)
@@ -3671,11 +3668,6 @@ packages:
   pkg-up@3.1.0:
     resolution: {integrity: sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==}
     engines: {node: '>=8'}
-
-  pnpm@9.0.6:
-    resolution: {integrity: sha512-9thjEwlzIHy3ozbWtDmiQqJqyAaAd99TDWqGBpQZhT3B/+ZAKexZSpxQWjpBDRlkPIcKumd2Mw9c/dzxCpwWFw==}
-    engines: {node: '>=18.12'}
-    hasBin: true
 
   postcss-calc@8.2.4:
     resolution: {integrity: sha512-SmWMSJmB8MRnnULldx0lQIyhSNvuDl9HfrZkaqqE/WHAhToYsAvDq+yAsA/kIyINDszOp3Rh0GFoNuH5Ypsm3Q==}
@@ -9761,8 +9753,6 @@ snapshots:
   pkg-up@3.1.0:
     dependencies:
       find-up: 3.0.0
-
-  pnpm@9.0.6: {}
 
   postcss-calc@8.2.4(postcss@8.4.38):
     dependencies:
