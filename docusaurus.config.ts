@@ -7,7 +7,7 @@ import rehypeKatex from 'rehype-katex';
 const config: Config = {
   title: 'Haril\'s Devlog',
   tagline: 'More information, better developer',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/avatar.png',
 
   // Set the production url of your site here
   url: 'https://songkg7.github.io',
@@ -89,7 +89,7 @@ const config: Config = {
     navbar: {
       title: 'Haril\'s Devlog',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Haril profile Logo',
         src: 'img/avatar.png',
       },
       items: [
