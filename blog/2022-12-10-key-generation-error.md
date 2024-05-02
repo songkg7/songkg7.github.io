@@ -6,8 +6,11 @@ tags: [gpg, keybase, security]
 categories:
 ---
 
-> 오류 해결 방법을 간단하게 공유합니다.
-{: .prompt-info }
+:::info
+
+오류 해결 방법을 간단하게 공유합니다.
+
+:::
 
 ```console
 key generation error: Unknown signature subpacket: 34

@@ -41,8 +41,11 @@ class SpringApplicationTest {
 
 또한 Mockito 를 활용하면 복잡한 의존관계를 간편하게 해결하여 테스트를 작성할 수 있다. 이 두 개념을 적절히 사용한다면 대부분의 유닛 테스트는 크게 어렵지 않다.
 
-> Mocking 을 너무 많이 해야한다면 의존성 설계가 잘못되었을 가능성이 높다. 남용하지 않도록 주의해야 한다.
-{: .prompt-warning}
+:::warning
+
+Mocking 을 너무 많이 해야한다면 의존성 설계가 잘못되었을 가능성이 높다. 남용하지 않도록 주의해야 한다.
+
+:::
 
 ## 그렇다면 SpringApplication 은?
 

@@ -44,8 +44,11 @@ public class EventController {
 
 handler 는 전통적인 Controller model 을 사용해서 만들어줬습니다.
 
-> Spring WebFlux 에서는 Router function 을 사용하여 요청을 관리할 수 있지만, 이 글은 WebFlux 에 관한 내용이 아니므로 `@RestController` 를 통한 방식을 선택했습니다.
-{: .prompt-tip }
+:::tip
+
+Spring WebFlux 에서는 Router function 을 사용하여 요청을 관리할 수 있지만, 이 글은 WebFlux 에 관한 내용이 아니므로 `@RestController` 를 통한 방식을 선택했습니다.
+
+:::
 
 테스트 코드를 작성해보겠습니다.
 
@@ -69,7 +72,7 @@ class EventControllerTest {
 }
 ```
 
-![image1](/assets/img/localdatetime-format-with-webflux/스크린샷%202022-11-29%20오후%209.55.22.webp)
+![image1](/img/localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 9.55.22.webp)
 
 테스트 코드를 실행하면 아래와 같은 요청이 발생하는 것과 같습니다.
 
@@ -87,9 +90,9 @@ Content-Type: application/stream+json
 
 기본 포맷으로 요청하면 정상적으로 응답을 받지만, 요청 포맷을 변경하면 어떨까요?
 
-![image2](/assets/img/localdatetime-format-with-webflux/스크린샷%202022-11-29%20오후%208.56.56.webp)
+![image2](/img/localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 8.56.56.webp)
 
-![image3](/assets/img/localdatetime-format-with-webflux/스크린샷%202022-11-29%20오후%208.56.16.webp)
+![image3](/img/localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 8.56.16.webp)
 
 ```bash
 $ http localhost:8080/event Accept=application/stream+json name==Spring time==2021-08-01T12:00:00Z
@@ -124,8 +127,11 @@ public record Event(
 
 다시 테스트를 실행해주면 정상적으로 통과하는 것을 확인할 수 있습니다.
 
-> 요청 포맷을 바꿀 수 있을 뿐이지 응답 포맷까지 변하진 않습니다. 응답 포맷 변경은 `@JsonFormat` 등의 annotation 을 통해서 설정 가능하지만 이 글에선 다루지 않습니다.
-{: .prompt-info }
+:::info
+
+요청 포맷을 바꿀 수 있을 뿐이지 응답 포맷까지 변하진 않습니다. 응답 포맷 변경은 `@JsonFormat` 등의 annotation 을 통해서 설정 가능하지만 이 글에선 다루지 않습니다.
+
+:::
 
 간단하게 문제를 해결했지만, 항상 최선의 해결책은 아닙니다. 변환해야하는 필드가 많다면 하나하나 annotation 을 붙이는 건 꽤나 귀찮은 작업이 되고, 실수로 annotation 을 작성하지 않아서 버그가 발생할 수도 있습니다. `ArchUnit`[^fn_nth_2] 등의 test library 를 사용해서 체크하게 하는 것도 가능하지만, 코드를 파악하기 위해 들여야하는 노력이 늘어난다는 것은 부정할 수 없는 사실입니다.
 
@@ -148,12 +154,15 @@ public class WebFluxConfig implements WebFluxConfigurer {
 }
 ```
 
-> `@EnableWebFlux` 를 사용하게되면 mapper 를 override 하기 때문에 애플리케이션이 의도한대로 동작하지 않을 수 있습니다.[^footnote]
-{: .prompt-danger }
+:::dange
+
+`@EnableWebFlux` 를 사용하게되면 mapper 를 override 하기 때문에 애플리케이션이 의도한대로 동작하지 않을 수 있습니다.[^footnote]
+
+:::
 
 다시 테스트를 실행해보면 annotation 없이도 통과하는 것을 확인할 수 있습니다.
 
-![image4](/assets/img/localdatetime-format-with-webflux/스크린샷%202022-11-29%20오후%209.52.51.webp)
+![image4](/img/localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 9.52.51.webp)
 
 ### 특정 필드만 다른 포맷 적용하기
 
@@ -184,20 +193,22 @@ public record Event(
     }
 ```
 
-![image5](/assets/img/localdatetime-format-with-webflux/스크린샷%202022-11-29%20오후%2010.07.30.webp)
+![image5](/img/localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 10.07.30.webp)
 
-> URI 가 길어지면 UriComponentsBuilder 를 사용하는 것도 좋은 방법입니다.
->
-> ```java
-> String uri = UriComponentsBuilder.fromUriString("/event")
->         .queryParam("name", "Spring")
->         .queryParam("time", "2021-08-01T12:00:00Z")
->         .queryParam("anotherTime", "2021-08-01T12")
->         .build()
->         .toUriString();
-> ```
->
-{: .prompt-tip }
+:::tip
+
+URI 가 길어지면 UriComponentsBuilder 를 사용하는 것도 좋은 방법입니다.
+
+```java
+String uri = UriComponentsBuilder.fromUriString("/event")
+        .queryParam("name", "Spring")
+        .queryParam("time", "2021-08-01T12:00:00Z")
+        .queryParam("anotherTime", "2021-08-01T12")
+        .build()
+        .toUriString();
+```
+
+:::
 
 ## Conclusion
 
@@ -206,8 +217,11 @@ public record Event(
 - `@DateTimeFormat` : 적용이 간단. 전역 설정보다 우선도가 높으므로 특정 필드만 다른 포맷을 사용해야할 경우 등 타겟팅하여 적용하는 것이 가능.
 - `WebFluxConfigurer` : 적용이 상대적으로 복잡하지만, 프로젝트 규모가 어느 정도 커져서 일관된 설정 적용이 필요할 경우 `@DateTimeFormat` 에 비해 압도적 유리. 일부 필드에 실수로 annotation 을 작성하지 않는 등의 휴먼 에러를 방지할 수 있음.
 
-> 모든 예제 코드는 [GitHub](https://github.com/songkg7/java-practice/blob/main/spring-webflux-parameter-sample/src/test/java/com/example/springwebfluxparametersample/controller/EventControllerTest.java) 에서 확인하실 수 있습니다.
-{: .prompt-info }
+:::info
+
+모든 예제 코드는 [GitHub](https://github.com/songkg7/java-practice/blob/main/spring-webflux-parameter-sample/src/test/java/com/example/springwebfluxparametersample/controller/EventControllerTest.java) 에서 확인하실 수 있습니다.
+
+:::
 
 ## Reference
 
