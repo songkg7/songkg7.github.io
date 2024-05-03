@@ -94,7 +94,9 @@ const config: Config = {
       apiKey: '9ceaa1bf44bf96e360bdf439cc74c0e2',
 
       indexName: 'songkg7io',
-      contextualSearch: true,
+
+      // 버전별로 다른 검색 결과를 원한다면 true로 설정 (초기에는 true 가 잘 동작하지 않음)
+      contextualSearch: false,
     },
     navbar: {
       title: 'Haril Devlog',
