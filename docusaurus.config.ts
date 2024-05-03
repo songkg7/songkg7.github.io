@@ -94,12 +94,7 @@ const config: Config = {
       apiKey: '9ceaa1bf44bf96e360bdf439cc74c0e2',
 
       indexName: 'songkg7io',
-
-      // Optional: Algolia search parameters
-      // searchParameters: {},
-
-      // Optional: path for search page that enabled by default (`false` to disable it)
-      // searchPagePath: 'search',
+      contextualSearch: true,
     },
     navbar: {
       title: 'Haril Devlog',
