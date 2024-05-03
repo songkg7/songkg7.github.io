@@ -86,6 +86,21 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
+    algolia: {
+      // The application ID provided by Algolia
+      appId: 'UXO3ZRTGDA',
+
+      // Public API key: it is safe to commit it
+      apiKey: '69e75c34de9eb9705859af6fa7f537f2',
+
+      indexName: 'songkg7io',
+
+      // Optional: Algolia search parameters
+      // searchParameters: {},
+
+      // Optional: path for search page that enabled by default (`false` to disable it)
+      // searchPagePath: 'search',
+    },
     navbar: {
       title: 'Haril Devlog',
       logo: {
