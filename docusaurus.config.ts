@@ -91,7 +91,7 @@ const config: Config = {
       appId: 'UXO3ZRTGDA',
 
       // Public API key: it is safe to commit it
-      apiKey: '69e75c34de9eb9705859af6fa7f537f2',
+      apiKey: '9ceaa1bf44bf96e360bdf439cc74c0e2',
 
       indexName: 'songkg7io',
 
