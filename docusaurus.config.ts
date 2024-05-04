@@ -105,13 +105,8 @@ const config: Config = {
         src: 'img/avatar.png',
       },
       items: [
-        {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'Tutorial',
-        },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        { 
+          to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/songkg7',
           label: 'GitHub',
@@ -121,44 +116,7 @@ const config: Config = {
     },
     footer: {
       style: 'dark',
-      links: [
-        {
-          title: 'Docs',
-          items: [
-            {
-              label: 'Tutorial',
-              to: '/docs/intro',
-            },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'LinkedIn',
-              href: 'https://linkedin.com/in/songkg7/',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/songkg7/songkg7.github.io',
-            },
-          ],
-        },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} Haril Song, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Haril Song, All Rights Reserved.`,
     },
     prism: {
       theme: prismThemes.github,
