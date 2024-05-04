@@ -109,8 +109,9 @@ const config: Config = {
                     to: '/blog', label: 'Blog', position: 'left'
                 },
                 {
+                    'aria-label': 'GitHub Repository',
+                    className: 'navbar--github-link',
                     href: 'https://github.com/songkg7',
-                    label: 'GitHub',
                     position: 'right',
                 },
             ],
