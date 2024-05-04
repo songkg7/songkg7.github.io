@@ -109,6 +109,12 @@ const config: Config = {
                     to: '/blog', label: 'Blog', position: 'left'
                 },
                 {
+                    type: 'docSidebar',
+                    sidebarId: 'productSidebar',
+                    position: 'left',
+                    label: 'Products',
+                },
+                {
                     'aria-label': 'GitHub Repository',
                     className: 'navbar--github-link',
                     href: 'https://github.com/songkg7',
