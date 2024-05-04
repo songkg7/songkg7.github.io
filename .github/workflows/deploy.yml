@@ -25,7 +25,7 @@ jobs:
           node-version: 20
           cache: pnpm
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
       - name: Test build website
         run: pnpm build
   deploy:
@@ -51,5 +51,5 @@ jobs:
         run: |
           git config --global user.email "songkg7@gmail.com"
           git config --global user.name "haril"
-          pnpm install --frozen-lockfile
+          pnpm install
           pnpm deploy
