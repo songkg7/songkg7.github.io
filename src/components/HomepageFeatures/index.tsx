@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
@@ -41,6 +42,18 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
+const landingList: FeatureItem[] = [
+    {
+        title: 'Will be updated soon! 🚀',
+        Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+        description: (
+        <>
+            The main page is currently being designed.
+        </>
+        ),
+    },
+];
+
 function Feature({title, Svg, description}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
@@ -55,13 +68,30 @@ function Feature({title, Svg, description}: FeatureItem) {
   );
 }
 
+function Landing({title, Svg, description}: FeatureItem) {
+  return (
+    <div className={clsx('col col--12')}>
+      <div className="text--center">
+        <Svg className={styles.featureSvg} role="img" />
+      </div>
+      <div className="text--center padding-horiz--md">
+        <Heading as="h1">{title}</Heading>
+          <p>{description}</p>
+          <Link to="/blog" className="button button--secondary button--lg">
+              Go to Blog
+          </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function HomepageFeatures(): JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">
         <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
+          {landingList.map((props, idx) => (
+            <Landing key={idx} {...props} />
           ))}
         </div>
       </div>
