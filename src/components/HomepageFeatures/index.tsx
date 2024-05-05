@@ -43,22 +43,22 @@ const FeatureList: FeatureItem[] = [
 ];
 
 const landingList: FeatureItem[] = [
-    {
-        title: 'Will be updated soon! 🚀',
-        Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
-        description: (
-        <>
-            The main page is currently being designed.
-        </>
-        ),
-    },
+  {
+    title: 'Will be updated soon! 🚀',
+    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    description: (
+      <>
+        The main page is currently being designed.
+      </>
+    ),
+  },
 ];
 
 function Feature({title, Svg, description}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <Svg className={styles.featureSvg} role="img"/>
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
@@ -72,14 +72,14 @@ function Landing({title, Svg, description}: FeatureItem) {
   return (
     <div className={clsx('col col--12')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <Svg className={styles.featureSvg} role="img"/>
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h1">{title}</Heading>
-          <p>{description}</p>
-          <Link to="/blog" className="button button--secondary button--lg">
-              Go to Blog
-          </Link>
+        <p>{description}</p>
+        <Link to="/blog" className="button button--secondary button--lg">
+          Go to Blog
+        </Link>
       </div>
     </div>
   );
