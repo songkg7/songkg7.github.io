@@ -5,7 +5,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
-    title: 'Haril Devlog',
+    title: 'Haril Dev',
     tagline: 'More information, better developer',
     favicon: 'img/avatar.png',
 
@@ -65,7 +65,7 @@ const config: Config = {
                 },
                 blog: {
                     showReadingTime: true,
-                    blogTitle: 'Haril Devlog',
+                    blogTitle: 'Haril Dev',
                     blogDescription: 'A blog about software development, programming, and computer science.',
                     blogSidebarTitle: 'All posts',
                     blogSidebarCount: 'ALL',
@@ -99,7 +99,7 @@ const config: Config = {
             contextualSearch: false,
         },
         navbar: {
-            title: 'Haril Devlog',
+            title: 'Haril Dev',
             logo: {
                 alt: 'Haril profile Logo',
                 src: 'img/avatar.png',
