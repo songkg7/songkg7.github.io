@@ -9,6 +9,8 @@ pin: true
 authors: haril
 ---
 
+![banner](./k6-logo.webp)
+
 ## Overview
 
 > Spring MVC 웹 애플리케이션은 동시 사용자를 몇 명까지 수용할 수 있을까? 🤔
@@ -22,6 +24,8 @@ authors: haril
 기술적인 오류나 오타 등의 잘못된 내용이 있다면 댓글로 알려주시면 감사하겠습니다 🙇‍♂️
 
 :::
+
+<!-- truncate -->
 
 ## Test Scenario
 

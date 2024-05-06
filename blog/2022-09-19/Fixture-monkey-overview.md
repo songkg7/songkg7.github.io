@@ -6,6 +6,8 @@ categories:
 authors: haril
 ---
 
+![banner](./fixture-monkey-banner.png)
+
 :::info
 
 예제 코드는 [GitHub](https://github.com/songkg7/java-practice/tree/main/fixture-monkey-demo)에서 보실 수 있습니다.

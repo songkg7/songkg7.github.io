@@ -73,7 +73,7 @@ class EventControllerTest {
 }
 ```
 
-![image1](./localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 9.55.22.webp)
+![image1](./1.webp)
 
 테스트 코드를 실행하면 아래와 같은 요청이 발생하는 것과 같습니다.
 
@@ -91,9 +91,9 @@ Content-Type: application/stream+json
 
 기본 포맷으로 요청하면 정상적으로 응답을 받지만, 요청 포맷을 변경하면 어떨까요?
 
-![image2](./localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 8.56.56.webp)
+![image2](./2.webp)
 
-![image3](./localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 8.56.16.webp)
+![image3](./3.webp)
 
 ```bash
 $ http localhost:8080/event Accept=application/stream+json name==Spring time==2021-08-01T12:00:00Z
@@ -163,7 +163,7 @@ public class WebFluxConfig implements WebFluxConfigurer {
 
 다시 테스트를 실행해보면 annotation 없이도 통과하는 것을 확인할 수 있습니다.
 
-![image4](./localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 9.52.51.webp)
+![image4](./4.webp)
 
 ### 특정 필드만 다른 포맷 적용하기
 
@@ -194,7 +194,7 @@ public record Event(
     }
 ```
 
-![image5](./localdatetime-format-with-webflux/스크린샷 2022-11-29 오후 10.07.30.webp)
+![image5](./5.webp)
 
 :::tip
 

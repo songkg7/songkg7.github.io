@@ -4,9 +4,10 @@ date: 2024-03-03 14:01:05 +0900
 aliases: null
 tags: [spatial-index, index, postgis, geometry]
 categories: null
-image: /assets/img/2024-03-03-Spatial-index/postgres-r-tree.png
 authors: haril
 ---
+
+![banner](./postgres-r-tree.png)
 
 매우 비효율적이였던 기존 구현 방식을 설명하고, 개선하기 위해 시도한 방법들을 기록합니다.
 

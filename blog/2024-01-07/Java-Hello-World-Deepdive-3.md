@@ -8,6 +8,8 @@ categories: null
 authors: haril
 ---
 
+![banner](./hello-world-programmer.webp)
+
 앞선 챕터에서는 Java 를 컴파일해보며 바이트코드 구조에 대해 살펴봤다. 이번 챕터에서는 JVM 이 실행되면서 'Hello World' 코드 블록을 어떻게 동작시키는지 살펴본다.
 
 ## Chapter 3. Java 를 실행하는 JVM
