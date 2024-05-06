@@ -2,7 +2,7 @@
 title: "남들보다 잘 하는 개발자, 어제보다 잘 하는 개발자"
 date: 2023-06-19 21:49:01 +0900
 aliases: 
-published: false
+draft: true
 tags: [essay]
 categories: Essay
 authors: haril
