@@ -18,7 +18,7 @@ curl https://www.google.com/ping\?sitemap\={제출하고자 하는 sitemap 의 �
 
 그리고 다시 search console 에 접속해보면...!
 
-![sitemap-success](/img/sitemaperror/sitemap-success.webp)
+![sitemap-success](./sitemap-success.webp)
 _근 한달만에 겨우 해결...ㅠㅠ_
 
 드디어 sitemap 을 인식하네요.

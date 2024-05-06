@@ -12,16 +12,16 @@ authors: haril
 
 ## Viminum 옵션창
 
-![where](/img/vimium/스크린샷 2022-09-02 오후 2.55.40.webp)
+![where](./vimium/스크린샷 2022-09-02 오후 2.55.40.webp)
 
 chrome 확장에서 버튼을 눌러서 옵션을 열어주자.
 
-![input](/img/vimium/스크린샷 2022-09-02 오후 2.56.47.webp)
+![input](./vimium/스크린샷 2022-09-02 오후 2.56.47.webp)
 
 이 부분을 수정해주면 단축키가 변경된다. 기본적인 매핑방법은 vim 과 동일하다. 개인적으로 vimari 의 탭 이동 단축키인 q, w 가 vimium 의 J, K 보다 편한 것 같아 변경해주었다.
 
 만약 어떤 action 에 키를 매핑해야하는지 모르겠다면 옆에 show available commands 를 눌러보면 친절하게 설명해준다.
 
-![help-view](/img/vimium/스크린샷 2022-09-02 오후 2.58.57.webp)
+![help-view](./vimium/스크린샷 2022-09-02 오후 2.58.57.webp)
 
 여기서 원하는 action 을 찾아서 특정 키에 매핑하면 되겠다.

@@ -52,7 +52,7 @@ services:
       - '9300'
 ```
 
-![image](/img/2023-07-27-Spring-Boot-With-Docker-Compose/Pasted-image-20230727132521.webp)
+![image](./Pasted-image-20230727132521.webp)
 
 bootRun 시 compose 파일을 자동으로 인식하고 `docker compose up` 작업이 먼저 실행됩니다.
 
@@ -78,7 +78,7 @@ spring:
 
 그 외에도 다양한 옵션이 있으니 살펴보시면 원하시는걸 선택하는데 도움이 되실 것 같습니다.
 
-![image](/img/2023-07-27-Spring-Boot-With-Docker-Compose/Pasted-image-20230727142925.webp)
+![image](./Pasted-image-20230727142925.webp)
 
 ## Conclusion
 

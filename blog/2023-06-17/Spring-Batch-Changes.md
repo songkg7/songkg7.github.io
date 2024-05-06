@@ -45,7 +45,7 @@ JobParameters jobParameters = jobLauncherTestUtils.getUniqueJobParametersBuilder
 		.toJobParameters();
 ```
 
-![image](/img/2023-06-17-Spring-Batch-50-changes/fixedConversionService.webp)
+![image](./fixedConversionService.webp)
 _해당 issue 가 해결된 모습_
 
 이 issue 는 2023-02-23 에 5.0.1 이 릴리즈되며 해결되었습니다.

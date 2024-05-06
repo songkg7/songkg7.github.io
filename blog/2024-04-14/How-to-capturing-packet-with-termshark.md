@@ -14,7 +14,7 @@ updated: 2024-04-14 14:33:15 +0900
 authors: haril
 ---
 
-![banner](/img/banner/termshark-banner.webp)
+![banner](./termshark-banner.webp)
 
 ## 네트워크 패킷이란
 

@@ -35,7 +35,7 @@ yum install httpie
 curl https://httpie.io/hello
 ```
 
-![curl-get](/img/httpie/스크린샷 2022-06-28 오후 9.17.52.webp)
+![curl-get](./httpie/스크린샷 2022-06-28 오후 9.17.52.webp)
 
 그럼 이제 `HTTPie` 와 비교해보자.
 
@@ -43,7 +43,7 @@ curl https://httpie.io/hello
 https httpie.io/hello
 ```
 
-![get](/img/httpie/스크린샷 2022-06-28 오후 9.15.04.webp)
+![get](./httpie/스크린샷 2022-06-28 오후 9.15.04.webp)
 
 명령어를 포함한 모든 부분에서 가독성이 훨씬 좋아진다. 응답 및 헤더값이 기본으로 포함되어 있어서 별도의 명령어를 사용하지 않아도 다양한 정보를 한 눈에 얻을 수 있다.
 

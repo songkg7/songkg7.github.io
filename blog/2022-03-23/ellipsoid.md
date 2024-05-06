@@ -8,7 +8,7 @@ authors: haril
 
 ## Background
 
-![earth](/img/2022-03-23-ellipsoid.webp)
+![earth](./2022-03-23-ellipsoid.webp)
 _image reference[^footnote]_
 
 지구는 평평하지도 완벽한 구형(Sphere)도 아닌 비표준 타원체(Ellipsoid)임을 고려하면 서로 다른 경도 및 위도 위치에 있는 두 점 사이의 거리를 빠르고 정확하게 계산하는 완벽한 공식은 없습니다.

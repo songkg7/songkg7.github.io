@@ -26,7 +26,7 @@ SEO 최적화를 위해서는 포스팅에 포함되는 이미지의 크기가 �
 
 실제로 2.8MB 정도의 jpg 파일을 webp 로 변환한 결과, 47kb 수준으로 감소했다. **1/50 이상 줄어든 것**이다! 사실 품질 손실이 일부 발생하지만 웹페이지에서는 체감하기 힘들었다.
 
-![image](/img/2023-04-26-Image-optimazation-for-SEO/스크린샷-2023-04-18-오후-10.43.14.webp)
+![image](./스크린샷-2023-04-18-오후-10.43.14.webp)
 
 이 정도면 문제 해결을 위한 동기는 충분히 마련되었다. 구현을 위해 정보를 수집해보자.
 
@@ -38,18 +38,18 @@ SEO 최적화를 위해서는 포스팅에 포함되는 이미지의 크기가 �
 
 이미지 프로세싱 관련 라이브러리로는 `sharp` 가 가장 유명한 라이브러리이지만, OS 의존적이여서 Obsidian 플러그인으로는 사용할 수가 없다. 혹여나 잘못 알고 있는 것이 아닐까 하여 Obsidian community 에서 해당 내용을 질문하고 사용할 수 없다는 명확한 답변을 받았다.
 
-![image](/img/2023-04-26-Image-optimazation-for-SEO/Pasted-image-20230418152006.webp)
+![image](./Pasted-image-20230418152006.webp)
 
-![image](/img/2023-04-26-Image-optimazation-for-SEO/Pasted-image-20230418152135.webp)
+![image](./Pasted-image-20230418152135.webp)
 
-![image](/img/2023-04-26-Image-optimazation-for-SEO/Pasted-image-20230418152325.webp)
+![image](./Pasted-image-20230418152325.webp)
 _관련 커뮤니티 대화 기록_
 
 어쩔 수 없이 `sharp` 의 대안으로 `imagemin` 을 선택해서 사용하기로 했다.
 
 하지만 치명적인 문제가 있었는데, `imagemin` 은 esbuild 를 실행할 때 platform 이 node 여야 동작한다. 하지만, obsidian plugin 은 platform 이 browser 여야 동작했다. 모든 플랫폼에서 사용가능하다는 neutral 옵션으로 하니까 둘 다 동작 안하더라...
 
-![image](/img/2023-04-26-Image-optimazation-for-SEO/Pasted-image-20230418173447.webp)
+![image](./Pasted-image-20230418173447.webp)
 
 당장 O2 에 적용할 수 있을만한 라이브러리는 찾지 못해서 임시로 간단한 스크립트를 구현하여 포맷 변경 작업을 처리하기로 했다 ㅠ
 
@@ -157,7 +157,7 @@ termianl 에서 sh 을 직접 실행하는건 왠지 우아하지 못하다고 �
 npm run publish
 ```
 
-![image](/img/2023-04-26-Image-optimazation-for-SEO/Pasted-image-20230426164025.webp)
+![image](./Pasted-image-20230426164025.webp)
 _꽤 잘 된다._
 
 우선은 이렇게 마무리했다.

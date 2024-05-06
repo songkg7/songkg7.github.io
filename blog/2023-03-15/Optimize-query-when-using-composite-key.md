@@ -4,7 +4,6 @@ date: 2023-03-15 13:28:00 +0900
 aliases: 
 tags: [spring, batch, sql, pagination, optimize, postgresql]
 categories: [Spring Batch]
-image: /assets/img/banner/1600px-Spring_Framework_logo.webp
 authors: haril
 ---
 
@@ -96,12 +95,12 @@ Execution Time: 11.475 ms
 
 잠깐 언급했듯이, query 를 생성해주는 역할은 `PagingQueryProvider` 가 가지고 있습니다. 현재 저는 PostgreSQL 을 사용하기 때문에 `PostgresPagingQueryProvider` 가 선택되어 사용됩니다.
 
-![image](/img/2023-03-15-Optimize-query-when-using-composite-key/PostgresPagingQueryProvider.webp)
+![image](./PostgresPagingQueryProvider.webp)
 _group by 절을 포함하고 있는지에 따라서 생성되는 쿼리가 다르다._
 
 `SqlPagingQueryUtils` 의 `buildSortConditions` 를 살펴보면 문제가 되는 쿼리를 어떤식으로 생성하는지 확인할 수 있습니다.
 
-![image](/img/2023-03-15-Optimize-query-when-using-composite-key/Screenshot-2023-03-14-오후-6.03.14.webp)
+![image](./Screenshot-2023-03-14-오후-6.03.14.webp)
 
 이중 for문 안에서 sortKey 를 기반으로 쿼리를 생성하는 것을 볼 수 있습니다.
 
@@ -158,16 +157,16 @@ void test() {
 }
 ```
 
-![image](/img/2023-03-15-Optimize-query-when-using-composite-key/Screenshot-2023-03-14-오후-6.09.40.webp)
+![image](./Screenshot-2023-03-14-오후-6.09.40.webp)
 
 원하는대로 동작하는 것을 확인하고, 배치를 실행시켜봅니다.
 
-![image](/img/2023-03-15-Optimize-query-when-using-composite-key/hive_webtoon_q3.webp)
+![image](./hive_webtoon_q3.webp)
 _웹툰 하이브 中_
 
 query 의 변화를 인지하지 못하고 여전히 6개의 parameter 가 전달되며 `out of range` 를 발생시킵니다.
 
-![image](/img/2023-03-15-Optimize-query-when-using-composite-key/Screenshot-2023-03-13-오후-6.02.40.webp)
+![image](./Screenshot-2023-03-13-오후-6.02.40.webp)
 
 아무래도 쿼리가 변경됐다고 해서 파라미터를 주입하는 부분이 자동으로 인식하진 못하는 것 같으니, 파라미터가 주입되는 부분을 찾기 위해 다시 디버깅을 해봅니다.
 
@@ -175,7 +174,7 @@ query 의 변화를 인지하지 못하고 여전히 6개의 parameter 가 전�
 
 파라미터는 `JdbcPagingItemReader` 가 직접 만들어주고 있었는데요, `JdbcPagingItemReader` 의 `getParameterList` 에서 반복문을 돌며 SQL 에 주입될 parameter 개수를 증가시키는걸 확인할 수 있었습니다.
 
-![image](/img/2023-03-15-Optimize-query-when-using-composite-key/Screenshot-2023-03-13-오후-5.14.05.webp)
+![image](./Screenshot-2023-03-13-오후-5.14.05.webp)
 _반복문으로 돌면서 sortKey size 에 적합한 parameter 를 생성한다._
 
 이 메서드만 override 하면 되겠다고 생각했지만 안타깝게도 `private` 이라 불가능합니다. 고민 끝에 `JdbcPagingItemReader` 를 통째로 복사하여 `getParameterList` 부분만 수정했습니다.
@@ -210,7 +209,7 @@ private List<Object> getParameterList(Map<String, Object> values, Map<String, Ob
 
 1000만건 이상의 페이징 처리에서는 30s 씩 걸리던 쿼리가 0.1s 단위까지 줄었으니 300배에 가까운 엄청난 성능 향상이네요.
 
-![image](/img/2023-03-15-Optimize-query-when-using-composite-key/Screenshot-2023-03-13-오후-6.11.34.webp)
+![image](./Screenshot-2023-03-13-오후-6.11.34.webp)
 
 이제는 아무리 많은 데이터가 있어도 쿼리가 느려질 걱정없이 ms 안에 읽기가 가능합니다. 😎
 

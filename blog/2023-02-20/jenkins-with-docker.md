@@ -53,7 +53,7 @@ node 는 Jenkins 의 역할을 효율적으로 분배할 수 있는 방법이다
 
 node 와 통신하기 위해 master 에 `ssh-keygen` 으로 키를 생성한다. 이미 생성해서 쓰고 있는게 있다면 재사용해도 무방하다.
 
-![image](/assets/img/2023-02-20-Docker-로 Jenkins 운영하기/jenkins-credentials-provider.webp)
+![image](./jenkins-credentials-provider.webp)
 
 - `ID`: ssh 키를 jenkins 내에서 식별할 수 있게 해주는 값이다. 설정해두면 jenkinsfile 등에서 credential 사용이 어느 정도 편해지므로 가급적 유의미한 값으로 설정하는 것이 좋다. 설정하지 않는다면 UUID 값이 생성된다.
 - `Username`: linux 의 유저. 보통 jenkins 를 유저로 사용하므로 jenkins 를 입력해주면 된다. **입력하지 않을시 reject key error 를 볼 수 있으니 주의**한다.

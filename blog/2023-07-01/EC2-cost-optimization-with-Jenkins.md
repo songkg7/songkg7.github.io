@@ -40,7 +40,7 @@ sequenceDiagram
 
 ### Jenkins Node 관리 정책
 
-![image](/img/2023-07-01-EC2-cost-optimization-with-Jenkins/Pasted-image-20230617191854.webp)
+![image](./Pasted-image-20230617191854.webp)
 
 요청이 큐에서 대기할 경우에만 node 를 활성화합니다. 불필요한 error 로그가 남는 것을 최소화할 수 있습니다. 추가로 1분 동안 활동이 없으면 idle 상태로 전환합니다.
 
@@ -74,7 +74,7 @@ aws ec2 stop-instances --instance-ids {instanceId}
 
 배치가 한달에 한 번 실행되도록 cron 표현식을 작성해주면 끝입니다.
 
-![image](/img/2023-07-01-EC2-cost-optimization-with-Jenkins/Pasted-image-20230701193759.webp)
+![image](./Pasted-image-20230701193759.webp)
 
 ```text
 H 9 1 * *

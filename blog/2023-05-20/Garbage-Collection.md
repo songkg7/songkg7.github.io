@@ -15,7 +15,7 @@ JVM 의 Garbage collection(이하 GC) 에 대해서 정리해봅니다.
 
 JVM Memory 는 여러 영역으로 구분되어 있다.
 
-![image](/img/2023-05-20-Garbage-Collection/스크린샷-2023-01-24-오후-8.23.58.webp)
+![image](./스크린샷-2023-01-24-오후-8.23.58.webp)
 
 Heap 영역은 new 연산자 등으로 생성된 객체와 배열 등을 저장하는 공간이다. Heap 영역에 생성된 객체나 배열은 다른 객체에서 참조될 수 있다. GC 는 바로 이 Heap 영역에서 발생한다.
 
@@ -36,7 +36,7 @@ public class Main {
 
 ## Stop the world
 
-![image](/img/2023-05-20-Garbage-Collection/the-world-jojo.gif)
+![image](./the-world-jojo.gif)
 _The World! 시간이여, 멈춰라! - 죠죠의 기묘한 모험 중_
 
 GC 을 실행하기 위해 JVM 이 애플리케이션 실행을 멈추는 것. **Stop the world 가 발생하면 GC 를 실행하는 쓰레드를 제외한 나머지는 모두 작업을 멈춘다.** GC 작업을 완료한 이후에야 중단했던 작업을 다시 시작한다. 어떤 GC 알고리즘을 사용하더라도 stop the world 는 발생하며, 대개 GC 튜닝이란 stop the world 시간을 줄이는 것이다.
@@ -78,11 +78,11 @@ doSomething(model);
 
 먼저 생성된 model 은 `doSomething` 안에서 사용된 뒤 이후로는 잘 사용되지 않을 것이다. 경우에 따라 다시 사용하는 경우도 있겠지만 GC는 기본적으로 그런 경우는 적다고 가정한 상태에서 설계되었다. Oracle 에서 측정한 아래 통계를 살펴보면 대부분의 객체가 생성된 직후 GC에 의해 정리되므로 그 가설은 어느 정도 맞다고 볼 수 있겠다.
 
-![image](/img/2023-05-20-Garbage-Collection/스크린샷-2023-01-24-오후-8.10.55.webp)
+![image](./스크린샷-2023-01-24-오후-8.10.55.webp)
 
 이러한 가설을 **weak generational hypothesis** 라 한다. 이 가설의 장점을 최대한 살리기 위해서 HotSpot VM 에서는 크게 2개로 물리적 공간을 나누었다. 둘로 나눈 공간이 Young 영역과 Old 영역이다.
 
-![image](/img/2023-05-20-Garbage-Collection/스크린샷-2023-01-24-오후-8.47.03.webp)
+![image](./스크린샷-2023-01-24-오후-8.47.03.webp)
 
 - Young 영역(Young Generation 영역): 새롭게 생성한 객체의 대부분이 여기에 위치한다. 대부분의 객체가 금방 접근 불가능한 상태가 되기 때문에 매우 많은 객체가 Young 영역에 생성되었다가 사라진다. 이 영역에서 객체가 사라질 때 Minor GC 가 발생한다고 말한다.
 - Old 영역(Old Generation 영역): 접근 불가능 상태로 되지 않아 Young 영역에서 살아남은 객체가 여기로 복사된다. 대부분 Young 영역보다 크게 할당하며, 크기가 큰 만큼 Young 영역보다 GC 는 적게 발생한다. 이 영역에서 객체가 사라질 때 Major GC(혹은 Full GC)가 발생한다고 말한다.
@@ -164,7 +164,7 @@ Q. G1GC가 이후 버전에서는 디폴트, 앞선 CMS와 비교해서 어떤 �
 - 기존 CMS 가진 메모리 단편화, G1 이 가진 pause 이슈 해결
 - 강력한 Concurrency 와 가벼운 GC 로직으로 heap 사이즈에 영향을 받지 않고 일정한 pause 시간이 특징
 
-![image](/img/2023-05-20-Garbage-Collection/Screenshot-2023-01-25-오전-10.54.25.webp)
+![image](./Screenshot-2023-01-25-오전-10.54.25.webp)
 
 ### ZGC
 
@@ -175,7 +175,7 @@ Q. G1GC가 이후 버전에서는 디폴트, 앞선 CMS와 비교해서 어떤 �
 - G1의 Region 처럼, ZGC 는 ZPage 라는 영역을 사용하며, G1 의 Region 은 크기가 고정인데 비해, ZPage 는 2MB 배수로 동적 운영됨 (큰 객체가 들어오면 2^ 로 영역을 구성해서 처리)
 - ZGC 가 내세우는 최대 장점 중 하나는 힙 크기가 증가하더라도 **stop the world 의 시간이 절대 10ms 를 넘지 않는다**는 것
 
-![image](/img/2023-05-20-Garbage-Collection/Screenshot-2023-01-25-오전-10.58.05.webp)
+![image](./Screenshot-2023-01-25-오전-10.58.05.webp)
 
 ## Conclusion
 

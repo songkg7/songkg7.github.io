@@ -17,7 +17,7 @@ authors: haril
 Docker
 : Linux 컨테이너를 만들고 사용할 수 있도록 하는 컨테이너화 기술, 그리고 그 기술을 지원하는 가장 큰 회사의 이름이자 오픈소스 프로젝트의 이름
 
-![deploy-history](/img/whydocker/deploy-history.webp)
+![deploy-history](./deploy-history.webp)
 _누구나 docker 에 대해 검색하면 한번쯤 봤을 그 그림_
 
 2013년에 등장한 돜는 인프라 세계를 컨테이너 세상으로 바꿔버렸다. 수많은 애플리케이션이 컨테이너로 배포하고 도커파일을 만들어 이미지를 빌드하고 컨테이너를 배포하는게 흔한 개발 프로세스가 되었다. 2019년 DockerCon 발표에선 무려 1052억번의 컨테이너 image pull 이 발생했다고 한다.

@@ -148,7 +148,7 @@ influx ping
 
 http://localhost:3000 으로 접근하여 그라파나가 정상적으로 동작하는 것을 확인한다.
 
-![image](/img/2023-11-10-Spring-MVC-Traffic-Testing/Pasted-image-20231108094916.webp)
+![image](./Pasted-image-20231108094916.webp)
 
 :::info
 

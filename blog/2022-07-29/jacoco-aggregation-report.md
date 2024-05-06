@@ -45,7 +45,7 @@ dependencies {
 
 이제 `./gradlew testCodeCoverageReport` 를 사용하여 모든 모듈의 테스트 결과가 집계되어 있는 jacoco report 를 만들 수 있다.
 
-![jacoco-directory](/img/jacoco-aggregation-directory.webp)
+![jacoco-directory](./jacoco-aggregation-directory.webp)
 
 :::warning
 

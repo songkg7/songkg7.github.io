@@ -8,7 +8,7 @@ categories: Essay
 authors: haril
 ---
 
-![image](/img/2023-06-19-better-then-others-better-then-yesterday/globe-3441673_1280.webp)
+![image](./globe-3441673_1280.webp)
 
 최근 한 개발자 분에게 '저는 **남들보다** 뭘 잘하고 있을까요?' 라는 질문을 받았다. 평소 확고한 가치관이 있어 공유해드렸고, 간단하게 정리해본다.
 

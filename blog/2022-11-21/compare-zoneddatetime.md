@@ -29,16 +29,16 @@ assertThat(seoulZonedTime).isEqualTo(utcTime);
 
 따라서, `equals` 를 통해서는 `false` 가 반환되게 됩니다.
 
-![image1](/img/스크린샷 2022-11-26 오전 7.53.57.webp)
+![image1](./스크린샷 2022-11-26 오전 7.53.57.webp)
 _ZonedDateTime#equals_
 
 하지만 `isEqaulTo` 는 그렇지 않은 것으로 보아 시간 객체에서 `isEqualTo` 는 동작방식이 다르다고 추측할 수 있습니다.
 
 실제로 `ZonedDateTime` 을 비교할 때 `isEqualTo` 는 `ZonedDateTime` 의 `equals` 를 호출하지 않고 `ChronoZonedDateTimeByInstantComparator#compare` 를 호출하며 동작합니다.
 
-![image2](/img/스크린샷 2022-11-26 오전 6.46.13.webp)
+![image2](./스크린샷 2022-11-26 오전 6.46.13.webp)
 
-![image3](/img/스크린샷 2022-11-26 오전 6.48.25.webp)
+![image3](./스크린샷 2022-11-26 오전 6.48.25.webp)
 _Comparator#compare 가 호출되게 된다._
 
 내부 구현을 보면 `toEpochSecoend()` 를 통해서 초로 변환 후 비교하는 것을 확인할 수 있습니다. `equals` 를 통한 객체 비교가 아닌 `compare` 를 통한 숫자 비교기 때문에 절대적인 시간을 비교하는 셈이 됩니다.

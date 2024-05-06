@@ -58,7 +58,7 @@ CREATE UNIQUE INDEX stu_1col_uni_idx ON student (name)
 
 name 만 채워진 값이 `insert` 되면 `stu_1col_uni_idx` 은 **같은 name 일 때 major 가 `null` 인 row 는 단 하나만 허용**합니다. 두 인덱스를 상호보완적인 형태로 생성하여 교묘하게 특정 컬럼의 `null` 중복을 막는 방법입니다.
 
-![duplicate error](/img/duplicatekeyerror.webp)
+![duplicate error](./duplicatekeyerror.webp)
 _major 가 없는 값을 저장하려고 하면 error 가 발생_
 
 하지만 이렇게 unique 조건이 두 개가 될 경우, `Upsert` 실행 시 constraint 체크는 단 하나만 허용하기 때문에 배치가 처음 의도대로 실행되지 않았습니다.

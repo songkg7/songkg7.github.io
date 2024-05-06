@@ -3,8 +3,6 @@ title: "[O2] Obsidian plugin 개발하기"
 date: 2023-02-22 15:40:00 +0900
 aliases: 
 tags: [obsidian, plugin, side-project, typescript, o2]
-categories: 
-image: /assets/img/banner/og-image.webp
 authors: haril
 ---
 
@@ -19,7 +17,7 @@ Obsidian 은 마크다운 파일간 링크를 통해 그래프 뷰를 제공하�
 - `title.md` -> `yyyy-MM-dd-title.md`
 - callout 문법
 
-![image](/img/2023-02-22-develop-obsidian-plugin/O2---Page-3.webp)
+![image](./O2---Page-3.webp)
 _layer 간의 경계를 넘어가는 이중 점선 화살표는 수작업이 필요한 부분입니다._
 
 Obsidian 과 Jekyll 을 병행해서 사용하는 이상 이 문법 변환 과정 및 attachment 복사 과정을 자동화해야할 필요가 있었습니다.
@@ -36,7 +34,7 @@ Obsidian 은 Notion 과는 다르게 커뮤니티 플러그인을 통해 기능�
 
 Obsidian 문법을 다른 플랫폼의 문법으로 바꾼다는 의미로 Obsidian to, O2 라고 프로젝트 이름을 붙였습니다.
 
-![image](/img/2023-02-22-develop-obsidian-plugin/4os943vzlf061.png.webp)
+![image](./4os943vzlf061.png.webp)
 
 ### 변환을 위한 준비
 
@@ -163,7 +161,7 @@ Jekyll 에서 지원하지 않는 키워드는 비슷한 역할을 하는 다른
 
 현재 사용하고 있는 Jekyll 기반 블로그는 발행을 위해 post 들이 위치해야하는 경로가 정해져있습니다. 다만 클라이언트마다 Jekyll 프로젝트가 위치한 경로가 다를 것이기 때문에 custom 한 path 처리를 위해 parameter 로 알아내야할 필요가 있었습니다. 이 부분은 설정 탭을 구성해서 받아오기로 하고 아래와 같은 입력 폼을 만들었습니다.
 
-![image](/img/2023-02-22-develop-obsidian-plugin/jekyll-path-setting-input.webp)
+![image](./jekyll-path-setting-input.webp)
 
 이렇게 모든 변환이 완료된 파일을 Jekyll 의 `_post` 경로로 이동시켜주면 변환작업이 완료됩니다.
 
@@ -209,7 +207,7 @@ Obsidian 만의 특별한 문법들은 정규표현식을 사용해서 처리했
 
 이제 community plugin 으로 등록하기 위해 [PR](https://github.com/obsidianmd/obsidian-releases/pull/1678) 을 작성해주는 것으로 마무리합니다. 당연하지만 커뮤니티 가이드라인을 지키지 않으면 반려될 수 있으니 주의해야 합니다. 또한, Obsidian 에서 플러그인을 개발할 때 주의해야할 부분들을 문서로 안내하고 있으니 최대한 맞춰서 개발합니다.
 
-![image](/img/2023-02-22-develop-obsidian-plugin/Obsidian-releases-pr.webp)
+![image](./Obsidian-releases-pr.webp)
 
 기존 PR 들을 좀 살펴보니 merge 에는 대략 2~4주 정도 걸리는 것 같네요. 나중에 피드백이 오면 다시 수정하도록 하고 맘편히 기다리면 되겠습니다.
 
@@ -217,7 +215,7 @@ Obsidian 만의 특별한 문법들은 정규표현식을 사용해서 처리했
 
 '이 정도는 3일이면 뚝딱이지 않을까~?' 싶었지만 해외여행을 하며 플러그인 구현까지 하려하니 결국 release PR 생성까지 약 일주일이 소요되었습니다 😂
 
-![image](/img/2023-02-22-develop-obsidian-plugin/coding-in-plane.webp)
+![image](./coding-in-plane.webp)
 _비행기를 타고 가면서 JUnit 을 개발한 켄트 백과 에릭 감마도 이렇게 코딩했을까..._
 
 Java 나 Kotlin 만 사용하다가 TypeScript 를 사용하려니 익숙하지 않고, 지금 쓰고 있는 코드가 Best practice 가 맞는지 확신이 들지 않아서 정말 어려웠습니다. 하지만 덕분에 `anync-await` 같은 JS 진영의 문법도 자세히 공부하게 되었으니 또 다른 기술 스택이 하나 생긴 것 같아 뿌듯하네요. 이렇게 글감도 하나 생기고 말입니다.
@@ -248,7 +246,7 @@ Java 나 Kotlin 만 사용하다가 TypeScript 를 사용하려니 익숙하지 
 
 약 6일간의 Code review 를 거쳐서 PR 이 merge 되었습니다. 이제 Obsidian Community plugin 에서 사용할 수 있게 되었습니다. 🎉
 
-![image](/img/2023-02-22-develop-obsidian-plugin/released-plugin.webp)
+![image](./released-plugin.webp)
 
 ## Reference
 

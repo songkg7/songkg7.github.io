@@ -54,7 +54,7 @@ public class Movie {
 }
 ```
 
-![image](/img/jsonnaming1.webp)
+![image](./jsonnaming1.webp)
 _deprecated 되어 취소선이 표시된다_
 
 하지만 jackson 2.12 버전부터 deprecated 된 방법이니 이왕이면 최신 방법을 알아보겠습니다.
