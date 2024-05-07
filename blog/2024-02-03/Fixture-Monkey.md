@@ -1,9 +1,9 @@
 ---
-title: "Fixture Monkey"
+title: "테스트를 쉽고 편리하게, Fixture Monkey"
 date: 2024-02-03 23:37:25 +0900
 aliases: null
 tags: [testing, test, fixture, naver, opensource]
-image: /assets/img/fixture-monkey-banner.png
+image: ./fixture-monkey-banner.png
 categories: null
 authors: haril
 ---
