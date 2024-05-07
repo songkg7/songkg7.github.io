@@ -5,10 +5,9 @@ aliases: null
 tags: [java, compile, javac, javap, instruction, operand, opcode]
 categories: null
 mermaid: true
+image: img/banner/hello-world-programmer.webp
 authors: haril
 ---
-
-![banner](./hello-world-programmer.webp)
 
 [이전 글](https://songkg7.github.io/posts/Java-Hello-World-Deepdive-1/) 에 이어서 "Hello World" 를 출력하기 위해 코드가 어떻게 변해가는지 살펴봅니다.
 
