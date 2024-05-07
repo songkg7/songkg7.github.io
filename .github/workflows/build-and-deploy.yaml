@@ -26,6 +26,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build website
+        env:
+          ORAMA_CLOUD_API_KEY: ${{ secrets.ORAMA_CLOUD_API_KEY }}
         run: pnpm run build
 
       - name: Upload Build Artifact
