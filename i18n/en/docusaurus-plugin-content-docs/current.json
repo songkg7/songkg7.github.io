@@ -1,0 +1,22 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.O2": {
+    "message": "O2",
+    "description": "The label for category O2 in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.O2.link.generated-index.description": {
+    "message": " Write once, convert to multiple platforms.",
+    "description": "The generated-index page description for category O2 in sidebar tutorialSidebar"
+  },
+  "sidebar.productSidebar.category.O2": {
+    "message": "O2",
+    "description": "The label for category O2 in sidebar productSidebar"
+  },
+  "sidebar.productSidebar.category.O2.link.generated-index.description": {
+    "message": " Write once, convert to multiple platforms.",
+    "description": "The generated-index page description for category O2 in sidebar productSidebar"
+  }
+}

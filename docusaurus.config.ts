@@ -28,8 +28,17 @@ const config: Config = {
     // useful metadata like html lang. For example, if your site is Chinese, you
     // may want to replace "en" with "zh-Hans".
     i18n: {
-        defaultLocale: 'en',
-        locales: ['en'],
+        defaultLocale: 'kr',
+        locales: ['kr', 'en'],
+        localeConfigs: {
+            kr: {
+                label: '한국어',
+            },
+            en: {
+                label: 'English',
+                htmlLang: 'en-GB',
+            },
+        },
     },
 
     markdown: {
@@ -71,6 +80,7 @@ const config: Config = {
                     blogSidebarCount: 'ALL',
                     remarkPlugins: [remarkMath],
                     rehypePlugins: [rehypeKatex],
+                    editLocalizedFiles: true,
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
@@ -105,6 +115,10 @@ const config: Config = {
                 src: 'img/avatar.png',
             },
             items: [
+                {
+                    type: 'localeDropdown',
+                    position: 'right',
+                },
                 {
                     to: '/blog', label: 'Blog', position: 'left'
                 },
