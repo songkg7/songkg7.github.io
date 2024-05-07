@@ -57,19 +57,6 @@ const config: Config = {
         },
     ],
 
-    plugins: [
-        [
-            "@orama/plugin-docusaurus-v3",
-            {
-                cloud: {
-                    indexId: "rufgtw468dbkyge6qd55ntbx",
-                    oramaCloudAPIKey: process.env.ORAMA_CLOUD_API_KEY,
-                    deploy: true,
-                },
-            },
-        ],
-    ],
-
     presets: [
         [
             'classic',
@@ -109,6 +96,18 @@ const config: Config = {
     themeConfig: {
         // Replace with your project's social card
         image: 'img/docusaurus-social-card.jpg',
+        algolia: {
+            // The application ID provided by Algolia
+            appId: 'UXO3ZRTGDA',
+
+            // Public API key: it is safe to commit it
+            apiKey: '9ceaa1bf44bf96e360bdf439cc74c0e2',
+
+            indexName: 'songkg7io',
+
+            // 버전별로 다른 검색 결과를 원한다면 true로 설정 (초기에는 true 가 잘 동작하지 않음)
+            contextualSearch: false,
+        },
         navbar: {
             title: 'Haril Dev',
             logo: {
