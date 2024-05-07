@@ -1,5 +1,6 @@
 ---
 title: PostgreSQL 에서 SELECT FOR UPDATE 구문의 동작방식
+description: "PostgreSQL 에서 SELECT FOR UPDATE 구문을 사용할 때 주의해야할 점에 대해 다룹니다"
 date: 2024-04-20 21:55:13 +0900
 aliases: 
 tags:
