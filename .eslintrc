@@ -1,3 +1,4 @@
 {
-  "extends": ["plugin:@docusaurus/recommended"]
+  "extends": ["plugin:@docusaurus/recommended"],
+  "parser": "@typescript-eslint/parser"
 }
