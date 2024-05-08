@@ -99,14 +99,9 @@ const config: Config = {
         algolia: {
             // The application ID provided by Algolia
             appId: 'D6WFZWSD4D',
-
             // Public API key: it is safe to commit it
             apiKey: '9e4843909b56bf91c2b09dccc0884889',
-
             indexName: 'haril',
-
-            // 버전별로 다른 검색 결과를 원한다면 true로 설정 (초기에는 true 가 잘 동작하지 않음)
-            contextualSearch: true,
         },
         navbar: {
             title: 'Haril Dev',
