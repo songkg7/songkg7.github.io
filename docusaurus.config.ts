@@ -41,6 +41,8 @@ const config: Config = {
         },
     },
 
+    plugins: ['docusaurus-plugin-sass'],
+
     markdown: {
         mermaid: true,
     },
@@ -95,7 +97,7 @@ const config: Config = {
                         'https://github.com/songkg7/songkg7.github.io/blob/main/'
                 },
                 theme: {
-                    customCss: './src/css/custom.css',
+                    customCss: './src/css/custom.scss',
                 },
             } satisfies Preset.Options,
         ],
