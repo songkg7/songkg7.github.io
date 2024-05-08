@@ -1,18 +1,22 @@
 import React from "react";
 import Heading from "@theme/Heading";
+import Link from "@docusaurus/Link";
 
 function Card() {
     return (
-        <div className="card col col--4 row--align-center">
+        <div className="card col col--4">
             <div className={"card__image"}>
                 image
             </div>
-            <div className="card__header">
+            <div className="card__header text--center">
                 <Heading as={"h1"}>Card Header</Heading>
             </div>
             <div className={"card__body"}>
                 <p>Card summary</p>
             </div>
+            <Link to="/blog" className="button button--link">
+                More
+            </Link>
         </div>
     )
 }
