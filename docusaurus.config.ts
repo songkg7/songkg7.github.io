@@ -106,7 +106,7 @@ const config: Config = {
             indexName: 'haril',
 
             // 버전별로 다른 검색 결과를 원한다면 true로 설정 (초기에는 true 가 잘 동작하지 않음)
-            contextualSearch: false,
+            contextualSearch: true,
         },
         navbar: {
             title: 'Haril Dev',
