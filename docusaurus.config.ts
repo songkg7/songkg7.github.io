@@ -115,6 +115,14 @@ const config: Config = {
             apiKey: '9e4843909b56bf91c2b09dccc0884889',
             indexName: 'haril',
         },
+        announcementBar: {
+            id: 'blog-migration-process',
+            content:
+                'I am currently migrating my blog. If you see a page not found, please search for the post using `cmd + k`.',
+            backgroundColor: '#fafbfc',
+            textColor: '#091E42',
+            isCloseable: false,
+        },
         navbar: {
             title: 'Haril Dev',
             logo: {
