@@ -1,9 +1,10 @@
 ---
-title: "[Java] Making First Collection (일급 컬렉션) More Collection-like - Iterable"
+title: "[Java] Making First Collection More Collection-like - Iterable"
 date: 2022-07-15 20:00:00 +0900
 tags: [java, iterable, iterator]
 categories: [Java]
 authors: haril
+description: "In this article, we introduce a way to make first-class collections more like a real Collection using Iterable."
 ---
 
 ## Overview
