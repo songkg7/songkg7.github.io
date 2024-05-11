@@ -72,3 +72,5 @@ _deprecated 되어 취소선이 표시된다_
 :::info
 
 변화된 내부 구현을 간단하게 설명하면 `NamingBase` 라는 추상 클래스가 기존 `PropertyNamingStrategy` 를 상속받고 있고, 다시 `NamingBase` 가 naming 전략에 상속되고 있다. `NamingBase` 를 일종의 중간 구현 클래스로 사용한다.
+
+:::
