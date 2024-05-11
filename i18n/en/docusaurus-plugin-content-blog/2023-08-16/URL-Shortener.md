@@ -1,7 +1,7 @@
 ---
-title: "[대규모 시스템 설계 기초] 직접 구현해보는 URL 단축기"
+title: "[Fundamentals of Large-Scale System Design] Implementing a URL Shortener from Scratch"
 date: 2023-08-16 13:08:09 +0900
-tags: [url, system-architecture, kotlin]
+tags: [url, system architecture, kotlin]
 mermaid: true
 image: img/banner/url-shortener-banner.webp
 authors: haril
@@ -11,27 +11,27 @@ authors: haril
 
 :::info
 
-코드는 [GitHub](https://github.com/songkg7/url-shortener-sample) 에서 확인하실 수 있습니다.
+You can check the code on [GitHub](https://github.com/songkg7/url-shortener-sample).
 
 :::
 
 ## Overview
 
-URL 길이를 줄이는 것은 이메일 또는 SMS 전송에서 URL 이 단편화되는 것을 방지하기 위해 시작되었습니다. 하지만 요즘에는 트위터나 인스타그램 등 SNS 에서 특정 링크 공유를 위해서 더 활발하게 사용되고 있습니다. 장황하게 보이지 않기 때문에 가독성이 개선되고 URL 로 이동하기 전에 사용자 통계를 수집하는 등 부가적인 기능을 제공할 수도 있습니다.
+Shortening URLs started to prevent URLs from being fragmented in email or SMS transmissions. However, nowadays, it is more actively used for sharing specific links on social media platforms like Twitter or Instagram. It improves readability by not looking verbose and can also provide additional features such as collecting user statistics before redirecting to the URL.
 
-이번 글에서는 URL 단축기를 직접 구현해보며 동작 원리를 살펴봅니다.
+In this article, we will implement a URL shortener from scratch and explore how it works.
 
-## URL 단축기?
+## What is a URL Shortener?
 
-먼저 결과물을 살펴보고 시작할게요.
+Let's first take a look at the result.
 
-아래 명령을 통해서 이번 글에서 구현할 url 단축기를 바로 실행시킬 수 있습니다.
+You can run the URL shortener we will implement in this article directly with the following command:
 
 ```bash
 docker run -d -p 8080:8080 songkg7/url-shortener
 ```
 
-사용법은 아래와 같습니다. 단축시킬 긴 url 을 longUrl 의 값으로 넣어주시면 됩니다.
+Here is how to use it. Simply input the long URL you want to shorten as the value of `longUrl`.
 
 ```bash
 curl -X POST --location "http://localhost:8080/api/v1/shorten" \
@@ -39,73 +39,73 @@ curl -X POST --location "http://localhost:8080/api/v1/shorten" \
     -d "{
             \"longUrl\": \"https://www.google.com/search?q=url+shortener&sourceid=chrome&ie=UTF-8\"
         }"
-# tN47tML, 임의의 값이 반환됩니다.
+# You will receive a random value like tN47tML.
 ```
 
-이제 웹페이지에서 `http://localhost:8080/tN47tML` 로 접근해보면,
+Now, if you access `http://localhost:8080/tN47tML` in your web browser,
 
 ![image](./Pasted-image-20230701200237.webp)
 
-기존 url 로 잘 접근하는 것을 볼 수 있습니다.
+You will see that it correctly redirects to the original URL.
 
-**단축 전**
+**Before Shortening**
 
 - https://www.google.com/search?q=url+shortener&sourceid=chrome&ie=UTF-8
 
-**단축 후**
+**After Shortening**
 
 - http://localhost:8080/tN47tML
 
-그러면 이제 어떻게 URL 을 단축시킬 수 있는지 알아볼게요.
+Now, let's see how we can shorten URLs.
 
-## 대략적인 설계
+## Rough Design
 
-### URL 단축하기
+### Shortening URLs
 
-1. longUrl 을 저장하기 전에 id 를 채번
-2. ID 를 base62 encode 하여 shortUrl 을 생성
-3. DB 에 id, shortUrl, longUrl 을 저장
+1. Generate an ID before storing the longUrl.
+2. Encode the ID to base62 to create the shortUrl.
+3. Store the ID, shortUrl, and longUrl in the database.
 
-메모리는 유한하며 비용이 상대적으로 비싼 편입니다. RDB 는 인덱스를 통해 빠르게 조회 가능하며 메모리에 비해 상대적으로 저렴하므로 RDB 를 사용하여 URL 을 관리하도록 하겠습니다.
+Memory is finite and relatively expensive. RDB can be quickly queried through indexes and is relatively cheaper compared to memory, so we will use RDB to manage URLs.
 
-URL 을 관리하기 위해 ID 생성 전략을 먼저 확보해야 합니다. ID 생성에는 다양한 방법이 있는데 여기서 다루기에는 내용이 다소 길어질 수 있어서 생략하겠습니다. 저는 간단하게 현재 시간에 대한 타임스탬프를 사용할 것 입니다.
+To manage URLs, we first need to secure an ID generation strategy. There are various methods for ID generation, but it may be too lengthy to cover here, so we will skip it. I will simply use the current timestamp for ID generation.
 
-#### Base62 변환
+#### Base62 Conversion
 
-ULID 를 사용하면 시간이 포함된 유일한 ID 를 생성할 수 있습니다.
+By using ULID, you can generate a unique ID that includes a timestamp.
 
 ```kotlin
-val id: Long = Ulid.fast().time // ex) 3145144998701, pk 로 사용
+val id: Long = Ulid.fast().time // e.g., 3145144998701, used as a primary key
 ```
 
-이 숫자를 62진법으로 변환하면 다음과 같은 문자열을 얻을 수 있습니다.
+Converting this number to base62, we get the following string.
 
 ```
 tN47tML
 ```
 
-이 문자열을 shortUrl 로써 DB 에 저장합니다.
+This string is stored in the database as the shortUrl.
 
 | id   | short   | long                                                                   |
 | ---- | ------- | ---------------------------------------------------------------------- |
 | 3145144998701 | tN47tML | https://www.google.com/search?q=url+shortener&sourceid=chrome&ie=UTF-8 |
 
-조회는 아래 순서로 이루어지게 됩니다.
+The retrieval process will proceed as follows:
 
-1. `localhost:8080/tN47tML` 로 get 요청이 발생
-2. `tN47tML` 을 base62 decoding
-3. 3145144998701 이라는 pk 를 얻어낸 후 DB 에 조회
-4. longUrl 로 요청을 Redirect
+1. A GET request is made to `localhost:8080/tN47tML`.
+2. Decode `tN47tML` from base62.
+3. Obtain the primary key 3145144998701 and query the database.
+4. Redirect the request to the longUrl.
 
-간단하게 살펴봤으니 구현해보면서 조금 더 디테일하게 살펴봅시다.
+Now that we have briefly looked at it, let's implement it and delve into more details.
 
-## 구현
+## Implementation
 
-지난 번 안정 해시 처럼 직접 구현해볼게요. 다행인 점은 URL 단축 구현은 그렇게 어렵지 않다는 것입니다.
+Just like the previous article on Consistent Hashing, we will implement it ourselves. Fortunately, implementing a URL shortener is not that difficult.
 
 ### Model
 
-먼저 유저에게 요청을 받기 위해 모델을 구현합니다. 구조를 최대한 단순화시켜서 단축시킬 URL 만 받았습니다.
+First, we implement the model to receive requests from users. We simplified the structure to only receive the URL to be shortened.
 
 ```kotlin
 data class ShortenRequest(
@@ -113,7 +113,7 @@ data class ShortenRequest(
 )
 ```
 
-`POST` 요청을 통해 처리할 수 있도록 Controller 를 구현해줍니다.
+We implement a Controller to handle `POST` requests.
 
 ```kotlin
 @PostMapping("/api/v1/shorten")
@@ -123,29 +123,9 @@ fun shorten(@RequestBody request: ShortenRequest): ResponseEntity<ShortenRespons
 }
 ```
 
-### Base62 변환
+### Base62 Conversion
 
-드디어 가장 핵심적인 부분이네요. ID 를 생성하면 해당 아이디를 base62 인코딩하여 단축합니다. 이렇게 단축된 문자열이 shortUrl 이 됩니다. 반대의 경우는 shortUrl 을 디코딩하여 ID 를 알아내고 이 ID 로 DB 에 질의하여 longUrl 을 알아내는데 사용합니다.
-
-```mermaid
-flowchart LR
-    ID --base62 encoding--> surl[short url]
-    surl --> db[(Database)]
-```
-
-```mermaid
-flowchart LR
-    surl[short url] --base62 decoding--> ID
-    ID --find--> db[(Database)]
-```
-
-```mermaid
-sequenceDiagram
-    Client->>Server: /shortUrl
-    Server->>Database: 192831(ID)
-    Database->>Server: longUrl
-    Server->>Client: Redirect /longUrl
-```
+Finally, the most crucial part. After generating an ID, we encode it to base62 to shorten it. This shortened string becomes the shortUrl. Conversely, we decode the shortUrl to find the ID and use it to query the database to retrieve the longUrl.
 
 ```kotlin
 private const val BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -174,13 +154,13 @@ class Base62Conversion : Conversion {
 }
 ```
 
-단축된 URL 의 길이는 아이디의 숫자 크기에 반비례합니다. 생성된 ID 의 숫자가 작을수록 URL 도 짧게 만들 수 있습니다.
+The length of the shortened URL is inversely proportional to the size of the ID number. The smaller the generated ID number, the shorter the URL can be made.
 
-단축 URL 의 길이가 8자리를 넘지 않게 하고 싶다면, ID 의 크기가 62^8 을 넘지 않도록 생성하면 됩니다. 따라서 ID 를 어떤 방식으로 생성하느냐도 굉장히 중요합니다. 앞서 설명했듯 이번 글에서는 내용을 단순화시키기 위해서 해당 부분을 시간값으로 처리했습니다.
+If you want the length of the shortened URL to not exceed 8 characters, you should ensure that the size of the ID does not exceed 62^8. Therefore, how you generate the ID is also crucial. As mentioned earlier, to simplify the content in this article, we handled this part using a timestamp value.
 
 ### Test
 
-`curl` 로 POST 요청을 보내서 임의의 URL 을 단축시켜 보겠습니다.
+Let's send a POST request with `curl` to shorten a random URL.
 
 ```bash
 curl -X POST --location "http://localhost:8080/api/v1/shorten" \
@@ -190,14 +170,14 @@ curl -X POST --location "http://localhost:8080/api/v1/shorten" \
         }"
 ```
 
-http://localhost:8080/{shortUrl} 로 접근해보면 정상적으로 리다이렉트 되는 것을 확인할 수 있습니다.
+You can confirm that it correctly redirects by accessing http://localhost:8080/{shortUrl}.
 
 ## Conclusion
 
-몇가지 개선해볼 수 있는 사항들 입니다.
+Here are some areas for improvement:
 
-- ID 생성 전략을 더 정밀하게 제어하면 shortUrl 을 더 단축시킬 수 있습니다.
-  - 트래픽이 많다면 동시성에 대한 문제를 반드시 고민해야할 것입니다.
+- By controlling the ID generation strategy more precisely, you can further shorten the shortUrl.
+  - If there is heavy traffic, you must consider issues related to concurrency.
   - Snowflake
-- host 부분도 DNS 를 사용하면 더 단축시킬 수 있습니다.
-- Persistence Layer 에 Cache 를 적용하면 더 빠른 응답을 구현할 수 있습니다.
+- Using DNS for the host part can further shorten the URL.
+- Applying cache to the Persistence Layer can achieve faster responses.
