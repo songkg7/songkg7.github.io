@@ -31,7 +31,6 @@ dependencies {
     implementation 'org.geotools:gt-referencing:26.2'
     ...
 }
-
 ```
 
 ## Writing Code
