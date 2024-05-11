@@ -1,5 +1,5 @@
 ---
-title: Kotlin 으로 지구 타원체 활용하기
+title: Utilizing Ellipsoids on Earth with Kotlin
 categories: [Geotools]
 date: 2022-03-23 17:34:00 +0900
 tags: [geotools, geometry, kotlin, java, ellipsoid]
@@ -11,13 +11,13 @@ authors: haril
 ![earth](./2022-03-23-ellipsoid.webp)
 _image reference[^footnote]_
 
-지구는 평평하지도 완벽한 구형(Sphere)도 아닌 비표준 타원체(Ellipsoid)임을 고려하면 서로 다른 경도 및 위도 위치에 있는 두 점 사이의 거리를 빠르고 정확하게 계산하는 완벽한 공식은 없습니다.
+Considering that the Earth is neither flat nor a perfect sphere, but an irregular ellipsoid, there is no perfect formula for quickly and accurately calculating the distance between two points at different longitudes and latitudes.
 
-그래도 geotools 라이브러리를 사용하면 수학적으로 보정된 근사치를 꽤나 간단하게 얻어낼 수 있습니다.
+However, by using the geotools library, you can obtain mathematically corrected approximations quite easily.
 
-## 의존성 추가
+## Adding Dependencies
 
-geotools 의 지구 타원체를 사용하기 위해서는 관련 라이브러리 의존성이 필요합니다.
+To use the Earth ellipsoid in geotools, you need to add the relevant library dependencies.
 
 ```groovy
 repositories {
@@ -34,9 +34,9 @@ dependencies {
 
 ```
 
-## 코드 작성
+## Writing Code
 
-먼저 서울과 부산의 좌표를 enum class 로 작성해줍니다.
+First, define the coordinates of Seoul and Busan as an enum class.
 
 ```kotlin
 enum class City(val latitude: Double, val longitude: Double) {
@@ -45,23 +45,23 @@ enum class City(val latitude: Double, val longitude: Double) {
 }
 ```
 
-그리고 테스트 코드를 통해 간단한 사용법을 살펴보겠습니다.
+Next, let's look at a simple usage example through a test code.
 
 ```kotlin
 class EllipsoidTest {
 
     @Test
     internal fun createEllipsoid() {
-        val ellipsoid = DefaultEllipsoid.WGS84  // GPS 시스템에서 사용하고 있는 WGS84 측량법을 활용하여 지구에 최대한 가까운 타원체를 만들어 준다
+        val ellipsoid = DefaultEllipsoid.WGS84  // Creates an ellipsoid that is as close to the Earth as possible using the WGS84 geodetic system used in GPS
 
-        val isSphere = ellipsoid.isSphere  // 구형인지 타원체인지 판단
-        val semiMajorAxis = ellipsoid.semiMajorAxis  // 장축(적도 반지름), 타원체에서 긴 쪽의 반지름
-        val semiMinorAxis = ellipsoid.semiMinorAxis  // 단축(극 반지름), 타원체에서 짧은 쪽의 반지름
-        val eccentricity = ellipsoid.eccentricity  // 이심률, 해당 타원체가 얼마나 구형에 가까운지를 나타냄
-        val inverseFlattening = ellipsoid.inverseFlattening  // 역평탄화 수치
-        val ivfDefinitive = ellipsoid.isIvfDefinitive // 역평탄화가 이 타원체에 결정적일 수 있는지
+        val isSphere = ellipsoid.isSphere  // Determines if it is a sphere or an ellipsoid
+        val semiMajorAxis = ellipsoid.semiMajorAxis  // Equatorial radius, the longer radius of the ellipsoid
+        val semiMinorAxis = ellipsoid.semiMinorAxis  // Polar radius, the shorter radius of the ellipsoid
+        val eccentricity = ellipsoid.eccentricity  // Eccentricity, indicates how close the ellipsoid is to a sphere
+        val inverseFlattening = ellipsoid.inverseFlattening  // Inverse flattening value
+        val ivfDefinitive = ellipsoid.isIvfDefinitive // Indicates if the inverse flattening is definitive for this ellipsoid
 
-        // 직교 거리
+        // Orthodromic distance
         val orthodromicDistance = ellipsoid.orthodromicDistance(
             City.SEOUL.longitude,
             City.SEOUL.latitude,
@@ -90,15 +90,15 @@ ivfDefinitive = true
 orthodromicDistance = 328199.9794919944
 ```
 
-`DefaultEllipsoid.WGS84` 로 지구 타원체를 생성할 수 있습니다. 만약 `WGS84` 가 아닌 `SPHERE` 를 사용하면 타원이 아닌 반지름 6371km 의 구체가 만들어집니다.
+You can create an Earth ellipsoid with `DefaultEllipsoid.WGS84`. If you use `SPHERE` instead of `WGS84`, a sphere with a radius of 6371km will be created.
 
-distance 의 결과는 미터(m) 로 출력되므로 km 로 변환해보면 328km 가 나오는 것을 확인할 수 있습니다. 실제 구글에 검색해보면 325km 가 나오니 제가 임의로 선정한 좌표와 구글이 선정한 좌표에 차이가 있을 수 있음을 감안해보면 나쁘지 않은 수치입니다.
+The distance result is in meters (m), so converting it to kilometers shows approximately 328km. If you search on Google, you may find 325km, so considering that there may be differences between the coordinates I chose and those chosen by Google, this is not a bad figure.
 
-이 외에도 다양한 기능이 존재하는데요. 이 포스팅에서 모두 다루기에는 너무 방대해서 필요하다면 다른 포스팅에서 다뤄보겠습니다.
+There are many other functions available as well. However, covering them all in this post would be too extensive, so if needed, I will cover them in another post.
 
 :::info
 
-오차의 범위는 비즈니스 요구사항에 따라서 만족스럽지 못할 수 있기 때문에 실제 적용하시기 전에 geotools 의 다른 method 들도 충분히 테스트해보시기 바랍니다.
+The margin of error may not be satisfactory depending on business requirements, so before actual implementation, make sure to thoroughly test other methods in geotools.
 
 ---
 
