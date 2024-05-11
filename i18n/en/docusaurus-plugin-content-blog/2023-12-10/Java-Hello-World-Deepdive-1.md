@@ -3,7 +3,7 @@ title: "From Java to Printing Hello World: Part 1"
 date: 2023-12-10 12:45:33 +0900
 aliases: null
 tags: [ java, compile, jvm ]
-categories: null
+categories: [ Java ]
 authors: haril
 image: img/banner/hello-world-programmer.webp
 description: "In the world of programming, it always starts with printing the sentence `Hello World`. It's like an unwritten rule. In this series, we will delve into the reasons behind the `Hello World` as the starting point, the compiled class files, and how the computer interprets and executes Java code."

@@ -4,7 +4,7 @@ date: 2024-01-07 17:08:34 +0900
 aliases: null
 tags: [ java, jvm ]
 image: img/banner/hello-world-programmer.webp
-categories: null
+categories: [ Java ]
 authors: haril
 description: "In this chapter, we will explore how the JVM executes the 'Hello World' code block."
 ---
