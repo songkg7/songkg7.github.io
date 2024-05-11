@@ -44,11 +44,13 @@ const FeatureList: FeatureItem[] = [
 
 const landingList: FeatureItem[] = [
     {
-        title: 'Will be updated soon! 🚀',
+        title: 'Hello World! 🚀',
         Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
         description: (
             <>
-                The main page is currently being designed.
+                Welcome to my blog.
+                Here you can find articles about software development and other interesting topics.
+                Enjoy your stay!
             </>
         ),
     },
