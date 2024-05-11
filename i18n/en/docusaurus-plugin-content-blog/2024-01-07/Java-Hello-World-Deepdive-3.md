@@ -129,6 +129,17 @@ String s2 = new String("Hello World");
 The string literal used inside the constructor is retrieved from the String Pool, but the `new` keyword guarantees the
 creation of a new and unique string.
 
+```text
+0: ldc           #7                  // String Hello World
+2: astore_1
+3: new           #9                  // class java/lang/String
+6: dup
+7: ldc           #7                  // String Hello World
+9: invokespecial #11                 // Method java/lang/String."<init>":(Ljava/lang/String;)V
+12: astore_2
+13: return
+```
+
 If we examine the bytecode, we can see that the string is 'created' using the `invokespecial` instruction.
 
 The `invokespecial` instruction means that the object initialization method is directly called.

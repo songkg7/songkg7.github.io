@@ -156,6 +156,16 @@ Although the term "design" sounds grand, in reality, it is hard-coded to find th
 found was not `main` but `haril`, it would have searched for a method named `haril`. Of course, the Java creators likely
 had reasons for choosing `main`, but that's about it.
 
+```c
+mainClassName = GetMainClassName(env, jarfile);
+mainClass = LoadClass(env, classname);
+
+// Find the main method
+mainID = (*env)->GetStaticMethodID(env, mainClass, "main", "([Ljava/lang/String;)V");
+
+jbject obj = (*env)->ToReflectedMethod(env, mainClass, mainID, JNI_TRUE);
+```
+
 ### Why args?
 
 Until now, we omitted mentioning `String[] args` in `main()`. Why must this argument be specified, and why does an error
