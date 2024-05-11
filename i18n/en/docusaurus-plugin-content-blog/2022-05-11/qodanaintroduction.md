@@ -35,9 +35,11 @@ Now, execute the `docker run ~` command written above and wait for a while to se
 
 I used a simple Java application for testing.
 
-![image](./Screenshot 2022-05-11 at 4.51.47 PM.webp)
+![image](./1.webp)
 
 Now, if you access http://localhost:8080, you can see the code analysis results.
+
+![image1](./2.webp)
 
 If you have Docker installed, you can easily obtain the code analysis results of your current project.
 
