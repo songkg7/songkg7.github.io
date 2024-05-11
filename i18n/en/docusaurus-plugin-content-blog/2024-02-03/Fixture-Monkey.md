@@ -4,8 +4,8 @@ date: 2024-02-03 23:37:25 +0900
 aliases: null
 tags: [testing, test, fixture, naver, opensource]
 image: img/banner/fixture-monkey-banner.png
-categories: null
 authors: haril
+description: "Fixture Monkey is a testing object creation library being developed as open source by Naver. By generating test fixtures randomly, it allows you to experience chaos engineering in practice."
 ---
 
 > "Write once, Test anywhere"
