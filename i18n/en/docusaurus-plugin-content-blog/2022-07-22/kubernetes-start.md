@@ -4,6 +4,7 @@ date: 2022-07-22 16:46:00 +0900
 tags: [kubernetes, minikube, devops]
 categories: [DevOps]
 authors: haril
+description: "This article explores Kubernetes Basics and how to use it with Docker Desktop."
 ---
 
 ## What is Kubernetes?
