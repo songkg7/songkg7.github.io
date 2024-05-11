@@ -1,5 +1,5 @@
 ---
-title: 패킷으로 알아보는 3 Way Handshake With Termshark
+title: Understanding 3 Way Handshake with Termshark through Packets
 date: 2024-04-14 14:32:47 +0900
 aliases: 
 tags:
@@ -8,75 +8,69 @@ tags:
   - tshark
   - termshark
   - wireshark
-categories: 
 image: /img/banner/termshark-banner.webp
-updated: 2024-04-14 14:33:15 +0900
 authors: haril
 ---
 
 ![banner](./termshark-banner.webp)
 
-## 네트워크 패킷이란
+## What are Network Packets?
 
-데이터를 네트워크로 전송하기 위해서는 어떻게 해야할까요? 상대방과 커넥션을 생성한 후, 데이터를 한 번에 보내는 방법이 가장 직관적인 방법일 겁니다. 하지만 이런 방법은 여러 요청을 처리해야할 때 비효율이 발생하는데요, 하나의 커넥션으로는 하나의 데이터 전송만 유지할 수 있기 때문입니다. 만약 큰 데이터가 전송되느라 커넥션이 길어진다면 다른 데이터들이 기다려야하겠죠.
+How do we transmit data over a network? Establishing a connection with the recipient and sending the data all at once might seem like the most straightforward approach. However, this method becomes inefficient when handling multiple requests because a single connection can only maintain one data transfer at a time. If a connection is prolonged due to a large data transfer, other data will have to wait.
 
-네트워크는 데이터 전송 과정을 최대한 효율적으로 처리하기 위해 데이터를 여러 조각으로 나눈 후, 수신 측에서 조립하도록 했습니다. 이 **조각난 데이터 구조체**를 패킷이라고 부릅니다. 패킷에는 수신 측에서 데이터를 순서대로 조립할 수 있도록 여러 추가 정보를 포함하고 있습니다.
+To efficiently handle the data transmission process, networks divide data into multiple pieces and require the receiving end to reassemble them. These fragmented data structures are called packets. Packets include additional information to allow the receiving end to reassemble the data in the correct order.
 
-이렇게 여러 패킷으로 전송되면 패킷 스위칭을 통해 많은 요청을 효율적으로 처리할 수 있지만, 중간에 데이터가 유실되거나, 정확한 순서로 전달되지 않거나 하는 등의 다양한 에러를 만나게 될 수 있습니다. 우리는 이런 문제를 어떻게 디버깅해야 할까요? 🤔
+While transmitting data in multiple packets enables efficient processing of many requests through packet switching, it can also lead to various errors such as data loss or incorrect delivery order. How should we debug such issues? 🤔
 
 <!-- truncate -->
 
-## Wireshark? No...! 이제는 Termshark!
+## Wireshark? No...! It's Termshark Time!
 
-네트워크 동작은 커널에 의해 가려져있는 부분이기 때문에 효과적인 디버깅을 위해서 패킷을 분석할 수 있는 도구는 필수적입니다. 당연히도 이미 많은 도구들이 제공되고 있어요. wireshark 가 대표적입니다.
+Network operations are often obscured by the kernel, making packet analysis tools essential for effective debugging. Naturally, there are already many tools available, with Wireshark being a prominent example.
 
-하지만 이번 글에서는 wireshark 같은 **GUI 를 사용하지 못하는 환경에서도 패킷을 분석할 수 있는 방법**을 소개해보려고 해요. wireshark 의 TUI 버전인 `termshark` 를 사용할겁니다. 사용법이 복잡하지 않기 때문에 간편하게 네트워크를 분석할 수 있습니다.
+However, in this article, we will explore a method to analyze packets even in environments where graphical user interfaces like Wireshark cannot be used. We will utilize `termshark`, the TUI version of Wireshark, for this purpose. Its straightforward usage allows for easy network analysis.
 
-## 설치 및 사용법
+## Installation and Usage
 
-Mac 을 기준으로 설명하기 때문에 설치는 `brew` 로 진행합니다.
+Since we are focusing on Mac, we will proceed with the installation using `brew`.
 
 ```bash
 brew install termshark
 ```
 
-먼저 패킷을 확인하려면 어떤 네트워크 장비를 통해 오고가는 패킷을 캡처할건지 지정해야 합니다. `termshark` 를 통해 현재 머신에 존재하는 네트워크 장비를 확인할 수 있습니다.
+To inspect packets, you need to specify which network device to capture packets passing through. You can use `termshark` to check the network devices present on your current machine.
 
 ```bash
 termshark -D
 ```
 
-![](https://i.imgur.com/irHG3bQ.png)
-
-`ifconfig` 라는 기본 명령어로도 확인할 수 있습니다.
+You can also use the basic command `ifconfig` to check.
 
 ```bash
 ifconfig
 ```
 
-![](https://i.imgur.com/NjtA2p3.png)
-
-우리가 이번 테스트에서 사용할 네트워크 장비는 루프백 인터페이스(localhost)입니다. 출력 결과를 살펴보니 `lo0` 라는 루프백 인터페이스가 존재하네요. 아래 명령을 통해 네트워크 패킷을 캡쳐합니다.
+For our testing, we will use the loopback interface (localhost). Upon examining the output, we find a loopback interface named `lo0`. The following command captures network packets:
 
 ```bash
-termshark -i lo0 -w test.pcap # 패킷을 캡쳐하여 test.pcap 이라는 파일로 생성
+termshark -i lo0 -w test.pcap # Capture packets and save them to a file named test.pcap
 ```
 
-termshark 를 실행하면 network packet 을 캡쳐하는 상태로 진입합니다.
+Running Termshark will put you in a state of capturing network packets.
 
-음... 루프백 인터페이스는 localhost 로 네트워크 요청을 보내면 될테니 로컬에서 실행 중인 애플리케이션이 하나 필요할 것 같네요. 터미널 창을 하나 더 열고, Docker 를 사용해서 실행해줍시다.
+Hmm... Since the loopback interface sends network requests to localhost, we need an application running locally. Let's open another terminal window and run a simple server application using Docker.
 
 ```bash
 docker run -d -p 8080:8080 songkg7/rest-server
 ```
 
-이 서버는 `/ping` 이라는 엔드포인트로 GET 요청이 오면 pong 이라는 문자열을 반환하는 간단한 server application 입니다. 메세지가 짧긴 하지만 패킷 동작을 간단하게 살펴보긴 충분할거에요.
+This server responds with the string "pong" when a GET request is made to the `/ping` endpoint. Although the message is short, it should be sufficient for a brief examination of packet operations.
 
-이제 Loopback 으로 요청을 보내고,
+Now, send a request to the loopback,
 
 :::info
 
-`Httpie` 가 설치되어 있지 않다면 `curl` 을 대신 사용하거나, `brew install httpie` 로 설치해주세요.
+If you don't have `Httpie` installed, you can use `curl` instead or install it with `brew install httpie`.
 
 :::
 
@@ -84,63 +78,58 @@ docker run -d -p 8080:8080 songkg7/rest-server
 http localhost:8080/ping
 ```
 
-tshark 를 실행한 세션에서는 `ctrl + c` 를 눌러 캡쳐를 종료합니다. `la` 를 찍어보면 `test.pcap` 이라는 파일이 생성된 것을 확인할 수 있습니다.
+To stop capturing in the tshark session, press `ctrl + c`. Typing `la` will confirm that the `test.pcap` file has been created.
 
-![](https://i.imgur.com/f7cGNTK.png)
+## Packet Analysis
 
-## 패킷 분석
-
-이제 패킷 캡쳐 과정은 모두 완료되었어요. 캡쳐 과정 동안 어떤 요청이 오고갔는지 살펴봅시다! 그냥 열어보면 정보량이 너무 많을 수 있으니, 아래처럼 필터링 조건을 지정해서 열면 보고 싶은 요청만 볼 수 있습니다.
+The packet capture process is now complete. Let's see what requests were made during the capture! Instead of viewing everything, you can specify filtering conditions to view only the requests you are interested in.
 
 ```bash
-termshark -r test.pcap tcp.port==8080 # 8080 포트로 오고간 패킷만 확인
+termshark -r test.pcap tcp.port==8080 # View packets exchanged over port 8080
 ```
 
-![](https://i.imgur.com/9R32wPz.png)
-_Boom!! 💣_
+Termshark provides basic key controls:
 
-Termshark 는 기본적으로 아래 키로 조작할 수 있어요.
+- Arrow keys or hjkl: Move the cursor
+- `tab`: Switch focus between windows
+- `?`: Help
+- `/`: Filter, allowing you to view specific packets like `tcp.port==8080`
+- `q`: Quit
 
-- 방향키 or hjkl : 커서 이동
-- `tab`: window 간 focus 이동
-- `?`: 도움말
-- `/` : filter, `tcp.port==8080` 등으로 원하는 것만 볼 수 있다.
-- `q`: 종료
+Termshark shares a color palette with Wireshark and provides intuitive visualization even with the default settings. If you wish to change the colors, you can adjust the Wireshark settings, but we will skip that as it slightly deviates from the focus of this article.
 
-색상 팔레트는 wireshark 와 공유하며 기본 설정으로도 충분히 직관적으로 시각화해줍니다. 만약 색상을 변경하고 싶다면 wireshark 의 설정을 만져주면 되지만, 이 글의 주제와는 약간 벗어나므로 생략할게요.
-
-다시 패킷 이야기로 돌아가서, 패킷 덤프로는 정말 많은 정보를 얻을 수 있지만 중요한 몇가지만 살펴볼게요. 기본적인 TCP 동작 흐름은 아래 이미지처럼 진행됩니다.
+Returning to the topic of packets, while packet dumps provide a wealth of information, let's focus on a few key details. The basic TCP operation flow progresses as shown in the image below.
 
 ![](https://i.imgur.com/qiDbLAK.png)
 
-먼저, 가장 상단을 보면 SYN -> SYN, ACK -> ACK 로 이어지는 3 way handshake 과정을 볼 수 있어요. 이 과정이 진행된 후에 커넥션이 ESTABLISHED 상태가 되며 연결이 수립됩니다.
+At the top, you can observe the 3-way handshake process, progressing from SYN to SYN, ACK, and finally to ACK. Once this process is completed, the connection enters the ESTABLISHED state, signifying a successful connection establishment.
 
-좀 더 자세히 살펴보면 상대와 어디까지 데이터를 주고 받았는지 알기 위해 초기 과정에서 시퀀스 넘버를 주고 받는 것도 확인할 수 있어요.
+A closer look reveals that during the initial stages, sequence numbers are exchanged to determine how far data has been transmitted between the parties.
 
 ![](https://i.imgur.com/HUcOEVH.png)
-_SYN 요청에서 client 측 sequence number 를 서버에 건네준다_
+_Client-side sequence number is handed to the server during the SYN request_
 
-SYN 요청을 하며 서버 측에 클라이언트가 설정한 시퀀스 넘버(4175220519)를 전달하고,
+During the SYN request, the client side conveys the sequence number (4175220519) set by the client to the server, and then,
 
 ![](https://i.imgur.com/ONbTNaM.png)
 
-서버는 클라이언트에 응답을 돌려주며(SYN ACK) 자신의 시퀀스 넘버(1538881812)를 함께 전달해요. Acknowledge Number 는 상대로부터 받아야하는 다음 시퀀스 번호를 의미해요. 서버 입장에서는 클라이언트에게 4175220519 를 받았기 때문에 다음 시퀀스 넘버인 4175220520 을 달라고 하고 있네요.
+the server responds (SYN ACK) by returning its sequence number (1538881812) along with a request for the next sequence number to be received. The Acknowledge Number signifies the next sequence number expected to be received. From the server's perspective, having received 4175220519 from the client, it requests 4175220520 as the next sequence number.
 
-이제 3 way handshake 의 마지막 패킷인 ACK 를 살펴보면
+Examining the final packet of the 3-way handshake, the ACK,
 
 ![](https://i.imgur.com/6wew0fe.png)
 
-시퀀스 넘버로 4175220520 를 전달하려 하고 서버에게 전달받은 시퀀스 넘버인 1538881812 에서 1 증가한 1538881812 + 1 = 1538881813 을 요청하고 있어요. 연결 상태는 CLIENT_ESTABLISHED 로 바뀐 것도 확인할 수 있네요.
+it attempts to transmit the sequence number 4175220520 and requests an increment from the received sequence number at the server, 1538881812, resulting in 1538881812 + 1 = 1538881813. The connection state has transitioned to CLIENT_ESTABLISHED.
 
 :::info
 
-시퀀스 번호가 0이나 1부터 시작하지 않는 이유는 통신 과정에 다른 패킷이 개입하기 어렵도록 하기 위해서입니다. 최초 커넥션 요청시 랜덤한 숫자를 배정함으로써 패킷에 대한 간섭을 방지합니다.
+Sequence numbers do not start from 0 or 1 to prevent interference with packets during communication. By assigning a random number during the initial connection request, packet interference is minimized.
 
 :::
 
 ## Conclusion
 
-이렇게 `termshark` 를 통해 간단하게 패킷을 분석할 수 있는 방법에 대해서 살펴봤어요. 이 번 글에서는 분량 조절을 위해 3 way handshake 정도만 살펴봤지만, 패킷 분석을 통해서는 굉장히 풍부한 정보를 얻을  수 있어요. 네트워크 동작에 대해 살펴볼 수 있는 계기가 되었기를 바랍니다.
+We have explored a simple method of packet analysis using `termshark`. In this article, we focused on the 3-way handshake to manage the length, but packet analysis provides a wealth of information. We hope this serves as an opportunity to delve into network operations.
 
 ## Reference
 

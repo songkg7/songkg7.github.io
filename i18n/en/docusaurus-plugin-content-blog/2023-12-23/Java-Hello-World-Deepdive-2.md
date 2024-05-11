@@ -1,38 +1,50 @@
 ---
-title: "Java 에서 Hello World 를 출력하기까지 2"
+title: "From Java to Printing Hello World: Part 2"
 date: 2023-12-23 01:01:35 +0900
 aliases: null
-tags: [java, compile, javac, javap, instruction, operand, opcode]
-categories: null
+tags: [ java, compile, javac, javap, instruction, operand, opcode ]
+categories: [ Java ]
 mermaid: true
 image: img/banner/hello-world-programmer.webp
 authors: haril
+description: "In this chapter, we will explore how the code evolves to print 'Hello World' by examining the compilation and disassembly processes."
 ---
 
-[이전 글](https://songkg7.github.io/posts/Java-Hello-World-Deepdive-1/) 에 이어서 "Hello World" 를 출력하기 위해 코드가 어떻게 변해가는지 살펴봅니다.
+![banner](./hello-world-programmer.webp)
 
-## Chapter 2. Compile 과 Disassemble
+Continuing from the [previous post](https://haril.dev/en/blog/2023/12/10/Java-Hello-World-Deepdive-1/), let's explore
+how the code evolves to print "Hello World."
 
-프로그래밍 언어에는 레벨이 있다.
+## Chapter 2. Compilation and Disassembly
 
-프로그래밍 언어가 인간의 언어와 가까울수록 고수준 언어(high-level language), 컴퓨터가 이해할 수 있는 언어(=기계어)에 가까울수록 저수준 언어(low-level language)라고 한다. 고수준 언어로 프로그램을 작성하면 인간이 이해하기 쉽기에 높은 생산성을 얻을 수 있지만, 그만큼 기계어와의 괴리가 심해지니 이 간극을 메우기 위한 과정이 필요하다.
+Programming languages have levels.
 
-고수준 언어가 저수준으로 내려오는 과정, 이걸 **컴파일(compile)** 이라고 부른다.
+The closer a programming language is to human language, the higher-level language it is, and the closer it is to the
+language a computer can understand (machine language), the lower-level language it is. Writing programs in a high-level
+language makes it easier for humans to understand and increases productivity, but it also creates a gap with machine
+language, requiring a process to bridge this gap.
 
-Java 또한 저수준 언어는 아니므로, 컴파일 과정이 존재한다. 자바에서는 이 컴파일 과정이 어떻게 동작하는지 살펴보자.
+The process of a high-level language descending to a lower level is called **compilation**.
 
-### Compile
+Since Java is not a low-level language, there is a compilation process. Let's take a look at how this compilation
+process works in Java.
 
-앞서 설명했던 것처럼 Java 코드를 컴퓨터가 바로 실행할 순 없다. Java 코드의 실행을 위해서는 작성된 코드를 컴퓨터가 읽고 해석할 수 있는 형태로 변환해줘야하는데, 이를 위해 크게는 아래와 같은 과정을 거치게 된다.
+### Compilation
+
+As mentioned earlier, Java code cannot be directly executed by the computer. To execute Java code, it needs to be
+transformed into a form that the computer can read and interpret. This transformation involves the following major
+steps:
 
 ```mermaid
 flowchart LR
-    *.java --compiling--> *.clazz --interpreting--> execution
+    *.java --compiling--> *.class --interpreting--> execution
 ```
 
-컴파일의 결과물인 `.class` 파일은 바이트 코드로 되어 있다. 하지만 여전히 컴퓨터가 실행할 수 있는 기계어는 아닌데, JVM 이 이 바이트 코드를 읽어서 기계어로 변환하는 작업을 마저 처리해준다. JVM 이 어떻게 처리해주는지는 마지막 챕터에서 다룬다.
+The resulting `.class` file from compilation is in bytecode. However, it is still not machine code that the computer can
+execute. The Java Virtual Machine (JVM) reads this bytecode and further processes it into machine code. We will cover
+how the JVM handles this in the final chapter.
 
-우선, `.java` 파일을 컴파일해서 `.class` 파일을 만들어보자. `javac` 명령어를 사용하면 컴파일할 수 있다.
+First, let's compile the `.java` file to create a `.class` file. You can compile it using the `javac` command.
 
 ```java
 // VerboseLanguage.java
@@ -49,58 +61,67 @@ javac VerboseLanguage.java
 
 ![](https://i.imgur.com/xPMY0Ib.png)
 
-클래스 파일이 생성된 것을 확인할 수 있다. `java` 명령어를 사용해서 클래스 파일을 실행시킬 수 있으며, 여기까지가 자바로 작성한 프로그램을 실행시키는 기본 흐름이다.
+You can see that the class file has been created. You can run the class file using the `java` command, and this is the
+basic flow of running a Java program.
 
 ```bash
 java VerboseLanguage
 // Hello World
 ```
 
-클래스 파일이 어떤 내용으로 이루어졌는지 궁금하지 않은가? 도대체 컴퓨터는 어떻게 생긴 언어를 읽고 실행하는지 신경쓰이지는 않는가? 이 파일에는 무슨 비밀이 들어있을까? 마치 판도라의 상자처럼 느껴진다.
+Are you curious about the contents of the class file? Wondering how the computer reads and executes the language? What
+secrets lie within this file? It feels like opening Pandora's box.
 
-기대를 안고 열어보면,
+Expecting something, you open it up, and...
 
 ![](https://i.imgur.com/t9WAXdz.png)
-_어림도 없지_
+_No way!_
 
-바이너리(binary)라는 짤막한 내용만 표시된다.
+Only a brief binary content is displayed.
 
-_아니 지금까지 컴파일의 결과물은 바이트 코드라며...?_
+_Wait, wasn't the result of compilation supposed to be bytecode...?_
 
-그렇다, 바이트 코드다. 동시에 바이너리 코드이기도 하다. 이쯤에서 바이트 코드와 바이너리 코드의 차이점을 간략하게 짚어보고 넘어가자.
+Yes, it is bytecode. At the same time, it is also binary code. At this point, let's briefly touch on the differences
+between bytecode and binary code before moving on.
 
-바이너리 코드
-: 0과 1 로만 구성된 코드. 기계어는 바이너리 코드로 이루어져 있지만, 모든 바이너리 코드가 기계어인 것은 아니다.
+Binary Code
+: Code composed of 0s and 1s. While machine language is made up of binary code, not all binary code is machine language.
 
-바이트 코드
-: 0과 1 로만 구성된 코드. 하지만 바이트 코드는 기계(machine)을 위한 것이 아닌 **VM 을 위한 것**이다. VM 에서 JIT compiler 등을 통해 기계어로 변환된다.
+Bytecode
+: Code composed of 0s and 1s. However, bytecode is not intended for the machine but for the **VM**. It is converted into
+machine code by the VM through processes like the JIT compiler.
 
-그래도 나름 이 글의 주제가 Deep-dive 를 표방하고 있는만큼 꾸역꾸역 변환하여 읽어봤다.
+Still, as this article claims to be a deep dive, we reluctantly tried to read through the conversion.
 
 ![](https://i.imgur.com/WwrGlp0.png)
-_다행히 우리들의 판도라의 상자 안에는 0 과 1 이 들어있을 뿐, 별 다른 고난이나 역경은 들어있지 않다._
+_Fortunately, our Pandora's box contains only 0s and 1s, with no other hardships or challenges._
 
-읽어내는데는 성공했지만, 0 과 1 만 가지고는 도저히 내용을 알기 어렵다 🤔
+While we succeeded in reading it, it is quite difficult to understand the content with just 0s and 1s 🤔
 
-이제, 이 암호를 풀어보자.
+Now, let's decipher this code.
 
-### Disassemble
+### Disassembly
 
-컴파일 과정을 진행하면 0과 1로 구성된 바이트 코드로 변환된다. 위에서 살펴봤듯이 바이트 코드를 그대로 해석하기는 무척 어렵다. 다행히도 JDK 에는 개발자가 컴파일된 바이트 코드를 읽을 수 있게 도와주는 도구가 포함되어 있어서 디버깅 등의 목적으로 활용할 수 있다.
+During the compilation process, the code is transformed into bytecode composed of 0s and 1s. As seen earlier,
+interpreting bytecode directly is quite challenging. Fortunately, the JDK includes tools that help developers read
+compiled bytecode, making it useful for debugging purposes.
 
-바이트 코드를 개발자가 해석하기 편한 형태로 변환하는 과정을 **역어셈블(disassemble)** 이라고 한다. 가끔 이 과정을 역컴파일(decompile)과 혼동할 수 있는데, 역컴파일은 변환 결과가 어셈블리어가 아니라 고수준 프로그래밍 언어라는 점에 차이가 있다. 또한 `javap` 문서에는 명확하게 disassemble 이라고 표현하고 있으므로 이를 따르도록 하겠다.
+The process of converting bytecode into a more readable form for developers is called **disassembly**. Sometimes this
+process can be confused with decompilation, but decompilation results in a higher-level programming language, not
+assembly language. Also, since the `javap` documentation clearly uses the term disassemble, we will follow suit.
 
 ![](https://i.imgur.com/vct9MSZ.png)
 
 :::info
 
-역컴파일의 경우는 말 그대로 바이너리를 컴파일 하기 전처럼, 상대적으로 고수준의 언어로 표현하는 것을 말한다. 반면, 역어셈블은 바이너리를 사람이 읽을 수 있는 최소한의 형식(assembler language)으로 표현해주는 것을 말한다.
+Decompilation refers to representing binary code in a relatively higher-level language, just like before compiling
+binary. On the other hand, disassembly represents binary code in a minimal human-readable form (assembler language).
 
 :::
 
 #### Virtual Machine Assembly Language
 
-`javap` 를 사용해서 바이트코드를 변환(disassemble)해보자. 0, 1 보다는 훨씬 읽을만한 결과가 출력된다.
+Let's use `javap` to disassemble the bytecode. The output is much more readable than just 0s and 1s.
 
 ```bash
 javap -c VerboseLanguage.class
@@ -124,28 +145,32 @@ public class VerboseLanguage {
 }
 ```
 
-이걸 보고 무엇을 알 수 있을까?
+What can we learn from this?
 
-먼저, 이 언어는 virtual machine assembly language 라고 불린다.
+Firstly, this language is called virtual machine assembly language.
 
-> The Java Virtual Machine code is written in the informal “virtual machine assembly language” output by Oracle's javap utility, distributed with the JDK release. - JVM Spec
+> The Java Virtual Machine code is written in the informal “virtual machine assembly language” output by Oracle's javap
+> utility, distributed with the JDK release. - JVM Spec
 
-format 은 아래와 같다.
+The format is as follows:
 
 ```text
 <index> <opcode> [ <operand1> [ <operand2>... ]] [<comment>]
 ```
 
 index
-: JVM code 바이트 배열의 인덱스. 메서드 시작 오프셋으로 생각할 수도 있다.
+: Index of the JVM code byte array. It can be thought of as the method's starting offset.
 
 opcode
-: 명령어(instruction) 집합 opcode 의 연상 기호(mnemonic). 우리는 무지개의 색상 순서를 '빨주노초파남보'라는 단어로 기억한다. 무지개의 색상이 명령어 집합이라면, '빨주노초파남보' 각각의 음절은 이를 구별하기 위해 정의된 연상 기호라고 할 수 있다.
+: Mnemonic symbol representing the set of instructions opcode. We remember the order of the rainbow colors as 'ROYGBIV'
+to distinguish the instruction set. If the rainbow colors represent the instruction set, each syllable of 'ROYGBIV' can
+be considered as a mnemonic symbol defined to differentiate them.
 
 operandN
-: 명령어의 피연산자. 컴퓨터 명령어의 피연산자는 주소 필드이다. constant pool 에서 처리할 데이터가 저장되어 있는 장소를 가리킨다.
+: Operand of the instruction. The operand of a computer instruction is the address field. It points to where the data to
+be processed is stored in the constant pool.
 
-출력된 역어셈블의 결과에서 main 메서드 부분만 좀 더 살펴보자.
+Let's take a closer look at the main method part of the disassembled result.
 
 ```text
 Code:
@@ -155,26 +180,30 @@ Code:
    8: return
 ```
 
-- `invokevirtual`: 인스턴스 메서드 호출
-- `getstatic`: 클래스에서 static field 를 가져온다
-- `ldc` run-time constant pool 에 데이터를 적재한다.
+- `invokevirtual`: Call an instance method
+- `getstatic`: Get a static field from a class
+- `ldc`: Load data into the run-time constant pool.
 
-3번째 줄의 `3: ldc #13` 은 13번 인덱스에 아이템을 넣으라는 의미이며, 넣는 아이템이 무엇인지는 주석으로 친절하게 표시되어 있다.
+The `3: ldc #13` on the third line means to put an item at index 13, and the item being put is kindly indicated in the
+comment.
 
 _Hello World_
 
-참고로 getstatic, invokevirtual 같은 바이트 코드 명령어 opcode 들은 1바이트의 바이트 번호로 표현된다. getstatic=0xb2, invokevirtual = 0xb6 등이다. 1바이트는 256가지 종류의 수를 표현할 수 있으므로, 자바 바이트 코드 명령어 opcode 역시 **최대 256개**라는 점을 알 수 있다.
+Note that bytecode instructions like `getstatic` and `invokevirtual` are represented by a single-byte opcode number. For
+example, `getstatic=0xb2`, `invokevirtual=0xb6`, and so on. It can be understood that Java bytecode instructions also
+have a maximum of **256** different opcodes.
 
 ![](https://i.imgur.com/FlBgfx7.png)
-_JVM Instruction Set 에 명시된 invokevirtual 의 바이트 코드_
+_JVM Instruction Set showing the bytecode for invokevirtual_
 
-main method 의 바이트 코드만 hex 로 보면 다음과 같다.
+If we look at the bytecode of the main method in hex, it would be as follows:
 
 ```text
 b2 00 07 12 0d b6
 ```
 
-아직은 눈치채기 어려울 수도 있을 것 같다. 힌트를 주자면, 좀 전에 opcode 앞의 숫자는 JVM array 의 index 라고 했었다. 표현 방식을 살짝 바꿔보자.
+It might still be a bit hard to notice the pattern. As a hint, remember that earlier we mentioned the number before the
+opcode is the index in the JVM array. Let's slightly change the representation.
 
 ```text
 arr = [b2, 00, 07, 12, 0d, b6]
@@ -184,24 +213,30 @@ arr = [b2, 00, 07, 12, 0d, b6]
 - arr[3] = 12 = ldc
 - arr[5] = b6 = invokevirtual
 
-index 가 어떤 의미였는지 조금은 명확하게 보인다. 인덱스를 건너뛰는 이유는 꽤나 단순한데, getstatic 은 2바이트의 피연산자가 필요하고 ldc 는 1바이트의 피연산자가 필요하다. 따라서 0번째에 있는 getstatic 다음 명령어인 ldc 는 1, 2 를 건너뛴 3번째에 기록된다. 같은 이유로 4를 건너뛰고 invokevirtual 이 5번째에 기록된다.
+It becomes somewhat clearer what the index meant. The reason for skipping some indices is quite simple: `getstatic`
+requires a 2-byte operand, and `ldc` requires a 1-byte operand. Therefore, the `ldc` instruction, which is the next
+instruction after `getstatic`, is recorded at index 3, skipping 1 and 2. Similarly, skipping 4, the `invokevirtual`
+instruction is recorded at index 5.
 
-마지막으로 4번째 줄에 보면 `(Ljava/lang/String;)V` 라는 주석이 눈에 띈다. 이 주석을 통해 자바 바이트 코드에서 클래스는 `L;` void 는 `V` 로 표현되는걸 알 수 있다. 다른 타입들도 고유의 표현이 있는데 이를 정리하면 다음과 같다.
+Lastly, notice the comment `(Ljava/lang/String;)V` on the 4th line. Through this comment, we can see that in Java
+bytecode, classes are represented as `L;`, and void is represented as `V`. Other types also have their unique
+representations, summarized as follows:
 
-| 자바 바이트코드 | 타입      | 설명                                  |
-| --------------- | --------- | ------------------------------------- |
-| B               | byte      | signed byte                           |
-| C               | char      | Unicode character                     |
-| D               | double    | double-precision floating-point value |
-| F               | float     | single-precision floating-point value |
-| I               | int       | integer                               |
-| J               | long      | long integer                          |
-| L\<classname>;  | reference | an instance of class \<classname>     |
-| S               | short     | signed short                          |
-| Z               | boolean   | true or false                         |
-| [               | reference | one array dimension                   |
+| Java Bytecode  | Type      | Description                           |
+|----------------|-----------|---------------------------------------|
+| B              | byte      | signed byte                           |
+| C              | char      | Unicode character                     |
+| D              | double    | double-precision floating-point value |
+| F              | float     | single-precision floating-point value |
+| I              | int       | integer                               |
+| J              | long      | long integer                          |
+| L\<classname>; | reference | an instance of class \<classname>     |
+| S              | short     | signed short                          |
+| Z              | boolean   | true or false                         |
+| [              | reference | one array dimension                   |
 
-`-verbose` 옵션을 주면 constant pool 을 포함한 역어셈블 결과를 자세히 볼 수 있다. operand 와 constant pool 을 함께 살펴보는 것도 재밌을 것이다.
+Using the `-verbose` option, you can see a more detailed disassembly result, including the constant pool. It would be
+interesting to examine the operands and constant pool together.
 
 ```text
   Compiled from "VerboseLanguage.java"
@@ -271,10 +306,12 @@ SourceFile: "VerboseLanguage.java"
 
 ## Conclusion
 
-전 챕터에서는 Hello World 를 출력하기 위해 왜 말많은 과정이 필요한지에 대해 살펴봤었다면, 이번 챕터에서는 Hello World 를 출력하기 전 어떤 과정이 진행되는지 컴파일과 역어셈블 과정을 통해 살펴봤다. 다음으로는 드디어 JVM과 함께 Hello World 출력 메서드의 실행 흐름을 살펴본다.
+In the previous chapter, we explored why a verbose process is required to print Hello World. In this chapter, we looked
+at the compilation and disassembly processes before printing Hello World. Next, we will finally examine the execution
+flow of the Hello World printing method with the JVM.
 
 ## Reference
 
-- [명령어 코드](https://seung-nari.tistory.com/entry/%EC%BB%B4%ED%93%A8%ED%84%B0-%EA%B5%AC%EC%A1%B0-%EB%AA%85%EB%A0%B9%EC%96%B4-%EC%BD%94%EB%93%9C-OP-Code-Mode-Operand)
+- [Opcode Codes](https://seung-nari.tistory.com/entry/%EC%BB%B4%ED%93%A8%ED%84%B0-%EA%B5%AC%EC%A1%B0-%EB%AA%85%EB%A0%B9%EC%96%B4-%EC%BD%94%EB%93%9C-OP-Code-Mode-Operand)
 - [Naver D2](https://d2.naver.com/helloworld/1230)
 - JVM specification

@@ -1,42 +1,50 @@
 ---
-title: "Java 에서 Hello World 를 출력하기까지 3"
+title: "From Java to Printing Hello World: Part 3"
 date: 2024-01-07 17:08:34 +0900
 aliases: null
-tags: [java, jvm]
-image: /assets/img/hello-world-programmer.webp
-categories: null
+tags: [ java, jvm ]
+image: img/banner/hello-world-programmer.webp
+categories: [ Java ]
 authors: haril
+description: "In this chapter, we will explore how the JVM executes the 'Hello World' code block."
 ---
 
 ![banner](./hello-world-programmer.webp)
 
-앞선 챕터에서는 Java 를 컴파일해보며 바이트코드 구조에 대해 살펴봤다. 이번 챕터에서는 JVM 이 실행되면서 'Hello World' 코드 블록을 어떻게 동작시키는지 살펴본다.
+In the previous chapter, we compiled Java and examined the bytecode structure. In this chapter, we will explore how the
+JVM executes the 'Hello World' code block.
 
-## Chapter 3. Java 를 실행하는 JVM
+## Chapter 3: Running Java on the JVM
 
 - Class Loader
 - Java Virtual Machine
 - Java Native Interface
-- JVM 메모리 적재 과정
-- Hello World 가 어떤 메모리 영역과 상호작용하게 되는지
+- JVM Memory Loading Process
+- Interaction of Hello World with Memory Areas
 
 ### Class Loader
 
-Java 의 클래스들이 언제, 어디서, 어떻게 메모리에 올라가고 초기화가 일어나는지 알기 위해서는 우선 JVM **클래스 로더(Class Loader)** 에 대해 살펴볼 필요가 있다.
+To understand when, where, and how Java classes are loaded into memory and initialized, we need to first look at the *
+*Class Loader** of the JVM.
 
-클래스 로더는 컴파일된 자바의 클래스 파일(.class)을 동적으로 로드하고, JVM 의 메모리 영역인 Runtime Data Area 에 배치하는 작업을 수행한다.
+The class loader dynamically loads compiled Java class files (.class) and places them in the Runtime Data Area, which is
+the memory area of the JVM.
 
-클래스 로더에서 class 파일을 로딩하는 순서는 다음과 같이 3단계로 구성된다.
+The process of loading class files by the class loader consists of three stages:
 
-1. Loading: 클래스 파일을 가져와서 **JVM 의 메모리에 로드**한다.
-2. Linking: 클래스 파일을 사용하기 위해 **검증**하는 과정이다.
-3. Initialization: 클래스 파일을 적절한 값으로 **초기화**한다.
+1. Loading: Bringing the class file into **JVM memory**.
+2. Linking: The process of **verifying** the class file for use.
+3. Initialization: Initializing the class file with appropriate values.
 
-유의할 점은, 클래스 파일은 한 번에 메모리에 올라가는 것이 아니라 **애플리케이션에서 필요할 경우 동적으로 메모리에 적재**된다는 점이다.
+It is important to note that class files are not loaded into memory all at once but are dynamically loaded into memory *
+*when needed by the application**.
 
-많이들 착각하는 부분은 클래스나 클래스에 포함된 static 멤버들이 메모리에 올라가는 시점이다. 소스를 실행하자마자 메모리에 모두 올라가는줄 착각하는데, 언제 어디서 사용될지 모르는 static 멤버들을 시작 시점에 모두 메모리에 올려놓는다는 것은 비효율적이다. 클래스 내의 멤버를 호출하게 되면 그제서야 클래스가 동적으로 메모리에 로드된다.
+A common misconception is the timing of when classes or static members within classes are loaded into memory. Many
+mistakenly believe that all classes and static members are loaded into memory as soon as the source is executed.
+However, static members are only loaded into memory when the class is dynamically loaded into memory upon calling a
+member within the class.
 
-verbose 옵션을 사용하면 메모리에 올라가는 동작과정을 엿볼 수 있다.
+By using the verbose option, you can observe the process of loading into memory.
 
 ```bash
 java -verbose:class VerboseLanguage
@@ -44,62 +52,82 @@ java -verbose:class VerboseLanguage
 
 ![image](https://i.imgur.com/4suH8mS.png)
 
-'Hello World' 가 출력되기 전에 `VerboseLanguage` 클래스가 먼저 로드되는걸 확인할 수 있다.
+You can see that the `VerboseLanguage` class is loaded before 'Hello World' is printed.
 
 :::info
 
-Java 1.8 과 Java 21 은 컴파일 결과물부터 로그 출력 포맷도 다르다. 버전이 올라감에 따라 최적화가 많이 이루어지고 컴파일러 동작도 약간씩 변하므로, 버전을 잘 확인하자. 이 글에서는 Java21 을 기본으로 사용하고 다른 버전의 경우 별도로 명시한다.
+Java 1.8 and Java 21 have different log output formats starting from the compilation results. As versions progress,
+optimizations are made and compiler behavior changes slightly, so it is important to check the version. This article
+uses Java 21 as the default version, and other versions will be specified separately.
 
 :::
 
 ### Runtime Data Area
 
-Runtime Data Area 는 프로그램이 동작하는 동안 데이터들이 저장되는 공간이다. 크게는 Shared Data Area 와 Per-thread Data Area 로 나누어진다.
+The Runtime Data Area is the space where data is stored during program execution. It is divided into Shared Data Areas
+and Per-thread Data Areas.
 
 #### Shared Data Areas
 
-JVM 에는 JVM 안에서 동작하는 여러 스레드 간 데이터를 공유할 수 있는 여러 영역이 존재한다. 따라서 다양한 스레드가 이러한 영역 중 하나에 동시에 접근할 수 있다.
+Within the JVM, there are several areas where data can be shared among multiple threads running within the JVM. This
+allows various threads to access one of these areas simultaneously.
 
 ##### Heap
 
-> `VerboseLanguage` 클래스의 인스턴스가 존재하는 곳
+> Where instances of the `VerboseLanguage` class exist
 
-Heap 영역은 모든 자바 객체 혹은 배열이 생성될 때 할당되는 영역이다. JVM 이 실행되는 순간에 만들어지고 JVM 이 종료될 때 함께 사라진다.
+The Heap area is where all Java objects or arrays are allocated when created. It is created when the JVM starts and is
+destroyed when the JVM exits.
 
-자바 스펙에 따라서, 이 공간은 자동으로 관리되어져야 한다. 이 역할은 GC 라고 알려진 도구에 의해 수행된다.
+According to the Java specification, this space should be automatically managed. This role is performed by a tool known
+as the Garbage Collector (GC).
 
-Heap 사이즈에 대한 제약은 JVM 명세에 존재하지 않는다. 메모리 처리도 JVM 구현에 맡겨져 있다. 그럼에도 불구하고 Garbage Collector 가 새로운 객체를 생성하기에 충분한 공간을 확보하지 못한다면 JVM 은 OutOfMemory 에러를 발생시킨다.
+There are no constraints on the size of the Heap specified in the JVM specification. Memory management is also left to
+the JVM implementation. However, if the Garbage Collector fails to secure enough space to create new objects, the JVM
+will throw an OutOfMemory error.
 
 ##### Method Area
 
-Method Area 는 클래스 및 인터페이스 정의를 저장하는 공유 데이터 영역이다. Heap 과 마찬가지로 JVM 이 시작될 때 생성되며 JVM 이 종료될 때만 소멸된다.
+The Method Area is a shared data area that stores class and interface definitions. Similar to the Heap, it is created
+when the JVM starts and is destroyed when the JVM exits.
 
-클래스 전역 변수와 static 변수는 이 영역에 저장되므로 프로그램이 시작부터 종료될 때까지 어디서든 사용이 가능한 이유가 된다. (= Run-Time Constant Pool)
+Global variables and static variables of a class are stored in this area, making them accessible from anywhere in the
+program from start to finish. (= Run-Time Constant Pool)
 
-구체적으로는 클래스 로더는 클래스의 바이트코드(.class)를 로드하여 JVM 에 전달하는데, JVM 은 객체를 생성하고 메서드를 호출하는 데 사용되는 클래스의 내부 표현을 런타임에 생성한다. 이 내부 표현은 클래스 및 인터페이스에 대한 필드, 메서드, 생성자에 대한 정보를 수집한다.
+Specifically, the class loader loads the bytecode (.class) of a class and passes it to the JVM, which then generates the
+internal representation of the class used for creating objects and invoking methods. This internal representation
+collects information about fields, methods, and constructors of the class and interfaces.
 
-사실 Method Area 는 JVM 명세에 따르면 구체적으로 '이래야 한다' 는 명확한 정의가 없는 영역이다. **논리적 영역**이며, 구현에 따라서 힙의 일부로 존재할 수도 있다. 간단한 구현에서는 힙의 일부이면서도 GC 나 압축이 발생하지 않도록 할 수도 있다.
+In fact, according to the JVM specification, the Method Area is an area with no clear definition of 'how it should be'.
+It is a **logical area** and depending on the implementation, it can exist as part of the Heap. In a simple
+implementation, it can be part of the Heap without undergoing GC or compression.
 
 ##### Run-Time Constant Pool
 
-**Run-Time Constant Pool 은 Method Area 의 일부**로 클래스 및 인터페이스 이름, 필드 이름, 메서드 이름에 대한 심볼릭 참조를 포함한다. JVM 은 Run-Time Constant Pool 을 통해 실제 메모리상 주소를 찾아서 참조할 수 있다.
+The **Run-Time Constant Pool is part of the Method Area** and contains symbolic references to class and interface names,
+field names, and method names. The JVM uses the Run-Time Constant Pool to find the actual memory addresses for
+references.
 
-앞서 바이트코드를 분석하며 클래스 파일 내부에 constant pool 이 있는 것을 확인했었다. 런타임에는 클래스파일 구조의 일부였던 constant pool 을 읽고 클래스로더에 의해 메모리에 적재되게 된다.
+As seen when analyzing bytecode, the constant pool was found inside the class file. During runtime, the constant pool,
+which was part of the class file structure, is read and loaded into memory by the class loader.
 
 ##### String Constant Pool
 
-> "Hello World" 문자열이 저장되는 곳
+> Where the "Hello World" string is stored
 
-앞 문단에서 Run-Time Constant Pool 이 Method Area 에 속한다고 했었다. Heap 에도 Constant Pool 이 하나 존재하는데 바로 String Constant Pool 이다.
+As mentioned earlier, the Run-Time Constant Pool is part of the Method Area. However, there is also a Constant Pool in
+the Heap, known as the String Constant Pool.
 
-이전, String 을 설명하며 Heap 을 잠깐 언급했다. `new String("Hello World")` 을 사용하여 문자열을 생성할 경우, 문자열을 객체로 다루게 되므로 Heap 영역에서 관리된다. 아래 케이스를 한 번 보자.
+When creating a string using `new String("Hello World")`, the string is treated as an object and is managed in the Heap.
+Let's look at an example:
 
 ```java
 String s1 = "Hello World";
 String s2 = new String("Hello World");
 ```
 
-생성자 내에서 사용된 문자열 리터럴은 String Pool 에서 가져온 것이지만, `new` 키워드는 새롭고 고유한 문자열 생성을 보장해준다.
+The string literal used inside the constructor is retrieved from the String Pool, but the `new` keyword guarantees the
+creation of a new and unique string.
 
 ```text
 0: ldc           #7                  // String Hello World
@@ -112,97 +140,120 @@ String s2 = new String("Hello World");
 13: return
 ```
 
-바이트코드를 확인해보면 invokespecial 을 통해 문자열이 '생성' 되는걸 확인할 수 있다.
+If we examine the bytecode, we can see that the string is 'created' using the `invokespecial` instruction.
 
-invokespecial 은 객체 초기화 메서드가 직접 호출된다는걸 의미한다.
+The `invokespecial` instruction means that the object initialization method is directly called.
 
-왜 Method Area 에 존재하는 Run-Time Constant Pool 과는 달리 String Constant Pool 은 Heap 에 존재할까? 🤔
+Why does the String Constant Pool exist in the Heap, unlike the Run-Time Constant Pool in the Method Area? 🤔
 
-- 문자열은 굉장히 큰 객체에 속한다. 또한 얼마나 생성될지 알기 어렵기 때문에, 메모리 공간을 효율적으로 사용하기 위해서는 사용되지 않는 문자열을 정리하는 과정이 필요하다. 즉, **Heap 영역에 존재하는 GC 가 필요하다**는 의미다.
-  - 스택에 저장한다면 공간을 찾기 힘들어서 문자열 선언 자체가 실패할 수 있다.
-  - 스택의 크기는 32bit 에서는 320kb~1MB, 64bit 에서는 1MB~2MB 정도를 기본값으로 가진다.
-- 문자열은 불변으로 관리된다. 수정은 허용되지 않으며, 항상 새롭게 생성된다. 이미 생성된 적이 있다면 재활용함으로써 메모리 공간을 절약한다(=interning). 하지만 참조되지 않는 문자열이 생길 수 있으며, 애플리케이션의 생명 주기동안 계속해서 쌓여갈 것이다. 메모리를 효율적으로 활용하기 위해 참조되지 않는(unreachable) 문자열을 정리할 필요가 있고, 이 말은 다시 한 번 **GC 가 필요하다**는 말로 귀결된다.
+- Strings belong to very large objects. Also, it is difficult to predict how many strings will be created, so a process
+  is needed to efficiently use memory space by cleaning up unused strings. This means that it is necessary for the
+  String Constant Pool to exist in the Heap.
+    - Storing in the stack would make it difficult to find space, and declaring a string could fail.
+    - The stack size is typically around 320kb~1MB for 32-bit and 1MB~2MB for 64-bit systems.
+- Strings are managed as immutable. They cannot be modified and are always created anew. By reusing already created
+  strings, memory space is saved (interning). However, unused (unreachable) strings may accumulate over the
+  application's lifecycle. To efficiently utilize memory, there is a need to clean up unreferenced strings, which again
+  leads to the need for **GC**.
 
-결국 String Constant Pool 은 GC 의 영향력 아래에 놓이기 위해 Heap 영역에 존재해야할 필요가 있다.
+In conclusion, the String Constant Pool needs to exist in the Heap to be under the influence of GC.
 
-문자열 비교 연산은 길이가 N 이라면 완벽하게 일치하기 위한 판단에 N 번의 연산이 필요하다. 반면 풀을 사용한다면, equals 비교로 ref 체크만 하면 되므로 $O(1)$ 의 비용이 든다.
+String comparison operations require N operations for perfect matching if the length is N. In contrast, using the pool,
+the equals comparison only requires checking the reference, incurring a cost of $O(1)$.
 
-`new` 로 문자열을 생성하여 String Constant Pool 외부에 있을 문자열을 String Constant Pool 로 보내는 것도 가능하다.
+It is possible to move a string that is outside the String Constant Pool into the String Constant Pool by creating a
+string using `new`.
 
 ```java
 String greeting = new String("Hello World");
-greeting.intern(); // constant pool 사용
+greeting.intern(); // using the constant pool
 
-// SCP 에 있는 문자열 리터럴과 동등 비교가 가능해진다.
+// Now, comparison with the string literal in the SCP is possible.
 assertThat(greeting).isEqualTo("Hello World"); // true
 ```
 
-과거에는 메모리를 절약하기 위한 일종의 트릭으로 제공됐지만, 이제는 이런 트릭을 사용할 필요가 없으니 참고만 하자. **문자열은 그냥 리터럴로 사용**하면 된다.
+While this was provided as a trick in the past to save memory, it is no longer necessary, so it is best to **use strings
+as literals**.
 
-다소 설명이 길었다. 요약해보자.
+To summarize:
 
-1. 숫자들은 최댓값이 제한되어 있는 반면에 문자열은 그 특성상 최대 크기를 고정하기 애매하다.
-2. 매우 커질 수 있고, 생성 이후 자주 사용될 가능성이 다른 타입에 비해 높다
-3. 자연스럽게 메모리 효율성이 높을 것이 요구된다. 그러면서도 사용성을 높이기 위해 전역적으로 참조될 수 있어야 한다.
-4. Per-Thread Date Area 중 Stack 에 있을 경우는 다른 스레드에서 재활용할 수 없고, 크기가 크면 할당 공간을 찾기 어렵다
-5. Shared Date Area 에 있는게 합리적 + Heap 에 있어야 하지만 JVM 레벨에서 불변으로 다뤄야하므로 전용 Constant Pool 을 Heap 내부에 별도로 생성하여 관리하게 되었다
+1. Numbers have a maximum value, whereas strings, due to their nature, have an unclear maximum size.
+2. Strings can become very large and are likely to be used frequently after creation compared to other types.
+3. Naturally, high memory efficiency is required. To achieve this while increasing usability, they should be globally
+   referable.
+4. If placed in the Per-Thread Data Area within the Stack, they cannot be reused by other threads, and if the size is
+   large, finding allocation space becomes difficult.
+5. It is rational to have them in the Shared Data Area + in the Heap, but since they need to be treated as immutable at
+   the JVM level, a dedicated Constant Pool is created within the Heap to manage them separately.
 
 :::tip
 
-생성자 내부의 문자열 리터럴은 String Constant Pool 에서 가져오지만 `new` 키워드는 독립된 문자열 생성을 보장한다. 결국, String Constant Pool 에 하나, Heap 영역에 하나씩 총 2개의 문자열이 존재하게 된다.
+While string literals inside constructors are retrieved from the String Constant Pool, the `new` keyword guarantees
+independent string creation. Consequently, there are two strings, one in the String Constant Pool and one in the Heap.
 
 :::
 
 #### Per-thread Data Areas
 
-Shared Data Area 외에도 JVM 은 개별 스레드 별로 데이터를 관리한다. **JVM 은 실제로 꽤 많은 스레드의 동시 실행을 지원**한다.
+In addition to the Shared Data Area, the JVM manages data for individual threads separately. **The JVM actually supports
+the concurrent execution of quite a few threads**.
 
 ##### PC Register
 
-각 JVM 스레드는 PC(program counter) register 를 가진다.
+Each JVM thread has a PC (program counter) register.
 
-PC register 는 CPU 가 명령(instruction)을 이어서 실행시킬 수 있도록 현재 명령어가 어디까지 실행되었는지를 저장한다. 또한 다음으로 실행되어야할 위치(메모리 주소)를 가지고 명령 실행이 최적화될 수 있도록 돕는다.
+The PC register stores the current position of the execution of instructions to enable the CPU to continue executing
+instructions. It also holds the memory address of the next instruction to be executed, aiding in optimizing instruction
+execution.
 
-PC 의 동작은 메서드의 특성에 따라 달라진다.
+The behavior of the PC depends on the nature of the method:
 
-- non-native method 라면, PC register 는 현재 실행 중인 명령의 주소를 저장한다.
-- native method 라면, PC register 는 undefined 를 가진다.
+- For non-native methods, the PC register stores the address of the currently executing instruction.
+- For native methods, the PC register holds an undefined value.
 
-PC register 의 수명 주기는 기본적으로 스레드의 수명주기와 같다.
+The lifecycle of the PC register is essentially the same as the thread's lifecycle.
 
 ##### JVM Stack
 
-JVM 스레드는 독립된 스택을 가진다. JVM 스택은 메서드 호출 정보를 저장하는 데이터 구조다. 각 메서드가 호출될 때마다 스택에 메서드의 지역 변수와 반환 값의 주소를 가지고 있는 새로운 프레임이 생성된다. 만약 primitive type 이라면 스택에 바로 저장되고, wrapper type 이라면 Heap 에 생성된 인스턴스의 참조를 갖게 된다. 이로 인하여 int 나 double 이 Integer, Double 보다 근소하게 성능상 이점을 갖게 된다.
+Each JVM thread has its own independent stack. The JVM stack is a data structure that stores method invocation
+information. A new frame is created on the stack for each method invocation, containing the method's local variables and
+the address of the return value. If it is a primitive type, it is stored directly on the stack, while if it is a wrapper
+type, it holds a reference to an instance created in the Heap. This results in int and double types having a slight
+performance advantage over Integer and Double.
 
-JVM 스택 덕분에 JVM 은 프로그램 실행을 추적하고 필요에 따라 스택 추적을 기록할 수 있다.
+Thanks to the JVM stack, the JVM can trace program execution and record stack traces as needed.
 
-- stack trace 라고 한다. `printStackTrace` 가 이것이다.
-- 한 작업이 스레드를 넘나드는 webflux 의 이벤트루프에서 stack trace 가 의미를 갖기 어려운 이유
+- This is known as a stack trace. `printStackTrace` is an example of this.
+- In scenarios like webflux's event loop where a single operation traverses multiple threads, the significance of a
+  stack trace may be difficult to understand.
 
-JVM 구현에 따라 스택의 메모리 사이즈와 할당 방식이 결정될 수 있다. 일반적으로는 1MB 남짓의 공간이 스레드가 시작될 때 할당된다.
+The memory size and allocation method of the stack can be determined by the JVM implementation. Typically, around 1MB of
+space is allocated when a thread starts.
 
-JVM 의 메모리 할당 에러는 stack overflow error 를 수반할 수 있다. 그러나 만약 JVM 구현이 JVM 스택 사이즈의 동적 확장을 허락한다면, 그리고 만약 메모리 에러가 확장 도중에 발생한다면 JVM 은 OutOfMemory 에러를 던지게 될 수 있다.
-
-스레드마다 분리된 stack 영역을 갖는다. Stack 은 호출되는 메서드 실행을 위해 해당 메서드를 담고 있는 역할을 한다. 메서드가 호출되면 새로운 Frame 이 Stack 에 생성된다. 이 Frame 은 LIFO 로 처리되며, 메서드 실행이 완료되면 제거된다.
+JVM memory allocation errors can result in a stack overflow error. However, if a JVM implementation allows dynamic
+expansion of the JVM stack size and a memory error occurs during expansion, the JVM may throw an OutOfMemory error.
 
 ##### Native Method Stack
 
-Native Method 는 자바가 아닌 다른 언어로 작성된 메서드를 말한다. 이 메서드들은 바이트코드로 컴파일될 수 없기 때문에(Java 가 아니므로 javac 를 사용할 수 없다), 별도의 메모리 영역이 필요하다.
+Native methods are methods written in languages other than Java. These methods cannot be compiled into bytecode (as they
+are not Java, javac cannot be used), so they require a separate memory area.
 
-- Native Method Stack 은 JVM Stack 과 매우 유사하지만 오직 native method 전용이다.
-- Native Method Stack 의 목적은 native method 의 실행을 추적하는 것이다.
+- The Native Method Stack is very similar to the JVM Stack but is exclusively for native methods.
+- The purpose of the Native Method Stack is to track the execution of native methods.
 
-JVM 구현은 Native Method Stack 의 사이즈와 메모리 블록을 어떻게 조작할 것인지를 자체적으로 결정할 수 있다.
+JVM implementations can determine how to manipulate the size and memory blocks of the Native Method Stack.
 
-JVM Stack 의 경우, Native Method Stack 에서 발생한 메모리 할당에러의 경우 스택오버플로우 에러가 된다. 반면에 Native Method Stack 의 사이즈를 늘리려는 시도가 실패한 경우 OutOfMemory 에러가 된다.
+In the case of memory allocation errors originating from the Native Method Stack, a stack overflow error occurs.
+However, if an attempt to increase the size of the Native Method Stack fails, an OutOfMemory error occurs.
 
-결론적으로, JVM 구현은 Native Method 호출을 지원하지 않기로 결정할 수 있고, 이러한 구현은 Native Method Stack 이 필요하지 않다는 점을 강조한다.
+In conclusion, a JVM implementation can decide not to support Native Method calls, emphasizing that such an
+implementation does not require a Native Method Stack.
 
-_Java Native Interface 의 사용 방법에 대해서는 별도의 글로 다룰 예정이다._
+_The usage of the Java Native Interface will be covered in a separate article._
 
 ### Execution Engine
 
-로딩과 저장하는 단계가 끝나고 나면 JVM 은 마지막 단계로 Class File 을 실행시킨다. 다음과 같은 세 가지 요소로 구성된다.
+Once the loading and storage stages are complete, the JVM executes the Class File. It consists of three elements:
 
 - Interpreter
 - JIT Compiler
@@ -210,41 +261,47 @@ _Java Native Interface 의 사용 방법에 대해서는 별도의 글로 다룰
 
 #### Interpreter
 
-프로그램을 시작하면 Interpreter 는 Bytecode 를 한 줄씩 읽어가며 기계가 이해할 수 있도록 기계어로 변환한다.
+When a program starts, the Interpreter reads the bytecode line by line, converting it into machine code that the machine
+can understand.
 
-일반적으로 Interpreter 의 속도는 느린 편이다. 왜 그럴까?
+Interpreters are generally slower. Why is that?
 
-컴파일 언어는 실행 전에 컴파일 과정을 통해 프로그램이 실행되기 위해 필요한 자원이나 타입 등을 미리 정의할 수 있다. 하지만 인터프리터 언어는 실행되기 전까지는 필요한 자원이나 변수의 타입을 알 수 없기 때문에 최적화 과정이 어렵기 때문이다.
+Compiled languages can define resources and types needed for a program to run during the compilation process before
+execution. However, in interpreted languages, necessary resources and variable types cannot be known until execution,
+making optimization difficult.
 
 #### JIT Compiler
 
-Just In Time Compiler 는 Interpreter 의 단점을 극복하기 위해 Java 1.1 부터 도입되었다.
+The Just In Time Compiler was introduced in Java 1.1 to overcome the shortcomings of the Interpreter.
 
-JIT 컴파일러는 런타임 시에 바이트코드를 기계어로 컴파일하여 자바 애플리케이션의 실행 속도를 향상시킨다. 전체 코드를 한 번에 기계어로 컴파일하는 것은 아니고, 자주 실행되는 부분(핫 코드)를 감지하여 컴파일한다.
+The JIT compiler compiles bytecode into machine code at runtime, improving the execution speed of Java applications. It
+detects frequently executed parts (hot code) and compiles them.
 
-아래 키워드를 사용하면 JIT 관련 동작을 확인할 수 있으니 필요하다면 사용해보자.
+You can use the following keywords to check JIT-related behaviors if needed:
 
-- `-XX:+PrintCompilation`: JIT 관련 로그 출력
-- `-Djava.compiler=NONE`: JIT 비활성화. 성능 하락을 확인할 수 있다.
+- `-XX:+PrintCompilation`: Outputs JIT-related logs
+- `-Djava.compiler=NONE`: Deactivates JIT. You can observe a performance drop.
 
 #### Garbage Collector
 
-별개의 문서로 다뤄야할만큼 매우 중요한 컴포넌트며 이미 [정리한 글](https://songkg7.github.io/posts/Garbage-Collection/)이 있어서 이번에는 생략한다.
+The Garbage Collector is a critical component that deserves a separate document, and there is already
+a [document](https://songkg7.github.io/posts/Garbage-Collection/) on it, so it will be skipped this time.
 
-- GC 를 최적화해야하는 경우는 흔하지 않다.
-  - 하지만 GC 동작으로 500ms 이상 처리가 지연되는 경우는 종종 있고, 많은 트래픽을 다루거나 캐시의 TTL 이 타이트한 곳이라면 500ms 의 지연은 충분히 문제가 될 수 있다.
+- Optimizing the GC is not common.
+    - However, there are cases where a delay of over 500ms due to GC operations occurs, and in scenarios handling high
+      traffic or tight TTLs in caches, a 500ms delay can be a significant issue.
 
 ## Conclusion
 
-Java 는 분명 어려운 언어다.
+Java is undoubtedly a complex language.
 
-면접을 보다보면 종종 이런 질문을 받는다.
+In interviews, you often get asked questions like this:
 
-_Java 에 대해서 얼마나 알고 계신다고 생각하시나요?_
+_How well do you think you know Java?_
 
-이젠 좀 확실히 대답할 수 있을 것 같다.
+Now, you should be able to answer more confidently.
 
-_음... 🤔 Hello World 정도요._
+_Um... 🤔 Just about Hello World._
 
 ## Reference
 

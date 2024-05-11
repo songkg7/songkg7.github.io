@@ -1,18 +1,20 @@
 ---
-title: "[Spring Batch] Custom constraint writer 구현"
+title: "[Spring Batch] Implementing Custom Constraint Writer"
 date: 2022-04-21 15:35:00 +0900
-tags: [spring-batch, item-writer, postgresql, partial-index, multi-constraint]
-categories: [Spring Batch]
+tags: [ spring-batch, item-writer, postgresql, partial-index, multi-constraint ]
+categories: [ Spring Batch ]
 authors: haril
 ---
 
-## 문제 상황 🧐
+## Situation 🧐
 
-최근 `PostgreSQL` 의 `Upsert` 를 특정 로직에서 사용하는 배치를 설계했습니다. 구현 도중 비즈니스 사항의 변경으로 복합 유니크 조건에 특정 컬럼을 추가하게 되었는데요.
+Recently, I designed a batch process that uses `Upsert` in `PostgreSQL` for a specific logic. During implementation, due
+to a change in business requirements, I had to add a specific column to a composite unique condition.
 
-**복합 유니크 컬럼의 unique 조건은 특정 컬럼의 `null` 중복은 막지 못하는 점**이 문제가 되었습니다.
+The issue arose from the fact that the unique constraint of the composite unique column does not prevent duplicates
+with `null` values in a specific column.
 
-예제로 문제가 된 부분을 살펴보겠습니다.
+Let's take a look at an example of the problematic situation.
 
 ```sql
 create table student
@@ -27,21 +29,24 @@ create table student
 );
 ```
 
-| id | name | major |
-| :--- | :--- | :--- |
-| 1 | song | korean |
-| 2 | kim | english |
-| 3 | park | math |
-| 4 | kim | NULL |
-| 5 | kim | NULL |
+| id | name | major   |
+|:---|:-----|:--------|
+| 1  | song | korean  |
+| 2  | kim  | english |
+| 3  | park | math    |
+| 4  | kim  | NULL    |
+| 5  | kim  | NULL    |
 
-`null` 중복을 허용하지 않기 위해서 자연스럽게 더미 데이터 삽입 방법이 생각났지만, **의미없는 데이터를 DB 에 저장하는 것에 거부감**이 들었습니다. 만약 `null` 이 발생하는 `column` 이 `UUID` 같이 복잡한 데이터를 저장하고 있는 `column` 이라면 의미없는 값은 다른 값들에 묻혀서 식별하기 매우 힘들어질게 뻔하기 때문입니다.
+To avoid allowing `null` duplicates, the idea of inserting dummy data naturally came to mind, but I felt reluctant to
+store meaningless data in the database. Especially if the column where `null` occurs stores complex data like `UUID`, it
+would be very difficult to identify meaningless values buried among other values.
 
-조금 귀찮을 수 있지만 `unique partial index` 을 사용하면 더미데이터를 넣지 않고도 `null` 을 허용하지 않을 수 있습니다. 힘들더라도 이상적인 방법을 최대한 추구해보겠습니다.
+Although it may be a bit cumbersome, using a `unique partial index` allows us to disallow `null` values without
+inserting dummy data. I decided to pursue the most ideal solution, even if it is challenging.
 
-## 해결방안
+## Solution
 
-### partial index
+### Partial Index
 
 ```sql
 CREATE UNIQUE INDEX stu_2col_uni_idx ON student (name, major)
@@ -51,23 +56,26 @@ CREATE UNIQUE INDEX stu_1col_uni_idx ON student (name)
     WHERE major IS NULL;
 ```
 
-`PostgreSQL` 은 부분 인덱스 기능을 제공합니다.
+`PostgreSQL` provides the functionality of partial indexes.
 
-부분 인덱스
-: 특정 조건을 만족한 경우에만 index 를 생성해주는 기능. index 의 범위를 줄여서 효율적인 index 생성 및 유지를 가능하게 합니다.
+Partial Index
+: A feature that creates an index only when certain conditions are met. It allows for efficient index creation and
+maintenance by narrowing the scope of the index.
 
-name 만 채워진 값이 `insert` 되면 `stu_1col_uni_idx` 은 **같은 name 일 때 major 가 `null` 인 row 는 단 하나만 허용**합니다. 두 인덱스를 상호보완적인 형태로 생성하여 교묘하게 특정 컬럼의 `null` 중복을 막는 방법입니다.
+When a value with only `name` is inserted, `stu_1col_uni_idx` allows only one row with the same `name` where `major`
+is `null`. By creating two complementary indexes, we can skillfully prevent duplicates with `null` values in a specific
+column.
 
 ![duplicate error](./duplicatekeyerror.webp)
-_major 가 없는 값을 저장하려고 하면 error 가 발생_
+_An error occurs when trying to store a value without `major`_
 
-하지만 이렇게 unique 조건이 두 개가 될 경우, `Upsert` 실행 시 constraint 체크는 단 하나만 허용하기 때문에 배치가 처음 의도대로 실행되지 않았습니다.
+However, when there are two unique constraints like this, since only one constraint check is allowed during `Upsert`
+execution, the batch did not run as intended.
 
-결국 고민을 거듭하다가 sql 을 실행시키기 전에 특정 값이 없는지 파악한 후, 조건에 맞는 sql 을 실행시키기로 했습니다.
+After much deliberation, I decided to check if a specific value is missing before executing the SQL and then execute the
+SQL that meets the conditions.
 
-### `SelectConstraintWriter` 구현
-
-기존에 사용했던 `JdbcBatchItemWriter` 은 실행시킬 sql 을 하나만 가질 수 있습니다. 이 writer 를 상속하여 여러 sql 을 가질 수 있도록 해보겠습니다.
+### Implementing `SelectConstraintWriter`
 
 ```java
 public class SelectConstraintWriter extends JdbcBatchItemWriter<Student> {
@@ -135,9 +143,11 @@ public class SelectConstraintWriter extends JdbcBatchItemWriter<Student> {
 }
 ```
 
-`JdbcBatchItemWriter` 의 `write` method 를 `override` 하여 구현했습니다. major 의 유무를 코드 상에서 검사한 후 sql 을 선택하여 실행시킬 것이기 때문에, `duplicateKeyException` 대신 `Upsert` 구문이 제대로 동작하게 할 수 있습니다.
+I implemented this by overriding the `write` method of the `JdbcBatchItemWriter` that was previously used. By checking
+the presence of `major` in the code and selecting and executing the appropriate SQL, we can ensure that the `Upsert`
+statement works correctly instead of encountering a `duplicateKeyException`.
 
-다음은 사용 예시입니다.
+Here is an example of usage:
 
 ```java
 @Bean
@@ -170,7 +180,8 @@ SelectConstraintWriter studentItemWriter() {
 
 ## Conclusion
 
-`PostgreSQL` 이 `Upsert` 실행시 다중 constraint 체크를 허용해줬다면 이렇게까지 할 필요가 없었을 거라 아쉽네요. 추후 버전에서는 업데이트되길 기대해봅니다.
+It's regrettable that if `PostgreSQL` allowed multiple constraint checks during `Upsert` execution, we wouldn't have
+needed to go to such lengths. I hope for updates in future versions.
 
 ---
 
