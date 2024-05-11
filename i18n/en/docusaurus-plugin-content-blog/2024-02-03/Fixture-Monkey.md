@@ -1,5 +1,5 @@
 ---
-title: "테스트를 쉽고 편리하게, Fixture Monkey"
+title: "Make Testing Easy and Convenient with Fixture Monkey"
 date: 2024-02-03 23:37:25 +0900
 aliases: null
 tags: [testing, test, fixture, naver, opensource]
@@ -10,24 +10,24 @@ authors: haril
 
 > "Write once, Test anywhere"
 
-네이버에서 오픈소스로 개발되고 있는 테스트 객체 생성 라이브러리이다. 아마도 이름은 넷플릭스의 오픈소스, [Chaos Monkey](https://netflix.github.io/chaosmonkey/) 에서 따온 듯하다. 랜덤으로 테스트 픽스처를 생성해주기 때문에, 실제로 카오스 엔지니어링을 하는 체험을 할 수 있다.
+Fixture Monkey is a testing object creation library being developed as open source by Naver. The name seems to be inspired by Netflix's open source tool, [Chaos Monkey](https://netflix.github.io/chaosmonkey/). By generating test fixtures randomly, it allows you to experience chaos engineering in practice.
 
-약 2년 전 처음 접한 이후, 가장 좋아하는 오픈소스 라이브러리 중 하나가 되었다. 어쩌다보니 글도 2편이나 썼다.
+Since I first encountered it about 2 years ago, it has become one of my favorite open source libraries. I even ended up writing two articles about it.
 
-- [Fixture Monkey 객체 생성 전략](https://songkg7.github.io/posts/Fixture-monkey-overview/)
+- [Fixture Monkey Object Creation Strategy](https://songkg7.github.io/posts/Fixture-monkey-overview/)
 - [Fixture Monkey 0.4.x](https://songkg7.github.io/posts/labmonkey/)
 
-이후로 버전이 변할 때마다 변경점이 너무 많아 추가적인 글을 안적고 있다가, 최근 1.x 가 릴리즈되었기에 새로운 마음으로 다시 소개글을 써본다.
+I haven't written any additional articles as there were too many changes with each version update, but now that version 1.x has been released, I am revisiting it with a fresh perspective.
 
-이전 글에서는 Java 를 기준으로 글을 작성했지만, 최근 추세에 맞춰서 Kotlin 으로 작성한다. 글 내용은 공식 문서를 기반으로 실제 사용 후기를 좀 섞었다.
+While my previous articles were based on Java, I am now writing in Kotlin to align with current trends. The content of this article is based on the official documentation with some added insights from my actual usage.
 
-## 왜 Fixture Monkey 가 필요한가
+## Why Fixture Monkey is Needed
 
-아래 같은 코드를 보면서 기존 방식에서 어떤 점이 문제인지 살펴보자.
+Let's examine the following code to see what issues exist with the traditional approach.
 
 :::info
 
-Java 개발자들에게 익숙한 JUnit5 를 사용하여 예제를 작성했다. 하지만 개인적으로 Kotlin 환경에서는 [Kotest](https://kotest.io/)를 사용하는 것을 추천한다.
+I used JUnit5, which is familiar to Java developers, for the examples. However, personally, I recommend using [Kotest](https://kotest.io/) in a Kotlin environment.
 
 :::
 
@@ -74,47 +74,47 @@ fun basic() {
         )
     )
 
-    // 테스트 목적에 비해 준비 과정이 길다
+    // The preparation process is lengthy compared to the test purpose
     actual shouldNotBe null
 }
 ```
 
-### 테스트 객체 생성의 어려움
+### Challenges of Test Object Creation
 
-테스트 코드를 살펴보면 assertion 을 위해 객체를 생성하기 위해 작성해야 하는 코드가 너무 많다고 느껴진다. 구현 내용상 프로퍼티를 설정하지 않으면 컴파일 에러가 발생하기 때문에, 무의미한 프로퍼티라도 반드시 작성해줘야 한다.
+Looking at the test code, it feels like there is too much code to write just to create objects for assertion. Due to the nature of the implementation, if properties are not set, a compilation error occurs, so even meaningless properties must be written.
 
-이렇게 테스트 코드에서 assertion 을 위해 준비해야하는 부분이 길어지면, 코드에 테스트 목적에 대한 의미가 불분명해질 수 있다. 처음 이 코드를 읽는 사람은 아무 의미 없는 프로퍼티여도 숨은 의미가 있는지 살펴봐야하기 때문이다. 이 과정은 개발자들의 피로감을 높인다.
+When the preparation required for assertion in test code becomes lengthy, the meaning of the test purpose in the code can become unclear. The person reading this code for the first time would have to examine even seemingly meaningless properties to see if there is any hidden significance. This process increases developers' fatigue.
 
-### 엣지 케이스 인식의 어려움
+### Difficulty in Recognizing Edge Cases
 
-직접 프로퍼티를 설정하여 객체를 생성할 경우, 프로퍼티가 고정되기 때문에 다양한 시나리오에서 나타날 수 있는 엣지 케이스를 놓치는 경우가 많다.
+When directly setting properties to create objects, many edge cases that could occur in various scenarios are often overlooked because the properties are fixed.
 
 ```kotlin
 val actual: Product = Product(
-    id = 1L, // 만약 id 가 음수가 되면 어떨까?
-    // ...생략
+    id = 1L, // What if the id becomes negative?
+    // ...omitted
 )
 ```
 
-엣지 케이스를 찾기 위해서는 하나하나 개발자가 프로퍼티를 설정해가며 검증해줘야 하는데, 실제로는 런타임에 에러가 발생한 이후에나 엣지 케이스에 대해 눈치채게 되는 일이 부지기수다. 에러가 발생하기 전에 엣지 케이스를 수월하게 발견하기 위해서는 객체의 프로퍼티가 어느 정도 랜덤성을 갖고 설정되야 한다.
+To find edge cases, developers have to set properties one by one and verify them, but in reality, it is often only after runtime errors occur that developers become aware of edge cases. To easily discover edge cases before errors occur, object properties need to be set with a certain degree of randomness.
 
-### 오브젝트 마더 패턴의 문제점
+### Issues with the Object Mother Pattern
 
-테스트 객체를 재사용하기 위해 팩토리 클래스를 생성하고 해당 클래스에서 객체를 생성하여 테스트 코드를 실행하는 패턴을 오브젝트 마더(Object mother) 패턴이라고 부른다.
+To reuse test objects, a pattern called the Object Mother pattern involves creating a factory class to generate objects and then executing test code using objects created from that class.
 
-하지만 이런 방법은 테스트 코드 뿐만이 아니라 팩토리까지 지속적으로 관리해야 하기 때문에 별로 좋아하는 방법이 아니다. 또한 여전히 엣지 케이스를 찾아내는데에는 전혀 도움이 되지 않는다.
+However, this method is not favored because it requires continuous management not only of the test code but also of the factory. Furthermore, it does not help in identifying edge cases.
 
-## Fixture Monkey 를 사용해보자
+## Using Fixture Monkey
 
-Fixture Monkey 는 재사용성, 랜덤성을 통해 상술했던 문제점을 우아하게 해결한다. 지금부터 어떻게 문제를 해결하는지 살펴보자.
+Fixture Monkey elegantly addresses the issues of reusability and randomness as mentioned above. Let's see how it solves these problems.
 
-먼저 의존성을 추가해준다.
+First, add the dependency.
 
 ```kotlin
 testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.0.13")
 ```
 
-`KotlinPlugin()` 을 적용하여 Kotlin 환경에서도 Fixture Monkey 가 원활하게 동작하도록 한다.
+Apply `KotlinPlugin()` to ensure that Fixture Monkey works smoothly in a Kotlin environment.
 
 ```kotlin
 @Test
@@ -125,7 +125,7 @@ fun test() {
 }
 ```
 
-위에서 사용했던 `Product` 클래스를 가지고 다시 테스트를 작성해보자.
+Let's write a test again using the `Product` class we used before.
 
 ```kotlin
 data class Product (
@@ -164,14 +164,14 @@ fun test() {
 }
 ```
 
-불필요한 프로퍼티 설정 과정 없이 순식간에 `Product` 인스턴스를 생성하여 테스트할 수 있다. 모든 프로퍼티 값은 기본적으로 랜덤하게 채워진다.
+You can create an instance of `Product` without the need for unnecessary property settings. All property values are filled randomly by default.
 
 ![image](https://i.imgur.com/OxgNxNx.png)
-_여러 프로퍼티들을 잘 채워준다_
+_Fills in multiple properties nicely_
 
 ### Post Condition
 
-하지만 대부분의 경우, **특정 조건에 맞는 프로퍼티 값이 필요**하다. 예를 들어 예시에서는 `id` 가 음수로 생성되었지만, 실제로 `id` 는 양수로 사용하는 경우가 많을 것이다. 예를 들면 아래처럼 검증 로직이 있을 수 있겠다.
+However, in most cases, **specific property values are required**. For example, in the example, the `id` was generated as a negative number, but in reality, `id` is often used as a positive number. There might be a validation logic like this:
 
 ```kotlin
 init {
@@ -179,11 +179,11 @@ init {
 }
 ```
 
-이 후 몇 번 테스트를 돌려보니, id 가 음수로 생성되는 경우 테스트가 실패한다. 이처럼 모든 값이 랜덤하게 생성된다는 점은, 미처 생각하지 못한 **엣지 케이스를 찾는데 특히 유용**하다.
+After running the test a few times, if the `id` is generated as a negative number, the test fails. The fact that all values are randomly generated makes it particularly useful for finding **unexpected edge cases**.
 
 ![image](https://i.imgur.com/ZdFuJtM.png)
 
-랜덤 속성을 유지하되, 검증 로직은 통과할 수 있도록 범위를 조금 제한해보자.
+Let's maintain the randomness but restrict the range slightly to ensure the validation logic passes.
 
 ```kotlin
 @RepeatedTest(10)
@@ -193,32 +193,32 @@ fun postCondition() {
         .build()
 
     val actual = fixtureMonkey.giveMeBuilder<Product>()
-        .setPostCondition { it.id > 0 } // 생성 객체의 프로퍼티 조건을 지정한다
+        .setPostCondition { it.id > 0 } // Specify property conditions for the generated object
         .sample()
 
     actual.id shouldBeGreaterThan 0
 }
 ```
 
-값이 랜덤하게 생성되기 때문에, `@RepeatedTest` 를 사용하여 10번 반복하여 테스트를 실행해줬다.
+I used `@RepeatedTest` to run the test 10 times.
 
 ![image](https://i.imgur.com/9NCTgr5.png)
 
-모두 통과하는걸 볼 수 있다. 
+You can see that all tests pass.
 
-### 다양한 프로퍼티 설정
+### Setting Various Properties
 
-`postCondition` 을 사용할 때는 주의해야할 점이 있는데, 만약 생성 조건을 너무 좁게 설정할 경우 객체 생성 비용이 너무 비싸질 수 있다. 이는 조건에 맞는 객체가 생성될 때까지 내부적으로 생성을 반복하기 때문이다. 이럴 때는 `setExp` 을 사용하여 특정 값을 고정하는 것이 훨씬 좋다.
+When using `postCondition`, be cautious as setting conditions too narrowly can make object creation costly. This is because the creation is repeated internally until an object that meets the condition is generated. In such cases, it is much better to use `setExp` to fix specific values.
 
 ```kotlin
 val actual = fixtureMonkey.giveMeBuilder<Product>()
-    .setExp(Product::id, 1L) // 고정값을 제외한 나머지는 랜덤이 된다
+    .setExp(Product::id, 1L) // Only the specified value is fixed, the rest are random
     .sample()
 
 actual.id shouldBe 1L
 ```
 
-프로퍼티가 컬렉션일 경우는 `sizeExp` 를 사용하여 컬렉션의 크기를 지정해줄 수도 있다.
+If a property is a collection, you can use `sizeExp` to specify the size of the collection.
 
 ```kotlin
 val actual = fixtureMonkey.giveMeBuilder<Product>()
@@ -228,7 +228,7 @@ val actual = fixtureMonkey.giveMeBuilder<Product>()
 actual.options.size shouldBe 3
 ```
 
-`maxSize`, `minSize` 를 사용하면 컬렉션의 최대 최소 사이즈 조건을 간단하게 지정할 수 있다.
+Using `maxSize` and `minSize`, you can easily set the maximum and minimum size constraints for a collection.
 
 ```kotlin
 val actual = fixtureMonkey.giveMeBuilder<Product>()
@@ -238,13 +238,13 @@ val actual = fixtureMonkey.giveMeBuilder<Product>()
 actual.options.size shouldBeLessThan 11
 ```
 
-이 외에도 다양한 프로퍼티 지정 메서드들이 있으니, 필요할 때 살펴보시길 권한다.
+There are various other property setting methods available, so I recommend exploring them when needed.
 
 ## Conclusion
 
-Fixture Monkey 는 단위테스트를 작성하면서 불편했던 부분들을 정말 잘 해소해준다. 이 글에서 예제로 언급하지는 않았지만, 빌더에 원하는 조건을 만들어놓고 재사용할 수 있고 프로퍼티에 랜덤성을 부여하여 개발자가 미처 찾지 못한 엣지 케이스들을 찾을 수 있게 도와준다. 덕분에 테스트 코드가 매우 짧아지고 오브젝트 마더같은 부가적인 코드가 필요없기 때문에 유지보수하기 편해지는 것은 덤이다.
+Fixture Monkey really resolves the inconveniences encountered while writing unit tests. Although not mentioned in this article, you can create conditions in the builder and reuse them, add randomness to properties, and help developers discover edge cases they may have missed. As a result, test code becomes very concise, and the need for additional code like Object Mother disappears, making maintenance easier.
 
-Fixture Monkey 의 1.x 버전이 릴리즈되기 전에도 운영 환경에 도입해보며 테스트 코드 작성에 많은 도움을 받고 있었다. 이제는 안정화 버전이 된만큼 부담없이 도입해서 즐거운 테스트 코드 작성이 되시기를 바란다.
+Even before the release of Fixture Monkey 1.x, I found it very helpful in writing test code. Now that it has become a stable version, I hope you can introduce it without hesitation and enjoy writing test code.
 
 ## Reference
 
