@@ -19,7 +19,7 @@ curl https://www.google.com/ping\?sitemap\={path to your submitted sitemap}
 And then, when you check the search console again...!
 
 ![sitemap-success](./sitemap-success.webp)
-_Finally resolved after almost a month...ㅠㅠ_
+_Finally resolved after almost a month...😢_
 
 The sitemap is finally being recognized.
 
