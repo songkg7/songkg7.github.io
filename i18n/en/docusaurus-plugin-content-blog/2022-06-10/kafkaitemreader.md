@@ -8,19 +8,19 @@ authors: haril
 
 :::info
 
-저는 Docker 를 사용하여 Kafka 설치 후 이번 글을 작성했지만 해당 내용은 이번 글에서 다루지 않습니다.
+I used Docker to install Kafka before writing this post, but that content is not covered here.
 
 :::
 
-## KafkaItemReader..?
+## What is KafkaItemReader..?
 
-Spring batch 에서는 Kafka Topic 의 데이터를 처리하는 경우를 위해서 `KafkaItemReader` 를 제공하고 있습니다.
+In Spring Batch, the `KafkaItemReader` is provided for processing data from Kafka topics.
 
-간단한 배치를 하나 만들어보겠습니다.
+Let's create a simple batch job.
 
 ## Example
 
-먼저 관련 의존성을 추가해줍니다.
+First, add the necessary dependencies.
 
 ```gradle
 dependencies {
@@ -31,7 +31,7 @@ dependencies {
 }
 ```
 
-`application.yml` 에 Kafka 관련 설정을 진행해줍니다.
+Configure Kafka settings in `application.yml`.
 
 ```yaml
 spring:
@@ -85,22 +85,22 @@ public class KafkaSubscribeJobConfig {
 }
 ```
 
-1. 데이터를 읽어들일 Topic 을 지정합니다.
-2. Topic 의 partition 을 지정하며, 여러 partition 지정이 가능합니다.
-3. KafkaItemReader 는 **offset 을 지정하지 않으면 0번 offset** 부터 읽습니다. 빈 맵을 넣어주면 마지막 offset 부터 데이터를 읽어옵니다.
-4. 실행에 필수적인 property 들을 설정합니다.
+1. Specify the topic from which to read the data.
+2. Specify the partition of the topic; multiple partitions can be specified.
+3. If no **offset is specified in KafkaItemReader**, it reads from offset 0. Providing an empty map reads from the last offset.
+4. Set the essential properties for execution.
 
 :::tip
 
-`KafkaProperties` 는 Spring 에서 kafka 를 편리하게 사용할 수 있도록 다양한 public interface 를 제공합니다.
+`KafkaProperties` provides various public interfaces to conveniently use Kafka in Spring.
 
 :::
 
-## 실행해보기
+## Try it out
 
-이제 배치를 실행시키면 `application.yml` 에 작성한 정보를 바탕으로 `consumer groups` 이 자동으로 생성되고 topic 을 구독하는 상태가 됩니다.
+Now, when you run the batch job, `consumer groups` are automatically created based on the information in `application.yml`, and the job starts subscribing to the topic.
 
-`kafka console producer` 를 사용해 `test` topic 에 1~10까지 데이터를 넣어보겠습니다.
+Let's use the `kafka console producer` to add data from 1 to 10 to the `test` topic.
 
 ```bash
 kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test
@@ -108,10 +108,10 @@ kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test
 
 ![produce-topic](./1.webp)
 
-배치가 topic 을 정상적으로 구독하고 있는 모습을 확인할 수 있습니다.
+You can see that the batch job is successfully subscribing to the topic.
 
 ![subscribe-batch](./2.webp)
 
-`chunkSize` 를 5로 설정했기 때문에 5개씩 데이터를 묶어서 처리하게 됩니다.
+Since we set the `chunkSize` to 5, the data is processed in batches of 5.
 
-여기까지 Spring Batch 에서 `KafkaItemReader` 를 사용하는 기본적인 방법에 대해 살펴보았고, 다음은 어떻게 테스트 코드를 작성할 수 있는지 알아보겠습니다.
+So far, we have looked at the basic usage of `KafkaItemReader` in Spring Batch. Next, let's see how to write test code.
