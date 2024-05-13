@@ -138,7 +138,7 @@ public class MD5Hash implements HashAlgorithm {
         try {
             instance = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("no algorythm found");
+            throw new IllegalStateException("no algorithm found");
         }
     }
 

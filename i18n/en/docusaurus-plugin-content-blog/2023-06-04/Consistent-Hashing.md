@@ -1,134 +1,166 @@
 ---
-title: "[대규모 시스템 설계 기초] 5장. 안정 해시 설계"
+title: "[System Design Interview] Chapter 5: Consistent Hashing"
 date: 2023-06-04 16:46:46 +0900
-aliases: 안정 해시
-tags: [hash, algorithm, consistent, system-design, consistent-hashing, architecture]
-categories: [System Design]
+tags: [ hash, algorithm, consistent, system-design, consistent-hashing, architecture ]
+categories: [ System Design ]
 authors: haril
 ---
 
-대규모 시스템을 설계하는데 필요한 구성 요소에는 어떤 것들이 있을까요?
+What are the essential components needed to design a large-scale system?
 
-이번 글에서는 라우팅 시스템 등에서 자주 사용되는 안정 해시(Consistent Hash)를 직접 구현해보고 데이터를 기반으로 이야기해봅니다.
+In this article, we will directly implement and discuss Consistent Hashing, which is commonly used in routing systems,
+and talk about it based on data.
 
 :::info
 
-전체 코드는 [Github](https://github.com/songkg7/consistent-hashing-sample)에서 확인하실 수 있습니다.
+You can check the complete code on [Github](https://github.com/songkg7/consistent-hashing-sample).
 
 :::
 
-글이 다소 길기 때문에 이후로는 편의상 '~한다.' 체로 설명합니다. 🙏
+Since the article is quite lengthy, from now on, we will use '~' for convenience in explanations. 🙏
 
-## 해시란?
+## What is Hashing?
 
-안정 해시에 대해서 알아보기 전에 간략하게 해시에 대해서 짚어보자.
+Before delving into Consistent Hashing, let's briefly touch on hashing.
 
-해시의 사전적 의미는 '임의 길이의 데이터 문자열을 입력으로 받아서 고정 크기의 출력, 일반적으로는 숫자와 문자열로 이루어진 해시 값 또는 해시 코드를 생성하는 수학적 함수'이다.
+The dictionary definition of hashing is 'a mathematical function that takes an arbitrary length data string as input and
+generates a fixed-size output, typically a hash value or hash code consisting of numbers and strings.'
 
-쉽게 풀어 이야기하면 같은 문자열 입력은 항상 같은 해시 코드를 반환한다는 것이다. 해시의 이런 특성을 이용하여 암호화나 파일의 위변조 판정 등 다양한 용도로 사용된다.
+In simple terms, it means that the same input string will always return the same hash code. This characteristic of
+hashing is used for various purposes such as encryption and file integrity verification.
 
-## 그래서, 안정 해시란?
+## So, What is Consistent Hashing?
 
-안정 해시(Consistent Hashing)란 분산되어 있는 서버 혹은 서비스에 데이터를 균등하게 나누기 위한 기술이다.
+Consistent Hashing is a technique used to evenly distribute data among distributed servers or services.
 
-굳이 안정 해시를 사용하지 않더라도 데이터를 균등하게 나누는게 불가능하지는 않다. 다만, **안정 해시는 수평적 확장을 용이하게 하는 것에 초점**이 맞춰져 있다. 안정 해시를 살펴보기 전에 왜 안정 해시가 등장하게 되었는지를 간단한 해시 라우팅 방식을 통해 살펴보자.
+Even without using Consistent Hashing, it is not impossible to evenly distribute data. However, **Consistent Hashing is
+focused on making horizontal scaling easier**. Before exploring Consistent Hashing, let's understand why Consistent
+Hashing emerged through a simple hash routing method.
 
-### 노드 기반 해시 라우팅 방식
+### Node-Based Hash Routing Method
 
 > hash(key) % n
 
 ![image](./Pasted-image-20230523203910.webp)
 
-이 방식은 단순하면서도 매우 효율적으로 트래픽을 분산해준다.
+This method efficiently distributes traffic while being simple.
 
-하지만 수평 확장에 매우 취약한 단점이 있다. node 목록이 변화하면 트래픽이 재분배되면서 기존 노드가 아닌 새로운 노드로 라우팅될 확률이 크게 증가한다.
+However, it has a significant weakness in horizontal scaling. When the node list changes, there is a high probability
+that traffic will be redistributed, leading to routing to new nodes instead of existing nodes.
 
-만약 특정 노드에 캐시를 해두는 방식으로 트래픽을 관리하고 있다면, 모종의 이유에 의해 **노드가 그룹에서 이탈했을 경우 대량의 캐시 미스**를 일으켜 서비스의 장애를 야기할 수 있다.
+If you are managing traffic by caching on specific nodes, if a node leaves the group for some reason, it can cause **a
+massive cache miss**, leading to service disruptions.
 
 ![image](./Pasted-image-20230523204056.webp)
 
-4개의 노드로 실험해본 결과 **1개 노드만 이탈해도 캐시 적중률이 27% 로 급격히 하락**하는걸 확인할 수 있었다. 실험 방식은 이후 문단에서 자세히 살펴본다.
+In an experiment with four nodes, it was observed that **if only one node leaves, the cache hit rate drops drastically
+to 27%**. We will examine the experimental method in detail in the following paragraphs.
 
-### 안정 해시 라우팅 방식
+### Consistent Hash Routing Method
 
-안정 해시는 대량의 캐시 미스 발생 가능성을 최대한 낮추기 위해 고안된 개념이다.
+Consistent Hashing is a concept designed to minimize the possibility of massive cache misses.
 
 ![image](./Pasted-image-20230601132426.webp)
 
-아이디어는 간단하다. 해시 공간의 시작과 끝을 이어서 일종의 고리(ring)을 만든 후, 해시 공간 위에 노드들을 배치한다. 노드들은 각각의 해시 공간을 할당받고 트래픽을 기다리게 된다.
+The idea is simple. Create a kind of ring by connecting the start and end of the hash space, then place nodes on the
+hash space above the ring. Each node is allocated its hash space and waits for traffic.
 
 :::info
 
-노드들을 배치하기 위해 사용하는 해시 함수는 나머지 연산과는 무관하다.
+The hash function used to place nodes is independent of modulo operations.
 
 :::
 
-이제 안정 해시로 구현된 이 라우터로 트래픽이 들어오는 상황을 가정해보자.
+Now, let's assume a situation where traffic enters this router implemented with Consistent Hashing.
 
 ![image](./Pasted-image-20230601133003.webp)
 
-해시 함수를 통과한 트래픽은 링 위에서 가장 가까운 노드를 향해 라우팅된다. B 노드는 이후 같은 요청이 들어올 때를 대비해서 `key1` 을 캐시해둔다.
+Traffic passed through the hash function is routed towards the nearest node on the ring. Node B caches `key1` in
+preparation for future requests.
 
-많은 트래픽이 들어온다고 가정할 때도 이와 같은 원리로 트래픽은 각자의 노드를 찾아 라우팅되게 된다.
+Even in the scenario of a high volume of traffic, traffic will be routed to their respective nodes following the same
+principle.
 
-#### 안정 해시의 장점
+#### Advantages of Consistent Hashing
 
-##### 노드 목록이 변하더라도 캐시가 Miss 될 확률이 적다
+##### Low probability of cache misses even when the node list changes
 
-E 노드가 추가된 상황을 가정해보자.
+Let's consider a situation where Node E is added.
 
 ![image](./Pasted-image-20230601133345.webp)
 
-이전에 들어왔던 키는 이전과 같은 지점에 배치된다. D 와 C 노드 사이에 배치되던 키 중 일부는 새로운 E 노드로 향하게 되면서 캐시가 미스하게 되지만, 나머지 노드들은 캐시 미스가 발생하지 않는다.
+Previously entered keys are placed at the same points as before. Some keys that were placed between Nodes D and C now
+point to the new Node E, causing cache misses. However, the rest of the keys placed in other spaces do not experience
+cache misses.
 
-네트워크에 에러가 발생하여 C 노드가 사라진 상황을 가정해도 결과는 비슷하다.
+Even if there is a network error causing Node C to disappear, the results are similar.
 
 ![image](./Pasted-image-20230601133814.webp)
 
-C 노드로 향했던 키들이 D 노드로 향하여 캐시 미스가 발생하지만 그 외 공간에 배치된 키들은 캐시 미스가 발생하지 않는다.
+Keys that were directed to Node C now route to Node D, causing cache misses. However, the keys placed in other spaces do
+not experience cache misses.
 
-결론적으로, 노드 목록에 어떠한 변화가 생기던지간에 변경된 노드와 직접적으로 관련된 키들만 캐시 미스가 발생하기 때문에 노드 수 기반의 해시 라우팅에 비하여 캐시 적중률을 끌어올릴 수 있게 된다.
+In conclusion, regardless of any changes in the node list, only keys directly related to the changed nodes experience
+cache misses. This increases the cache hit rate compared to node-based hash routing, improving overall system
+performance.
 
-#### 안정 해시의 문제점
+#### Disadvantages of Consistent Hashing
 
-다른 모든 설계들이 그렇듯이, 우아하게만 보이는 안정 해시에도 문제점은 있다.
+Like all other designs, Consistent Hashing, which may seem elegant, also has its drawbacks.
 
-##### 파티션을 균일하게 유지하기 어렵다
+##### Difficult to maintain uniform partitions
 
 ![image](./Pasted-image-20230523204228.webp)
-_서로 다른 크기의 해시 공간을 갖게 된 노드들_
+_Nodes with different sizes of hash spaces are placed on the ring._
 
-어떤 key 가 생성될지 모르는 이상, 해시 함수의 결과값을 정확히 예측하는 것은 매우 어렵다. 그러므로 해시 결과에 의해 링 위 포지션이 정해지는 안정 해시는 노드가 균등한 해시 공간을 가지고 링 위에 분포할 것이라고 보장할 수 없다.
+It is very difficult to predict the results of a hash function without knowing which key will be generated. Therefore,
+Consistent Hashing, which determines the position on the ring based on the hash result, cannot guarantee that nodes will
+have uniform hash spaces and be distributed evenly on the ring.
 
-##### 균등 분포를 달성하기 어렵다
+##### Difficult to achieve uniform distribution
 
 ![image](./Pasted-image-20230523204258.webp)
-_D 노드가  담당하는 해시공간이 너무 넓으면 트래픽이 쏠릴 수 있다._
+_If a node's hash space is too wide, traffic can be concentrated._
 
-노드가 해시 링 위에 균등한 파티션을 가지고 배치되지 않기 때문에 생기는 문제이다. 운이 없으면 위 예처럼 D 노드가 담당하는 해시 공간이 다른 노드에 비해 비정상적으로 크게 설정될 수 있다. 이 상태는 특정 노드에 트래픽이 쏠리면서 전체적인 장애를 유발하는, 핫스팟이라고 하는 문제를 초래할 수 있다.
+This problem arises because nodes are not evenly distributed on the hash ring. If Node D's hash space is abnormally
+larger than other nodes, it can lead to a hotspot issue where traffic is concentrated on a specific node, causing
+overall system failure.
 
-## 가상 노드(Virtual Node)
+## Virtual Nodes
 
-해시 공간은 유한하다. 그러므로 해시 공간에 배치된 노드 수가 굉장히 많다면 표준편차가 감소하여 노드 하나가 없어진다 하더라도 다음 노드에 큰 부하는 가지 않을 것이다. 문제는 현실 세계에서 **물리 노드의 수는 곧 비용**이라는 점이다.
+The hash space is finite. Therefore, if there are a large number of nodes placed in the hash space, the standard
+deviation decreases, meaning that even if one node is removed, the next node will not be heavily burdened. The problem
+lies in the fact that in the real world, **the number of physical nodes equates to cost**.
 
-그래서 물리 노드(Physical node)를 모방하는 가상 노드(Virtual node)를 구현하여 이를 영리하게 해결한다.
+To address this, virtual nodes, which mimic physical nodes, are implemented to solve this intelligently.
 
 ![image](./Pasted-image-20230523204810.webp)
 
-가상 노드는 내부적으로 물리 노드의 해시값을 가리키고 있다. 일종의 분신술(...?)이라고 생각하면 된다. 본체인 물리 노드는 해시 링 위에 배치되지 않고, 복제된 가상 노드들만이 해시 링 위에서 트래픽을 기다리고 있다. 트래픽이 가상 노드에 할당되면 내부에 존재하는 실제 노드의 해시 값으로 라우팅되는 원리이다.
+Virtual nodes internally point to the hash value of the physical nodes. Think of them as a kind of duplication magic.
+The main physical node is not placed on the hash ring, only the replicated virtual nodes wait for traffic on the hash
+ring. When traffic is allocated to a virtual node, it is routed based on the hash value of the actual node it
+represents.
 
-## 안정 해시 D.I.Y
+## DIY Consistent Hashing
 
-지금까지는 이론적 설명이었다. 개인적으로 어떤 개념을 학습할 때 **직접 구현해보는 것만큼 확실한 학습 방법은 없다**고 생각한다. 직접 구현해보자.
+> DIY: Do It Yourself
 
-### Hash 알고리즘 선택
+So far, we have discussed the theoretical aspects. Personally, I believe that there is no better way to learn a concept
+than **implementing it yourself**. Let's implement it.
 
-이름에도 해시가 포함되니 어떻게 보면 당연하지만, 안정 해시를 구현할 때는 적절한 해시 알고리즘을 선택하는 것이 매우 중요하다. 해시 함수의 속도가 성능과 직결되기 때문이다. 일반적으로 널리 사용되는 해시 알고리즘은 MD5 와 SHA-256 이 있다.
+### Choosing a Hash Algorithm
 
-- MD5: 속도가 보안보다 중요한 어플리케이션. SHA-256 에 비해 해시 공간은 작다. 2^128
-- SHA-256: 더 긴 해시 크기와 더 강력한 암호화 속성. 속도는 MD5 에 비해 느리다. 2^256, 1.15792 x 10^77 정도의 매우 큰 해시 공간을 갖기 때문에 충돌이 거의 발생하지 않는다.
+It may seem obvious since the name includes hashing, but when implementing Consistent Hashing, selecting an appropriate
+hash algorithm is crucial. The speed of the hash function is directly related to performance. Commonly used hash
+algorithms are MD5 and SHA-256.
 
-라우팅에서는 보안보다 속도가 중요하고 해시 충돌 걱정이 덜하기 때문에 MD5 로도 충분하다고 생각되어 MD5 로 해시 함수를 구현했다.
+- MD5: Suitable for applications where speed is more important than security. Has a smaller hash space compared to
+  SHA-256. 2^128
+- SHA-256: Has a longer hash size and stronger encryption properties. Slower than MD5. With a very large hash space of
+  about 2^256, collisions are almost non-existent.
+
+For routing, speed is more important than security, and since there are fewer concerns about hash collisions, MD5 is
+considered sufficient for implementing the hash function.
 
 ```java
 public class MD5Hash implements HashAlgorithm {
@@ -138,7 +170,7 @@ public class MD5Hash implements HashAlgorithm {
         try {
             instance = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("no algorythm found");
+            throw new IllegalStateException("no algorithm found");
         }
     }
 
@@ -159,16 +191,16 @@ public class MD5Hash implements HashAlgorithm {
 
 :::tip
 
-Java 에서는 `MessageDigest` 를 통해서 MD5 알고리즘을 사용하는 해시 함수를 편리하게 구현할 수 있다.
+In Java, you can conveniently implement a hash function using the MD5 algorithm through `MessageDigest`.
 
 :::
 
 ### Hash Ring
 
 ```java
-// businessKey 를 hash 하고 ring 에 배치된 다음 해시값(node)을 찾는다.
+// Hash the businessKey and find the hashed value (node) placed on the ring.
 public T routeNode(String businessKey) {
-    if (ring.isEmpty()) { // ring 이 비어있으면 node 가 없다는 의미이므로 null 을 반환
+    if (ring.isEmpty()) { // If the ring is empty, it means there are no nodes, so return null
         return null;
     }
     Long hashOfBusinessKey = this.hashAlgorithm.hash(businessKey);
@@ -184,97 +216,124 @@ public T routeNode(String businessKey) {
 }
 ```
 
-hash ring 은 `TreeMap` 을 사용하여 구현했다. `TreeMap` 은 저장과 동시에 key(해시값)의 오름차순으로 정렬을 유지하기 때문에 `tailMap(key)` 메서드를 통해서 key(해시값)보다 큰 값들을 찾아올 수 있고, 큰 key 를 찾을 수 없다면 `firstKey` 로 가장 작은 key 와 연결하여 링을 구현한다.
+The hash ring is implemented using a `TreeMap`. Since `TreeMap` maintains keys (hash values) in ascending order upon
+storage, we can use the `tailMap(key)` method to find values greater than the key (hash value) and connect them to the
+largest key if a larger key cannot be found.
 
 :::info
 
-`TreeMap` 이 익숙하지 않다면, 이 [링크](https://coding-factory.tistory.com/557)를 참조해주기 바란다.
+If you are not familiar with `TreeMap`, please refer to this [link](https://coding-factory.tistory.com/557).
 
 :::
 
-### 테스트
+### Testing
 
-일반 라우팅 방법에 비해 안정 해시 라우팅은 얼마나 효과적일까? 모처럼 직접 구현했으니 이 의문을 스스로 해결해보자. 개략적인 테스트 설계는 다음과 같다.
+How effective is Consistent Hashing compared to the standard routing method? Now that we have implemented it ourselves,
+let's resolve this question. The rough test design is as follows:
 
-- 1M 트래픽을 처리한 이후, 노드 목록에 변화를 주고 다시 같은 트래픽이 들어오는 상황을 가정
-- 4대의 물리 노드
+- Process 1 million requests, then introduce changes to the node list and assume the same traffic comes in again.
+- 4 physical nodes
 
-간단한 테스트 코드[^fn-nth-1]를 통해서 수치화했고, 이를 그래프로 그려보니 6개의 케이스를 도출해낼 수 있었다. 하나씩 살펴보자.
+The numerical data was quantified through a simple test code[^fn-nth-1], and when graphed, it revealed six cases. Let's
+look at each one.
 
-#### Case 1. Simple Hash, Node 변화없음
+#### Case 1: Simple Hash, No Node Changes
 
 ![image](./Pasted-image-20230601150740.webp)
 
-1M 건의 요청을 보내고 이어서 다시 1M 의 같은 요청을 보냈다. 노드의 변화가 없기 때문에 두 번째 요청부터는 100%의 캐시 히트율을 기록하는 것을 확인할 수 있다.
+After sending 1 million requests and then another 1 million of the same requests, since there were no changes in the
+nodes, the cache hit rate was 100% from the second request onwards.
 
 :::info
 
-낮은 수치지만 첫번째 요청에서도 캐시가 히트할 수 있었던 것(회색 그래프)은 테스트를 설계할 때 랜덤한 문자열을 키로 사용했기 때문에 낮은 확률로 중복된 키 값이 존재했기 때문이다.
+Although the cache hit rate was low, the possibility of cache hits even in the first request (gray graph) was due to the
+random nature of the keys used in the test, resulting in a low probability of duplicate key values.
 
 :::
 
-노드들의 그래프 높이가 비슷한 것을 보아 `hash % N` 을 사용한 라우팅은 예상대로 모든 트래픽이 아주 잘 분산되는 것 또한 확인할 수 있다.
+Looking at the heights of the graphs for the nodes, we can see that the routing using `hash % N` is indeed distributing
+all traffic very evenly.
 
-#### Case 2. Simple Hash, 1대의 노드 이탈
+#### Case 2: Simple Hash, 1 Node Departure
 
 ![image](./Pasted-image-20230601150807.webp)
 
-캐시 히트를 표시해주는 초록색 그래프가 확연히 낮아진 것을 볼 수 있다. 1번 Node 가 이탈하면서 2, 3, 4번 노드로 트래픽이 분산되었는데 운이 좋아서 이전과 같은 노드로 향한 트래픽은 캐시가 적중할 수 있었지만, 대부분은 다른 노드로 향하게 되면서 캐시가 적중하지 못하는 것이다.
+The cache hit rate, indicated by the green graph, significantly decreased. With Node 1 departing, the traffic was
+distributed to Nodes 2, 3, and 4. While some traffic luckily hit the cache on the same nodes as before, most of it was
+directed to different nodes, resulting in cache misses.
 
-#### Case 3. Consistent Hash, Node 변화 없음, 가상 노드 없음
+#### Case 3: Consistent Hash, No Node Changes, No Virtual Nodes
 
 ![image](./Pasted-image-20230601153047.webp)
 
 :::info
 
-물리 노드는 해시 링 위에 배치되지 않음을 생각해볼 때, 가상 노드가 물리 노드의 수를 증가시키는 역할을 하려면 가상 노드가 적어도 2개 이상 존재해야 한다. 그러므로 1개의 가상 노드를 사용한다는 것은 사실상 가상 노드를 사용하지 않는 상태이다.
+Considering that physical nodes are not placed on the hash ring, using only one virtual node practically means not using
+virtual nodes.
 
 :::
 
-Case 1 과 마찬가지로, 첫 번째 요청에서 캐시가 바로 히트할 수는 없으므로 붉은 그래프가 먼저 상승하며 두 번째 요청에서는 100% 캐시 적중하므로 녹색 그래프와 붉은 그래프의 높이가 같게 된다.
+Similar to Case 1, the red graph rises first as cache hits cannot occur immediately in the first request. By the second
+request, the cache hit rate is 100%, aligning the heights of the green and red graphs.
 
-하지만 노드마다 그래프의 높이가 다른 것을 확인할 수 있는데, 이게 바로 안정 해시의 단점이였던 **균일하지 않은 파티션으로 인하여 골고루 분산되지 않는 트래픽**인 것이다.
+However, it can be observed that the heights of the graphs for each node are different, indicating the drawback of
+Consistent Hashing—**uneven traffic distribution due to non-uniform partitions**.
 
-#### Case 4. Consistent Hash, 1대의 노드 이탈, 가상 노드 없음
+#### Case 4: Consistent Hash, 1 Node Departure, No Virtual Nodes
 
 ![image](./SCR-20230601-nxtx.webp)
 
-1번 노드를 이탈시킨 이후, Case 2 와 비교해보면 캐시 적중률이 압도적으로 뛰어난 것을 확인할 수 있다.
+After Node 1 departs, the cache hit rate overwhelmingly improved compared to Case 2.
 
-하지만 좀 더 자세히 살펴보면, 첫 번째 요청에서 1번 노드로 향했던 트래픽이 두 번째 트래픽에서 그대로 2번 노드로 향한 것을 볼 수 있다. 2번 노드는 캐시에 적중한 트래픽을 포함하여 총 45만건 정도의 요청을 처리했다. 노드 3번의 22만건 처리에 비하면 2배 이상 높은 수치이다. 반면 3번과 4번 노드의 처리량은 기존대비 변화가 전혀 없다. 여기서 안정 해시의 장점이기도 하면서 동시에 단점이 되는 일종의 **핫스팟 현상을 확인**할 수 있다.
+Upon closer inspection, it can be seen that the traffic originally directed to Node 1 then moved to Node 2 in the second
+traffic wave. Node 2 processed around 450,000 requests, including cache hits, which is more than twice the amount
+processed by Node 3 with 220,000 requests. Meanwhile, the traffic to Nodes 3 and 4 remained unchanged. This illustrates
+the advantage of Consistent Hashing while also highlighting a kind of **hotspot phenomenon**.
 
-#### Case 5. Consistent Hash, 1대의 노드 이탈, 10대의 가상 노드
+#### Case 5: Consistent Hash, 1 Node Departure, 10 Virtual Nodes
 
-이번에는 파티션 균등 배분 및 핫스팟 현상 해소를 위해 가상 노드를 적용해보자.
+To achieve uniform partitioning and resolve the hotspot issue, let's apply virtual nodes.
 
 ![image](./Pasted-image-20230601155340.webp)
 
-전체적으로 그래프에 변화가 일어난다. 1번 노드로 향할 예정이었던 트래픽들은 2, 3, 4번 노드들로 나눠진 것으로 보인다. 여전히 균등하게 나눠진 파티션은 아닌 것 같지만 Case 4와 비교했을 때 핫스팟 문제는 점점 해결되고 있다. 가상 노드 10대로는 부족한 것 같으니 충분히 늘려보자.
+Overall, there is a change in the graphs. The traffic that was supposed to go to Node 1 is now divided among Nodes 2, 3,
+and 4. Although the partitions are not evenly distributed, the hotspot issue is gradually being resolved compared to
+Case 4. Since 10 virtual nodes seem insufficient, let's increase them further.
 
-#### Case 6. Consistent Hash, 1대의 노드 이탈, 100대의 가상 노드
+#### Case 6: Consistent Hash, 1 Node Departure, 100 Virtual Nodes
 
 ![image](./Pasted-image-20230601160256.webp)
 
-드디어 2, 3, 4번 노드의 그래프가 비슷해졌다. 1번 노드 이탈 후 해시 링 위에는 물리 노드당 100대의 가상 노드, 즉 300대의 가상 노드가 존재하고 있다. 정리해보면 다음과 같다.
+Finally, the graphs for Nodes 2, 3, and 4 are similar. After Node 1's departure, there are 100 virtual nodes per
+physical node on the hash ring, totaling 300 virtual nodes. In summary:
 
-- Case 1 과도 견줄 수 있을만큼 트래픽이 균일하게 분산되는 것을 확인할 수 있다.
-- 1번 노드가 이탈하더라도 이후 1번 노드로 향할 트래픽이 여러 노드들로 분산되면서 핫스팟 문제를 발생시키지 않는다.
-- 1번 노드로 향할 트래픽 외에는 여전히 캐시에 적중한다.
+- It can be seen that traffic is evenly distributed enough to withstand Case 1.
+- Even if Node 1 departs, the traffic intended for Node 1 is spread across multiple nodes, preventing the hotspot issue.
+- Apart from the traffic directed to Node 1, the cache still hits.
 
-충분한 가상 노드를 배치하니 나머지 연산을 통해 분산하던 라우팅 방식에 비해 수평 확장에 굉장히 유리해졌다는 것을 확인할 수 있었다.
+By placing a sufficient number of virtual nodes, the routing method using Consistent Hashing has become highly
+advantageous for horizontal scaling compared to the remaining operations, as observed.
 
-## 마무리
+## Conclusion
 
-지금까지 대규모 시스템 설계 5장에 나오는 안정 해시에 대해 살펴봤습니다. 안정 해시가 어떤 것인지, 어떤 문제를 해결하기 위해 존재하는지 이해하는데에 도움이 되셨기를 바랍니다.
+We have examined Consistent Hashing as discussed in Chapter 5 of the fundamentals of large-scale system design. We hope
+this has helped you understand what Consistent Hashing is, and why it exists to solve certain problems.
 
-별도의 case 로 언급하지는 않았지만 이후 가상 노드를 몇 대까지 늘려야 완전한 균등 분포를 달성할 수 있을지 신경 쓰여서 10000대까지 늘려보았는데요, 어느 정도 충분한 가상 노드 대수를 확보하면 더 이상 가상 노드 대수를 늘려도 효과는 미미했습니다. 이론상으로는 가상 노드를 늘리면 늘릴수록 편차는 0에 수렴하고, 균등 분포를 달성할 수 있습니다. 하지만 가상 노드를 늘리는 것은 해시 링 위에 많은 인스턴스가 존재하는 것이고 따라서 불필요한 오버헤드가 발생할 수 있습니다. 새로운 노드가 추가되거나 삭제될 때마다 해시 링위에서 가상 노드를 찾아서 정리해주는 작업이 필요해지기 때문[^fn-nth-2]입니다. 운영 중인 환경에서는 데이터를 기반으로 적절한 수의 가상 노드를 설정하시길 바랍니다.
+Although not mentioned in a separate case, I was concerned about how many virtual nodes should be added to achieve a
+perfectly uniform distribution. Therefore, I increased the number of virtual nodes to 10,000 and found that adding more
+virtual nodes had minimal effect. Theoretically, increasing virtual nodes should converge the variance to zero and
+achieve a uniform distribution. However, increasing virtual nodes means having many instances on the hash ring, leading
+to unnecessary overhead. It requires the task of finding and organizing virtual nodes on the hash ring whenever a new
+node is added or removed[^fn-nth-2]. In a live environment, please set an appropriate number of virtual nodes based on
+data.
 
 ## Reference
 
-- [Java HashMap 은 어떻게 동작하는가](https://d2.naver.com/helloworld/831311)
-- [안정 해시 설계](https://donghyeon.dev/%EC%9D%B8%ED%94%84%EB%9D%BC/2022/03/20/%EC%95%88%EC%A0%95-%ED%95%B4%EC%8B%9C-%EC%84%A4%EA%B3%84/)
+- [How Does Java HashMap Work](https://d2.naver.com/helloworld/831311)
+- [Designing Consistent Hashing](https://donghyeon.dev/%EC%9D%B8%ED%94%84%EB%9D%BC/2022/03/20/%EC%95%88%EC%A0%95-%ED%95%B4%EC%8B%9C-%EC%84%A4%EA%B3%84/)
 - [Lonor/websocket-cluster](https://github.com/Lonor/websocket-cluster)
 
 [^fn-nth-1]: [SimpleHashRouterTest](https://github.com/songkg7/consistent-hashing-sample/blob/main/src/test/java/com/example/consistenthashingsample/router/SimpleHashRouterTest.java)
 
-[^fn-nth-2]: 특히 TreeMap 으로 구현된 Hash Ring 의 경우 삽입, 삭제가 발생할 때마다 내부 원소들의 재배치가 발생하기 때문에 대량의 삽입, 삭제는 다소 비효율적입니다.
+[^fn-nth-2]: In particular, for a Hash Ring implemented using TreeMap, massive insertions and deletions are somewhat
+inefficient as the internal elements need to be rearranged each time.
