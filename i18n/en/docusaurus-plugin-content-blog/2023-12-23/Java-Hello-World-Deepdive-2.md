@@ -1,5 +1,5 @@
 ---
-title: "From Java to Printing Hello World: Part 2"
+title: "Deep Dive into Java: The Path to Hello World - Part 2"
 date: 2023-12-23 01:01:35 +0900
 aliases: null
 tags: [ java, compile, javac, javap, instruction, operand, opcode ]

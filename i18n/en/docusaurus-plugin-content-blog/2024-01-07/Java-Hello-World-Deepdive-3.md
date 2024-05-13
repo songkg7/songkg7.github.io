@@ -1,5 +1,5 @@
 ---
-title: "From Java to Printing Hello World: Part 3"
+title: "Deep Dive into Java: The Path to Hello World - Part 3"
 date: 2024-01-07 17:08:34 +0900
 aliases: null
 tags: [ java, jvm ]
