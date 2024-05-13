@@ -92,7 +92,7 @@ const config: Config = {
                     rehypePlugins: [rehypeKatex],
                     editLocalizedFiles: true,
                     showLastUpdateTime: true,
-                    showLastUpdateAuthor: true,
+                    showLastUpdateAuthor: false,
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
