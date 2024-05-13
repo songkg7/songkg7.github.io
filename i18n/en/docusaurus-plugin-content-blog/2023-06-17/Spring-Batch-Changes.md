@@ -3,7 +3,7 @@ title: "Spring Batch 5.0 Changes"
 date: 2023-06-17 19:46:19 +0900
 aliases: 
 tags: [spring, batch, changes]
-categories: Spring Batch
+categories: [Spring Batch]
 authors: haril
 ---
 
