@@ -245,5 +245,3 @@ Let's summarize today's content in one line and conclude the article.
 ## Reference
 
 - [Stack overflow](https://stackoverflow.com/questions/34110504/optimize-query-with-offset-on-large-table)
-
----
