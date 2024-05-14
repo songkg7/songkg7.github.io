@@ -1,13 +1,14 @@
 ---
 title: "Optimizing Pagination in Spring Batch with Composite Keys"
 date: 2023-03-15 13:28:00 +0900
-aliases: 
-tags: [spring, batch, sql, pagination, optimize, postgresql]
-categories: [Spring Batch]
+aliases:
+tags: [ spring, batch, sql, pagination, optimize, postgresql ]
+categories: [ Spring Batch ]
 authors: haril
 ---
 
-In this article, I will discuss the issues and solutions encountered when querying a table with millions of data using Spring Batch.
+In this article, I will discuss the issues and solutions encountered when querying a table with millions of data using
+Spring Batch.
 
 ## Environment
 
@@ -16,7 +17,8 @@ In this article, I will discuss the issues and solutions encountered when queryi
 
 ## Problem
 
-While using `JdbcPagingItemReader` to query a large table, I noticed a significant slowdown in query performance over time and decided to investigate the code in detail.
+While using `JdbcPagingItemReader` to query a large table, I noticed a significant slowdown in query performance over
+time and decided to investigate the code in detail.
 
 ### Default Behavior
 
@@ -30,17 +32,20 @@ ORDER BY id
 LIMIT 1000;
 ```
 
-In Spring Batch, when using `JdbcPagingItemReader`, instead of using an offset, it generates a where clause for pagination. This allows for fast retrieval of data even from tables with millions of records without any delays.
+In Spring Batch, when using `JdbcPagingItemReader`, instead of using an offset, it generates a where clause for
+pagination. This allows for fast retrieval of data even from tables with millions of records without any delays.
 
 :::tip
 
-Even with `LIMIT`, using `OFFSET` means reading all previous data again. Therefore, as the amount of data to be read increases, the performance degrades. For more information, refer to the article[^fn-nth-1].
+Even with `LIMIT`, using `OFFSET` means reading all previous data again. Therefore, as the amount of data to be read
+increases, the performance degrades. For more information, refer to the article[^fn-nth-1].
 
 :::
 
 ### Using Multiple Sorting Conditions
 
-**The problem arises when querying a table with composite keys**. When a composite key consisting of 3 columns is used as the sort key, the generated query looks like this:
+**The problem arises when querying a table with composite keys**. When a composite key consisting of 3 columns is used
+as the sort key, the generated query looks like this:
 
 ```sql
 SELECT *
@@ -52,7 +57,9 @@ ORDER BY create_at, user_id, content_no
 LIMIT 1000;
 ```
 
-However, **queries with OR operations in the where clause do not utilize indexes effectively**. OR operations require executing multiple conditions, making it difficult for the optimizer to make accurate decisions. When I examined the `explain` output, I found the following results:
+However, **queries with OR operations in the where clause do not utilize indexes effectively**. OR operations require
+executing multiple conditions, making it difficult for the optimizer to make accurate decisions. When I examined
+the `explain` output, I found the following results:
 
 ```log
 Limit  (cost=0.56..1902.12 rows=1000 width=327) (actual time=29065.549..29070.808 rows=1000 loops=1)
@@ -63,9 +70,11 @@ Planning Time: 0.152 ms
 Execution Time: 29070.915 ms
 ```
 
-With a query execution time close to 30 seconds, most of the data is discarded during filtering on the index, resulting in unnecessary time wastage.
+With a query execution time close to 30 seconds, most of the data is discarded during filtering on the index, resulting
+in unnecessary time wastage.
 
-Since PostgreSQL manages composite keys as tuples, writing queries using tuples allows for utilizing the advantages of Index scan even in complex where clauses.
+Since PostgreSQL manages composite keys as tuples, writing queries using tuples allows for utilizing the advantages of
+Index scan even in complex where clauses.
 
 ```sql
 SELECT *
@@ -85,7 +94,8 @@ Execution Time: 11.475 ms
 
 It can be observed that data is directly retrieved through the index without discarding any data through filtering.
 
-Therefore, when the query executed by `JdbcPagingItemReader` uses tuples, it means that even when using composite keys as sort keys, processing can be done very quickly.
+Therefore, when the query executed by `JdbcPagingItemReader` uses tuples, it means that even when using composite keys
+as sort keys, processing can be done very quickly.
 
 Let's dive into the code immediately.
 
@@ -93,7 +103,8 @@ Let's dive into the code immediately.
 
 ### Analysis
 
-As mentioned earlier, the responsibility of generating queries lies with the `PagingQueryProvider`. Since I am using PostgreSQL, the `PostgresPagingQueryProvider` is selected and used.
+As mentioned earlier, the responsibility of generating queries lies with the `PagingQueryProvider`. Since I am using
+PostgreSQL, the `PostgresPagingQueryProvider` is selected and used.
 
 ![image](./PostgresPagingQueryProvider.webp)
 _The generated query differs based on whether it includes a `group by` clause._
@@ -106,7 +117,9 @@ Within the nested for loop, we can see how the query is generated based on the s
 
 ### Customizing `buildSortConditions`
 
-Having directly inspected the code responsible for query generation, I decided to modify this code to achieve the desired behavior. However, direct overriding of this code is not possible, so I created a new class called `PostgresOptimizingQueryProvider` and re-implemented the code within this class.
+Having directly inspected the code responsible for query generation, I decided to modify this code to achieve the
+desired behavior. However, direct overriding of this code is not possible, so I created a new class
+called `PostgresOptimizingQueryProvider` and re-implemented the code within this class.
 
 ```java
 private String buildSortConditions(StringBuilder sql) {
@@ -164,7 +177,39 @@ The successful execution confirms that it is working as intended, and I proceede
 ![image](./hive_webtoon_q3.webp)
 _Within the Webtoon Hive_
 
-The first query is executed without requiring parameters, and subsequent queries receive parameters from the previous query.
+However, the `out of range` error occurred, indicating that the query was not recognized as having changed. To identify
+the part where the parameter is injected, I debugged the code again.
+
+![image](./Screenshot-2023-03-13-오후-6.02.40.webp)
+
+It seems that the parameter injection part is not automatically recognized just because the query has changed, so let's
+debug again to find the parameter injection part.
+
+## JdbcOptimizedPagingItemReader
+
+The parameter is directly created by `JdbcPagingItemReader`, and I found that the number of parameters to be injected
+into SQL is increased by iterating through `getParameterList` in `JdbcPagingItemReader`.
+
+![image](./Screenshot-2023-03-13-오후-5.14.05.webp)
+
+I thought I could just override this method, but unfortunately it is not possible because it is `private`. After much
+thought, I copied the entire `JdbcPagingItemReader` and modified only the `getParameterList` part.
+
+The `getParameterList` method is overridden in `JdbcOptimizedPagingItemReader` as follows:
+
+```java
+private List<Object> getParameterList(Map<String, Object> values, Map<String, Object> sortKeyValue) {
+    // ...
+    // Returns the parameters that need to be set in the where clause without increasing them.
+    return new ArrayList<>(sortKeyValue.values());
+}
+```
+
+There is no need to add `sortKeyValue`, so it is directly added to `parameterList` and returned.
+
+Now, let's run the batch again.
+
+The first query is executed without requiring parameters,
 
 ```log
 2023-03-13T17:43:14.240+09:00 DEBUG 70125 --- [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [SELECT * FROM large_table ORDER BY create_at ASC, user_id ASC, content_no ASC LIMIT 2000]
@@ -178,15 +223,20 @@ The subsequent query execution receives parameters from the previous query.
 
 The queries are executed exactly as intended! 🎉
 
-For pagination processing with over 10 million records, queries that used to take around 30 seconds now run in the range of 0.1 seconds, representing a significant performance improvement of nearly 300 times.
+For pagination processing with over 10 million records, queries that used to take around 30 seconds now run in the range
+of 0.1 seconds, representing a significant performance improvement of nearly 300 times.
 
 ![image](./Screenshot-2023-03-13-오후-6.11.34.webp)
 
-Now, regardless of the amount of data, queries can be read within milliseconds without worrying about performance degradation. 😎
+Now, regardless of the amount of data, queries can be read within milliseconds without worrying about performance
+degradation. 😎
 
 ## Conclusion
 
-In this article, I introduced the method used to optimize Spring Batch in an environment with composite keys. However, there is a drawback to this method: all columns that make up the composite key must have the same sorting condition. If `desc` or `asc` are mixed within the index condition generated by the composite key, a separate index must be used to resolve this issue 😢
+In this article, I introduced the method used to optimize Spring Batch in an environment with composite keys. However,
+there is a drawback to this method: all columns that make up the composite key must have the same sorting condition.
+If `desc` or `asc` are mixed within the index condition generated by the composite key, a separate index must be used to
+resolve this issue 😢
 
 Let's summarize today's content in one line and conclude the article.
 
