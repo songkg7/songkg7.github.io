@@ -15,7 +15,7 @@ Let's delve into the topic of Garbage Collection (GC) in the JVM.
 
 The JVM memory is divided into several regions.
 
-![image](./screenshot-2023-01-24-8.23.58-pm.webp)
+![image](./5.webp)
 
 The Heap region is where objects and arrays created by operations like `new` are stored. Objects or arrays created in the Heap region can be referenced by other objects. GC occurs precisely in this Heap region.
 
@@ -78,11 +78,11 @@ doSomething(model);
 
 The initially created `model` is used within `doSomething` but is unlikely to be used much afterward. While there may be cases where it is reused, GC is designed with the assumption that such occurrences are rare. Looking at statistics from Oracle, most objects are cleaned up by GC shortly after being created, validating this assumption.
 
-![image](./screenshot-2023-01-24-8.10.55-pm.webp)
+![image](./1.webp)
 
 This assumption is known as the **weak generational hypothesis**. To maximize the benefits of this hypothesis, the HotSpot VM divides the physical space into two main areas: the Young Generation and the Old Generation.
 
-![image](./screenshot-2023-01-24-8.47.03-pm.webp)
+![image](./2.webp)
 
 - Young Generation: This area primarily houses newly created objects. Since most objects quickly become unreachable, many objects are created and then disappear in the Young Generation. When objects disappear from this area, it triggers a Minor GC.
 - Old Generation: Objects that survive in the Young Generation without becoming unreachable are moved to the Old Generation. This area is typically larger than the Young Generation, and since it is larger, GC occurs less frequently here. When objects disappear from this area, it triggers a Major GC (or Full GC).
@@ -163,7 +163,7 @@ Q. Considering G1GC is the default in later versions, what are the pros and cons
 - Addresses memory fragmentation issues in CMS and pause issues in G1
 - Known for strong concurrency and lightweight GC logic, ensuring consistent pause times regardless of heap size
 
-![image](./screenshot-2023-01-25-10.54.25-am.webp)
+![image](./3.webp)
 
 ### ZGC
 
@@ -174,7 +174,7 @@ Q. Considering G1GC is the default in later versions, what are the pros and cons
 - Utilizes ZPages similar to G1's Regions, but ZPages are dynamically managed in 2MB multiples (adjusting region sizes dynamically to accommodate large objects)
 - One of ZGC's key advantages is that **"Stop the World" time never exceeds 10ms regardless of heap size**
 
-![image](./screenshot-2023-01-25-10.58.05-am.webp)
+![image](./4.webp)
 
 ## Conclusion
 
