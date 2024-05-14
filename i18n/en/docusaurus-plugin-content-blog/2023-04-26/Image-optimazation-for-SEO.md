@@ -1,130 +1,145 @@
 ---
-title: "블로그 검색 노출을 위한 이미지 최적화하기"
-aliases: 
-tags: [webp, imagemin, obsidian, jekyll, seo, javascript]
-categories: 
+title: "Optimizing Images for Blog Search Exposure"
+aliases:
+tags: [ webp, imagemin, obsidian, jekyll, seo, javascript ]
+categories:
 date: 2023-04-26 16:28:55 +0900
 mermaid: true
 authors: haril
 ---
 
-블로그 포스팅 자동화 과정 중 SEO 를 위한 이미지 최적화에 대해 이야기합니다. 성공이 아닌 실패에 대한, Plan B 로 돌아가야만 했던 이야기입니다.
+In the process of automating blog posting, we discuss image optimization for SEO. This is a story of failure rather than
+success, where we had to resort to Plan B.
 
 :::info
 
-코드는 [GitHub](https://github.com/songkg7/songkg7.github.io/tree/master/tools)에서 확인하실 수 있습니다.
+You can check the code on [GitHub](https://github.com/songkg7/songkg7.github.io/tree/master/tools).
 
 :::
 
-## 문제 인식
+## Identifying the Problem
 
-SEO 최적화를 위해서는 포스팅에 포함되는 이미지의 크기가 최대한 작을수록 좋다. 검색 엔진 크롤링봇들의 효율이 향상되고, 페이지 로딩이 빨라져서 사용자 경험에도 긍정적인 영향을 준다.
+For SEO optimization, it is best to have images in blog posts as small as possible. This improves the efficiency of
+search engine crawling bots, speeds up page loading, and positively impacts user experience.
 
-그렇다면 어떤 이미지 포맷을 사용해야할까? 🤔
+So, which image format should we use? 🤔
 
-구글에서는 이 문제를 해결하기 위해 **WebP** 라는 이미지 포맷을 직접 개발했고, 사용을 적극 권장하고 있다. 광고로 먹고 사는 구글에게 있어서도 이미지 최적화는 사용자가 빠르게 웹사이트 광고에 도달하게 해주기 때문에 수익성과도 직접적으로 연관되어 있다.
+Google has developed an image format called **WebP** to address this issue and actively recommends its use. For Google,
+which profits from advertising, image optimization is directly related to profitability as it allows users to quickly
+reach website ads.
 
-실제로 2.8MB 정도의 jpg 파일을 webp 로 변환한 결과, 47kb 수준으로 감소했다. **1/50 이상 줄어든 것**이다! 사실 품질 손실이 일부 발생하지만 웹페이지에서는 체감하기 힘들었다.
+In fact, converting a jpg file of about 2.8MB to webp reduced it to around 47kb. That's **more than a 1/50 reduction!**
+Although some quality loss occurred, it was hardly noticeable on the webpage.
 
-![image](./스크린샷-2023-04-18-오후-10.43.14.webp)
+![image](./1.webp)
 
-이 정도면 문제 해결을 위한 동기는 충분히 마련되었다. 구현을 위해 정보를 수집해보자.
+With this level of improvement, the motivation to solve the problem was more than enough. Let's gather information to
+implement it.
 
-## 해결 방법 접근
+## Approach to the Solution
 
-### Plan A. O2 에 기능으로 추가하기
+### Plan A. Adding to O2 as a Feature
 
-이미 블로그 포스팅을 하기 위해 직접 개발한 [O2](https://github.com/songkg7/o2) 라는 플러그인이 있다. `WebP` 변환 작업이 이 플러그인의 기능 중 일부로 포함되는 것이 가장 이상적인 방법이라고 생각했기 때문에, 먼저 이 방법을 시도했다.
+We have a plugin called [O2](https://github.com/songkg7/o2) that we developed for blog posting. Since we thought that
+including the `WebP` conversion task as part of this plugin's functionality would be the most ideal way, we first
+attempted this approach.
 
-이미지 프로세싱 관련 라이브러리로는 `sharp` 가 가장 유명한 라이브러리이지만, OS 의존적이여서 Obsidian 플러그인으로는 사용할 수가 없다. 혹여나 잘못 알고 있는 것이 아닐까 하여 Obsidian community 에서 해당 내용을 질문하고 사용할 수 없다는 명확한 답변을 받았다.
+While `sharp` is the most famous library for image processing, it is OS-dependent and cannot be used with Obsidian
+plugins. To confirm this, I asked about it in the Obsidian community and received a clear answer that it cannot be used.
 
 ![image](./Pasted-image-20230418152006.webp)
 
 ![image](./Pasted-image-20230418152135.webp)
 
 ![image](./Pasted-image-20230418152325.webp)
-_관련 커뮤니티 대화 기록_
+_Related community conversation_
 
-어쩔 수 없이 `sharp` 의 대안으로 `imagemin` 을 선택해서 사용하기로 했다.
+Unable to use `sharp`, we decided to use `imagemin` as an alternative.
 
-하지만 치명적인 문제가 있었는데, `imagemin` 은 esbuild 를 실행할 때 platform 이 node 여야 동작한다. 하지만, obsidian plugin 은 platform 이 browser 여야 동작했다. 모든 플랫폼에서 사용가능하다는 neutral 옵션으로 하니까 둘 다 동작 안하더라...
+However, there was a critical issue: `imagemin` requires the platform to be node for it to work when running esbuild,
+but the Obsidian plugin required the platform to be a browser. Setting it to neutral, which should work on both
+platforms, didn't work on either...
 
 ![image](./Pasted-image-20230418173447.webp)
 
-당장 O2 에 적용할 수 있을만한 라이브러리는 찾지 못해서 임시로 간단한 스크립트를 구현하여 포맷 변경 작업을 처리하기로 했다 ㅠ
+Since we couldn't find a suitable library to apply to O2 immediately, we decided to implement a simple script to handle
+the format conversion task.
 
 ### Plan B. npm script
 
-플러그인에 기능을 추가하는 것이 아니라 jekyll 프로젝트 내부에 직접 스크립팅을 하면 간단하게 포맷 컨버팅을 할 수 있다.
+Instead of adding functionality to the plugin, we can easily convert formats by scripting directly within the Jekyll
+project.
 
 ```javascript
 async function deleteFilesInDirectory(dir) {
-  const files = fs.readdirSync(dir);
+    const files = fs.readdirSync(dir);
 
-  files.forEach(function (file) {
-    const filePath = path.join(dir, file);
-    const extname = path.extname(filePath);
-    if (extname === '.png' || extname === '.jpg' || extname === '.jpeg') {
-      fs.unlinkSync(filePath);
-      console.log(`remove ${filePath}`);
-    }
-  });
+    files.forEach(function (file) {
+        const filePath = path.join(dir, file);
+        const extname = path.extname(filePath);
+        if (extname === '.png' || extname === '.jpg' || extname === '.jpeg') {
+            fs.unlinkSync(filePath);
+            console.log(`remove ${filePath}`);
+        }
+    });
 }
 
 async function convertImages(dir) {
-  const subDirs = fs
-    .readdirSync(dir)
-    .filter((file) => fs.statSync(path.join(dir, file)).isDirectory());
+    const subDirs = fs
+        .readdirSync(dir)
+        .filter((file) => fs.statSync(path.join(dir, file)).isDirectory());
 
-  await imagemin([`${dir}/*.{png,jpg,jpeg}`], {
-    destination: dir,
-    plugins: [imageminWebp({ quality: 75 })]
-  });
-  await deleteFilesInDirectory(dir);
+    await imagemin([`${dir}/*.{png,jpg,jpeg}`], {
+        destination: dir,
+        plugins: [imageminWebp({quality: 75})]
+    });
+    await deleteFilesInDirectory(dir);
 
-  for (const subDir of subDirs) {
-    const subDirPath = path.join(dir, subDir);
-    await convertImages(subDirPath);
-  }
+    for (const subDir of subDirs) {
+        const subDirPath = path.join(dir, subDir);
+        await convertImages(subDirPath);
+    }
 }
 
 (async () => {
-  await convertImages('assets/img');
+    await convertImages('assets/img');
 })();
 ```
 
-이 방법은 빠르게 원하는 기능을 구현 할 수 있지만, O2 가 제어하는 프로세스 외부에 존재하기 때문에 포맷을 변경한 후 사용자는 직접 변경된 이미지를 다시 마크다운 문서에 링크해줘야 하는 작업이 추가된다.
+While this method allows for quick implementation of the desired functionality, it requires users to manually relink the
+changed images to the markdown document outside of the process controlled by O2.
 
-굳이 이 방법을 사용해야한다면, 정규표현식을 사용해서 모든 파일에 링크된 이미지 확장자를 `webp` 로 변경해버리기로 했다. 그럼 이미지를 다시 문서에 링크해줘야 하는 작업을 생략할 수 있을 것이다.
+If we must use this method, we decided to use regular expressions to change the image extensions linked in all files
+to `webp`, thereby skipping the task of relinking images in the document.
 
 ```javascript
-// 중략
+// omitted
 async function updateMarkdownFile(dir) {
-  const files = fs.readdirSync(dir);
+    const files = fs.readdirSync(dir);
 
-  files.forEach(function (file) {
-    const filePath = path.join(dir, file);
-    const extname = path.extname(filePath);
-    if (extname === '.md') {
-      const data = fs.readFileSync(filePath, 'utf-8');
-      const newData = data.replace(
-        /(!\^\*]\((.*?)\.(png|jpg|jpeg)\))/g,
-        (match, p1, p2, p3) => {
-          return p1.replace(`${p2}.${p3}`, `${p2}.webp`);
+    files.forEach(function (file) {
+        const filePath = path.join(dir, file);
+        const extname = path.extname(filePath);
+        if (extname === '.md') {
+            const data = fs.readFileSync(filePath, 'utf-8');
+            const newData = data.replace(
+                /(!\^\*]\((.*?)\.(png|jpg|jpeg)\))/g,
+                (match, p1, p2, p3) => {
+                    return p1.replace(`${p2}.${p3}`, `${p2}.webp`);
+                }
+            );
+            fs.writeFileSync(filePath, newData);
         }
-      );
-      fs.writeFileSync(filePath, newData);
-    }
-  });
+    });
 }
 
 (async () => {
-  await convertImages('assets/img');
-  await updateMarkdownFile('_posts');
+    await convertImages('assets/img');
+    await updateMarkdownFile('_posts');
 })();
 ```
 
-그리고 script 로 적어놓아 블로그 글을 발행할 때 실행시킨다.
+Then, we wrote a script to run when publishing a blog post.
 
 ```bash
 #!/usr/bin/env bash
@@ -145,11 +160,13 @@ echo "Done! 🎉"
 ./tools/publish
 ```
 
-termianl 에서 sh 을 직접 실행하는건 왠지 우아하지 못하다고 느껴진다. `package.json` 에 추가해서 조금 더 깔끔하게 사용해보자.
+Directly running sh in the terminal somehow felt inelegant. Let's add it to `package.json` for a cleaner usage.
 
 ```json
-"scripts": {
+{
+  "scripts": {
     "publish": "./tools/publish"
+  }
 }
 ```
 
@@ -158,31 +175,34 @@ npm run publish
 ```
 
 ![image](./Pasted-image-20230426164025.webp)
-_꽤 잘 된다._
+_It works quite well._
 
-우선은 이렇게 마무리했다.
+For now, we concluded it this way.
 
 ## Conclusion
 
-이번 과정으로 인해 블로그 포스팅 파이프라인은 아래처럼 변하게 되었다.
+Through this process, the blog posting pipeline has transformed as follows:
 
 **Before**
 
 ```mermaid
 flowchart LR
-    A[글작성] --> B[O2 실행] --> C[이미지 포맷 변환] --> D[마크다운 링크 수정] --> E[git push]
+    A[Write Post] --> B[Run O2] --> C[Convert Images] --> D[Modify Markdown Links] --> E[git push]
 ```
 
 **After**
 
 ```mermaid
 flowchart LR
-    A[글작성] --> B[O2 실행] --> D[Publish]
+    A[Write Post] --> B[Run O2] --> D[Publish]
 ```
 
-결과만 놓고 보면 그렇게 나쁘지 않은 것 같기도...? 🤔
+Looking at the results alone, it doesn't seem that bad, does it...? 🤔
 
-O2 플러그인 기능의 일부로 이미지 포맷을 변경 기능을 추가해주고 싶었지만, 여러가지 이유로 (당장은) 적용하지 못해서 다소 아쉽다. JS 와 sh 을 사용한 방법은 사용자에게 추가적인 액션을 요구하고, 유지보수가 쉽지 않다. 해당 기능을 어떻게 O2 내부로 가져올 수 있을지 꾸준히 고민해봐야겠다.
+We wanted to add the image format conversion feature as part of the O2 plugin functionality, but for various reasons, we
+couldn't apply it (for now), which is somewhat disappointing. The methods using JS and sh require additional actions
+from the user and are not easy to maintain. We need to consistently think about how to bring this feature into O2
+internally.
 
 ## Reference
 
