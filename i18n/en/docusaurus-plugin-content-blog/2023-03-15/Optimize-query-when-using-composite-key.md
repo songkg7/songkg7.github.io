@@ -177,8 +177,7 @@ The successful execution confirms that it is working as intended, and I proceede
 ![image](./hive_webtoon_q3.webp)
 _Within the Webtoon Hive_
 
-However, the `out of range` error occurred, indicating that the query was not recognized as having changed. To identify
-the part where the parameter is injected, I debugged the code again.
+However, the `out of range` error occurred, indicating that the query was not recognized as having changed.
 
 ![image](./Screenshot-2023-03-13-오후-6.02.40.webp)
 
