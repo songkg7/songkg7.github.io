@@ -163,8 +163,10 @@ echo "Done! 🎉"
 Directly running sh in the terminal somehow felt inelegant. Let's add it to `package.json` for a cleaner usage.
 
 ```json
-"scripts": {
-"publish": "./tools/publish"
+{
+  "scripts": {
+    "publish": "./tools/publish"
+  }
 }
 ```
 
