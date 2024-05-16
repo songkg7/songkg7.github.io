@@ -3,6 +3,7 @@ title: "[O2] Obsidian plugin 개발하기"
 date: 2023-02-22 15:40:00 +0900
 aliases: 
 tags: [obsidian, plugin, side-project, typescript, o2]
+description: "Obsidian 으로 Jekyll 블로그를 운영하기 위해 오픈소스를 개발하게 된 이야기를 다룹니다"
 authors: haril
 ---
 
