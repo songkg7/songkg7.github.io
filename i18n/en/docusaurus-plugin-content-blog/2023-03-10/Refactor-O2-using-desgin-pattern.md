@@ -5,7 +5,8 @@ aliases:
 tags: [typescript, obsidian, o2, design-pattern]
 mermaid: true
 categories: 
-image: /assets/img/banner/og-image.webp
+image: img/banner/og-image.webp
+description: "This article discusses the process of using design patterns to improve the structure of the O2 project for more flexible management."
 authors: haril
 ---
 
@@ -32,14 +33,29 @@ Due to the length of the code, a partial excerpt is provided. For the full code,
 ```typescript
 export async function convertToChirpy(plugin: O2Plugin) {
     try {
-        // Implementation details
+        await backupOriginalNotes(plugin);
+        const markdownFiles = await renameMarkdownFile(plugin);
+        for (const file of markdownFiles) {
+            // remove double square brackets
+            const title = file.name.replace('.md', '').replace(/\s/g, '-');
+            const contents = removeSquareBrackets(await plugin.app.vault.read(file));
+            // change resource link to jekyll link
+            const resourceConvertedContents = convertResourceLink(plugin, title, contents);
+
+            // callout
+            const result = convertCalloutSyntaxToChirpy(resourceConvertedContents);
+
+            await plugin.app.vault.modify(file, result);
+        }
+
+        await moveFilesToChirpy(plugin);
+        new Notice('Chirpy conversion complete.');
     } catch (e) {
         console.error(e);
         new Notice('Chirpy conversion failed.');
     }
 }
 ```
-
 Being unfamiliar with TypeScript and Obsidian usage, I had focused more on implementing features rather than the overall design. Now, trying to add new features, it became difficult to anticipate side effects, and the code implementation lacked clear communication of the developer's intent.
 
 To better understand the code flow, I created a graph of the current process as follows.
