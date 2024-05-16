@@ -86,7 +86,7 @@ const config: Config = {
                     showReadingTime: true,
                     blogTitle: 'Haril Dev',
                     blogDescription: 'A blog about software development, programming, and computer science.',
-                    blogSidebarTitle: 'All posts',
+                    blogSidebarTitle: 'All Posts',
                     blogSidebarCount: 'ALL',
                     remarkPlugins: [remarkMath],
                     rehypePlugins: [rehypeKatex],
@@ -142,6 +142,11 @@ const config: Config = {
                     sidebarId: 'productSidebar',
                     position: 'left',
                     label: 'Products',
+                },
+                {
+                    to: '/blog/archive',
+                    label: 'Archive',
+                    position: 'left',
                 },
                 {
                     'aria-label': 'GitHub Repository',
