@@ -3,6 +3,7 @@ title: "[O2] Developing an Obsidian Plugin"
 date: 2023-02-22 15:40:00 +0900
 aliases:
 tags: [ obsidian, plugin, side-project, typescript, o2 ]
+description: "This post describes the process of developing an Obsidian plugin to convert Obsidian syntax to Jekyll syntax."
 authors: haril
 ---
 
