@@ -2,7 +2,7 @@
 title: "How Many Concurrent Requests Can a Single Server Application Handle?"
 date: 2023-11-10 12:57:26 +0900
 tags: [ test, k6, aws, stress-test, spike-test, performance-test, network, timeout, spring, mvc ]
-image: img/banner/k6-log.webp
+image: img/banner/k6-logo.webp
 pin: true
 authors: haril
 description: "How many concurrent users can a Spring MVC web application accommodate? 🤔 This article explores changes in network traffic focusing on Spring MVC's Tomcat configuration."

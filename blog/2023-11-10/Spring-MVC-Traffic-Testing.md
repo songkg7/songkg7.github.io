@@ -2,7 +2,7 @@
 title: "1대의 서버 애플리케이션은 최대 몇 개의 동시 요청을 감당할 수 있을까?"
 date: 2023-11-10 12:57:26 +0900
 tags: [test, k6, aws, stress-test, spike-test, performance-test, network, timeout, spring, mvc]
-image: img/banner/k6-log.webp
+image: img/banner/k6-logo.webp
 pin: true
 authors: haril
 description: "Spring MVC 웹 애플리케이션은 동시 사용자를 몇 명까지 수용할 수 있을까? 🤔 이번 글에서는 Spring MVC 의 tomcat 설정을 중심으로 네트워크의 변화를 살펴봅니다."
