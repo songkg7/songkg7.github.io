@@ -12,7 +12,6 @@ tags:
   - nio
   - java
 categories:
-updated: 2024-05-21 14:36:08 +0900
 authors: haril
 ---
 
