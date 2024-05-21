@@ -1,6 +1,6 @@
 ---
 title: Journey to a Multi-Connection Server
-date: 2024-04-27 00:27:00 +0900
+date: 2024-05-21 16:27:00 +0900
 aliases:
 tags:
   - network
@@ -18,7 +18,7 @@ authors: haril
 
 ## Overview
 
-Implementing a server application that can handle multiple client requests simultaneously is now very easy. Just using [[Spring MVC]] alone can get you there in no time. However, as an engineer, I am curious about the underlying principles. In this article, we will embark on a journey to reflect on the considerations that were made to implement a multi-connection server by questioning the things that may seem obvious.
+Implementing a server application that can handle multiple client requests simultaneously is now very easy. Just using Spring MVC alone can get you there in no time. However, as an engineer, I am curious about the underlying principles. In this article, we will embark on a journey to reflect on the considerations that were made to implement a multi-connection server by questioning the things that may seem obvious.
 
 :::info
 
@@ -315,7 +315,7 @@ In the **multi-threading model, one thread can handle only one request**, but in
 
 :::tip
 
-How about using the folk game 'The Rose of Sharon Has Bloomed' as an analogy?
+How about using the folk game 'Red light, Green light' as an analogy?
 
 Typically, the thread (Socket) remembers all the game participants (Channel) and watches them all at once (Selector).
 If the thread cannot watch all participants at once and has to focus on each one individually, it becomes a multi-threading model 😂.
