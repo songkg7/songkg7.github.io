@@ -7,7 +7,7 @@ categories:
 authors: haril
 ---
 
-[지난 글](https://songkg7.github.io/posts/chezmoi-awesome-dotfile-manager/)에 이어 좀 더 편리하게 활용할 수 있는 방법들에 대해 공유합니다.
+[지난 글](https://haril.dev/blog/2023/03/26/chezmoi-awesome-dotfile-manager)에 이어 좀 더 편리하게 활용할 수 있는 방법들에 대해 공유합니다.
 
 :::info
 

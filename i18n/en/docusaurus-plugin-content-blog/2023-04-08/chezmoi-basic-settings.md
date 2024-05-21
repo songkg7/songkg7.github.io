@@ -7,7 +7,7 @@ categories:
 authors: haril
 ---
 
-Following on from the [previous post](https://songkg7.github.io/posts/chezmoi-awesome-dotfile-manager/), I'll share some ways to make better use of chezmoi.
+Following on from the [previous post](https://haril.dev/blog/2023/03/26/chezmoi-awesome-dotfile-manager), I'll share some ways to make better use of chezmoi.
 
 :::info
 
