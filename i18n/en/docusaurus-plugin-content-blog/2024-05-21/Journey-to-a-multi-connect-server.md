@@ -13,6 +13,7 @@ tags:
   - java
 categories:
 authors: haril
+description: Implementing a server application that can handle multiple client requests simultaneously is now very easy. Just using Spring MVC alone can get you there in no time. However, as an engineer, I am curious about the underlying principles. In this article, we will embark on a journey to reflect on the considerations that were made to implement a multi-connection server by questioning the things that may seem obvious.
 ---
 
 ## Overview
