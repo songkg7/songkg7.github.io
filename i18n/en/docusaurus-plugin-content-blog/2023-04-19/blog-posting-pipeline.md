@@ -12,7 +12,7 @@ I mostly use the Markdown editor Obsidian for writing, and host my blog on GitHu
 
 :::info
 
-This post was inspired by a presentation by [Sungyun](https://github.com/zzsza) from GgleTto.
+This post was inspired by a presentation by [Sungyun](https://github.com/zzsza) from 글또(geultto).
 
 :::
 
@@ -143,6 +143,6 @@ All my writing, including drafts that are not posted on the blog, is managed pub
 
 [^fn-nth-1]: I've always kept notes nearby since I studied music in the past. It seemed like the best time to come up with something was when I was about to fall asleep. It doesn't seem much different now. Bugs solutions always seem to come to mind just before falling asleep...
 
-[^fn-nth-2]: [O2 Plugin Development Story](https://songkg7.github.io/posts/develop-obsidian-plugin/)
+[^fn-nth-2]: [O2 Plugin Development Story](https://haril.dev/blog/2023/02/22/develop-obsidian-plugin)
 
 [^fn-nth-3]: Although new bug issues are added with each post... 😭 ~~???: That's a feature~~
