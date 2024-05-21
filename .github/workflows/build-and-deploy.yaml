@@ -28,6 +28,7 @@ jobs:
       - name: Build website
         env:
           ORAMA_CLOUD_API_KEY: ${{ secrets.ORAMA_CLOUD_API_KEY }}
+          GOOGLE_ANALYTICS_TRACKING_ID: ${{ secrets.GOOGLE_ANALYTICS_TRACKING_ID }}
         run: pnpm run build
 
       - name: Upload Build Artifact

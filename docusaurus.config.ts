@@ -72,7 +72,7 @@ const config: Config = {
             'classic',
             {
                 gtag: {
-                    trackingID: 'G-5VZJZHY7VL',
+                    trackingID: process.env.GOOGLE_ANALYTICS_TRACKING_ID,
                     anonymizeIP: true,
                 },
                 docs: {
