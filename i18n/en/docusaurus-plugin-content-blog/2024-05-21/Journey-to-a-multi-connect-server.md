@@ -81,15 +81,15 @@ try (ServerSocket serverSocket = new ServerSocket(PORT)) {
         ) {
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                out.println("Echo: " + inputLine);
+                System.out.println("Echo: " + inputLine);
             }
             System.out.println("Client disconnected.");
         } catch (IOException e) {
-            println("Exception in connection with client: " + e.getMessage());
+            System.out.println("Exception in connection with client: " + e.getMessage());
         }
     }
 } catch (IOException e) {
-    println("Could not listen on port " + PORT + ": " + e.getMessage());
+    System.out.println("Could not listen on port " + PORT + ": " + e.getMessage());
 }
 ```
 
