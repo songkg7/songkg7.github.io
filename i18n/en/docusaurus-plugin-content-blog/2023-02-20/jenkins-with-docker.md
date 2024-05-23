@@ -5,6 +5,7 @@ aliases:
 tags: [ci, cd, devops, jenkins]
 categories: DevOps
 authors: haril
+description: "This article explains how to install and operate Jenkins using Docker."
 ---
 
 ## Overview

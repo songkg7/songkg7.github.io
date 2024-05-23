@@ -5,6 +5,7 @@ aliases:
 tags: [postgresql, rdb, spring, batch]
 categories: 
 authors: haril
+description: "When using the Spring Batch JdbcPagingItemReader, be cautious when setting the sortKeys parameter. If the order of the sorting conditions is not maintained, an Index scan may not occur as intended."
 ---
 
 I would like to share an issue I encountered while retrieving large amounts of data in PostgreSQL.
