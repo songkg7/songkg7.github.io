@@ -26,5 +26,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Test build website
+        env:
+          GOOGLE_ANALYTICS_TRACKING_ID: ${{ secrets.GOOGLE_ANALYTICS_TRACKING_ID }}
         run: pnpm run build
-
