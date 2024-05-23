@@ -1,5 +1,5 @@
 ---
-title: "Docker 로 Jenkins 운영하기"
+title: "Operating Jenkins with Docker"
 date: 2022-11-17 00:47:00 +0900
 aliases: 
 tags: [ci, cd, devops, jenkins]
@@ -9,7 +9,7 @@ authors: haril
 
 ## Overview
 
-Docker 를 사용하여 Jenkins 를 설치하고 운영하는 법을 설명한다.
+This article explains how to install and operate Jenkins using Docker.
 
 ## Contents
 
@@ -21,52 +21,52 @@ Docker 를 사용하여 Jenkins 를 설치하고 운영하는 법을 설명한�
 docker run --name jenkins-docker -d -p 8080:8080 -p 50000:50000 -v /home/jenkins:/var/jenkins_home -u root jenkins/jenkins:lts 
 ```
 
-volume 을 마운트하여 Jenkins 데이터를 호스트 머신에 영속화한다. TeamCity 와 달리 Jenkins 는 파일로 모든 설정이 관리된다. 마운트를 설정해두면 인증 정보 및 데이터 관리가 매우 편리해지므로 꼭 설정하자. 대상 경로는 `/home/jenkins` 또는 `/var/lib/jenkins` 를 많이 사용한다.
+Mount a volume to persist Jenkins data on the host machine. Unlike TeamCity, Jenkins manages all configurations in files. Setting up a mount makes authentication information and data management much more convenient, so be sure to configure it. Common target paths are `/home/jenkins` or `/var/lib/jenkins`.
 
-이 글에서는 `/home/jenkins` 경로에 생성했다고 가정하고 진행한다.
+For the purpose of this article, it is assumed that the path `/home/jenkins` has been created.
 
 ### Authentication
 
-master 든 node 든 보안 및 접근 제어를 위해 jenkins 라는 유저를 만들어서 진행한다.
+To ensure security and access control for both the master and nodes, create a user named 'jenkins' and proceed as follows.
 
-#### 유저 접근 권한 설정
+#### Setting User Access Permissions
 
 ```bash
 chown -R jenkins /var/lib/jenkins
 ```
 
-#### SSH key 관리 에 대해
+#### Managing SSH Keys
 
-키가 없다면 `ssh-keygen` 으로 키를 하나 생성하여 private key, 와 public key 를 준비한다.
+If you don't have keys, generate one using `ssh-keygen` to prepare a private key and a public key.
 
-경로 입력창이 나올 경우 `/home/jenkins/.ssh/id_rsa` 를 입력하여 `/home/jenkins/.ssh` 아래에 키가 생성될 수 있도록 하면 된다.
+When prompted for a path, enter `/home/jenkins/.ssh/id_rsa` to ensure the key is created under `/home/jenkins/.ssh`.
 
 #### GitLab
 
-gitlab 의 개인 설정에 들어가면 SSH setting 탭이 있다. public key 를 추가해준다.
+In GitLab's personal settings, there is an SSH setting tab. Add the public key.
 
-pipeline 에서 git 을 선택하면 repository 경로 입력창이 표시된다. git@~ 로 시작하는 SSH 경로를 입력해주면 붉은 에러가 표시된다. 해결하기 위해 credential 을 하나 생성한다. SSH credential 을 선택하여 생성하고 ID 값은 유용하게 사용될 수 있는 값이므로 입력하는 것을 권장한다.
+When selecting Git in the pipeline, a repository path input field is displayed. Entering an SSH path starting with git@~ will show a red error. To resolve this, create a credential. Choose SSH credential to create one, and the ID value can be a useful value, so it is recommended to enter it.
 
-#### Node 설정
+#### Node Configuration
 
-node 는 Jenkins 의 역할을 효율적으로 분배할 수 있는 방법이다.
+Nodes are a way to efficiently distribute Jenkins roles.
 
-node 와 통신하기 위해 master 에 `ssh-keygen` 으로 키를 생성한다. 이미 생성해서 쓰고 있는게 있다면 재사용해도 무방하다.
+To communicate with the node, generate a key on the master using `ssh-keygen`. If you already have one that you are using, you can reuse it.
 
 ![image](./jenkins-credentials-provider.webp)
 
-- `ID`: ssh 키를 jenkins 내에서 식별할 수 있게 해주는 값이다. 설정해두면 jenkinsfile 등에서 credential 사용이 어느 정도 편해지므로 가급적 유의미한 값으로 설정하는 것이 좋다. 설정하지 않는다면 UUID 값이 생성된다.
-- `Username`: linux 의 유저. 보통 jenkins 를 유저로 사용하므로 jenkins 를 입력해주면 된다. **입력하지 않을시 reject key error 를 볼 수 있으니 주의**한다.
+- `ID`: This value allows Jenkins to identify the SSH key internally, making it easier to use credentials in Jenkinsfiles, so it's best to set a meaningful value. If not set, a UUID value will be generated.
+- `Username`: The Linux user. Typically, 'jenkins' is used as the user, so enter 'jenkins'. **Be cautious as not entering this may result in a reject key error**.
 
-#### Docker 접근 권한
+#### Docker Access Permissions
 
-docker group 이 없을 경우 생성한다. 보통은 docker 를 설치하면 자동으로 생성된다.
+If the docker group does not exist, create it. Usually, it is automatically created when installing Docker.
 
 ```bash
 sudo groupadd docker
 ```
 
-다음 명령어를 통해 jenkins user 에게 docker 를 실행할 수 있는 권한을 부여한다.
+Grant Jenkins user permission to run Docker by running the following command.
 
 ```bash
 sudo gpasswd -a jenkins docker
@@ -77,28 +77,28 @@ sudo gpasswd -a jenkins docker
 sudo chmod 666 /var/run/docker.sock
 ```
 
-docker daemon 을 재시작하여 변경된 설정을 적용시키자.
+Restart the Docker daemon to apply the changes.
 
 ```bash
 systemctl restart docker
 ```
 
-이후로 `docker ps` 명령이 실행되는 것을 확인할 수 있다.
+You should now be able to run the `docker ps` command.
 
 ### Restart
 
-Jenkins 의 버전을 업데이트하거나 플러그인을 설치, 제거, 업데이트하는 경우 Jenkins 가 재시작된다. 하지만 docker 로 관리 중일 경우 container 가 내려가버리기 때문에 jenkins 가 시작되지 않는다. restart 를 위해서는 container 에 restart 정책을 설정해줘야 한다.
+When updating Jenkins version or installing, removing, or updating plugins, Jenkins restarts. However, if you are managing it with Docker, the container goes down, preventing Jenkins from starting. To enable restart, you need to set a restart policy on the container.
 
 ```bash
 docker update --restart=always jenkins-docker
 ```
 
-이후로 jenkins-docker container 는 항상 running 상태를 유지한다.
+After this, the jenkins-docker container will always remain in a running state.
 
-## 주의사항
+## Caution
 
-플러그인 업데이트의 경우 현재 운영중인 jenkins 의 버전과 호환되는지 신중하게 살펴본 후 업데이트해야 한다. Jenkins 의 버전과 플러그인의 버전이 맞지 않아서 pipeline 이 실패하는 일이 종종 생길 수 있다.
+When updating plugins, carefully check if they are compatible with the current version of Jenkins in operation. Mismatched versions between Jenkins and plugins can often lead to pipeline failures.
 
 ## Reference
 
-[docker 로 Jenkins 관리하기](https://dev-overload.tistory.com/40)
+[Managing Jenkins with Docker](https://dev-overload.tistory.com/40)
