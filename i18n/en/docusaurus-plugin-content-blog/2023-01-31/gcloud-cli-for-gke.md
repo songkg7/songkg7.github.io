@@ -5,6 +5,7 @@ aliases:
 tags: [gcp, kubernetes, cli, gcloud]
 categories: DevOps
 authors: haril
+description: "Google Cloud Kubernetes 를 local 에서 CLI 를 통해 빠르게 관리하기 위한 방법을 공유합니다."
 ---
 
 ## Overview
