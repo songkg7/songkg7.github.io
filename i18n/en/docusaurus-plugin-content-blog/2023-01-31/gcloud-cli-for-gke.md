@@ -81,4 +81,42 @@ Do you want to continue (Y/n)?  y
 ╠═ Installing: gke-gcloud-auth-plugin                       ═╣
 ╠════════════════════════════════════════════════════════════╣
 ╠═ Installing: gke-gcloud-auth-plugin                       ═╣
-╠══════
+╠════════════════════════════════════════════════════════════╣
+╠═ Creating backup and activating new installation          ═╣
+╚════════════════════════════════════════════════════════════╝
+
+Performing post processing steps...done.
+
+Update done!
+```
+
+re-run the connection command, and you should see that the cluster is connected without any error messages.
+
+```bash
+gcloud container clusters get-credentials sv-dev-cluster --zone asia-northeast3-a --project {projectId}
+```
+
+```console
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for sv-dev-cluster.
+```
+
+Once the connection is successful, you will also notice changes in Docker Desktop. Specifically, new information will be displayed in the Kubernetes tab.
+
+![1.png](./gke-cluster-connect-3.webp)
+
+Afterwards, you can also directly check GKE resources locally using `kubectl`.
+
+```bash
+kubectl get deployments
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+my-application        1/1     1            1           20d
+```
+
+## Conclusion
+
+We have briefly explored efficient ways to manage GKE resources locally. Using `kubectl` locally enables extended features like autocomplete, making Kubernetes management much more convenient. If you are new to using GKE, I strongly recommend giving it a try.
+
+## Reference
+
+[k8s-plugin](https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke?hl=en)
