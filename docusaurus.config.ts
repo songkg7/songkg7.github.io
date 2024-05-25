@@ -113,6 +113,7 @@ const config: Config = {
             // Public API key: it is safe to commit it
             apiKey: '0a4b92132d7b910ad83d3e1bb4b0f4a9',
             indexName: 'haril',
+            insights: true,
         },
         announcementBar: {
             id: 'blog-migration-process',
