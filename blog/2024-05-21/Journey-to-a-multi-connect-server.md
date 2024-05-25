@@ -14,7 +14,10 @@ tags:
 categories:
 authors: haril
 description: 다중 접속 서버를 구현하기 위한 여정을 떠나봅니다. 소켓, 멀티 스레드, 멀티 플렉싱, 이벤트 루프에 대해 알아봅니다.
+image: https://i.imgur.com/bDTb83y.png
 ---
+
+![banner](https://i.imgur.com/bDTb83y.png)
 
 ## Overview
 
