@@ -514,6 +514,6 @@ gitGraph LR:
 
 ## Reference
 
-- https://engineering.linecorp.com/ko/blog/do-not-block-the-event-loop-part1#mcetoc_1gdcaies0o
+- https://engineering.linecorp.com/ko/blog/do-not-block-the-event-loop-part1
 - https://mark-kim.blog/understanding-non-blocking-io-and-nio/
 - https://oliveyoung.tech/blog/2023-10-02/c10-problem/
