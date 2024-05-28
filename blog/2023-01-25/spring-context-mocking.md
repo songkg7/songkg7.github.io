@@ -5,6 +5,7 @@ aliases:
 tags: [test, spring, mockito, junit, java, mock]
 categories: Spring
 authors: haril
+description: "Spring 환경에서 Context loading 을 제거하여 테스트 속도를 빠르게 하기 위한 방법을 공유합니다"
 ---
 
 ## Overview
