@@ -1,25 +1,26 @@
 ---
-title: "WebFlux 에서 Date type 을 url parameter 로 사용하기"
+title: "Using Date Type as URL Parameter in WebFlux"
 date: 2022-11-22 11:28:00 +0900
 aliases:
 tags: [webflux, localdatetime, url, parameter]
 categories: Java
 authors: haril
+description: "Exploring the considerations when using Date type as a URL parameter in WebFlux"
 ---
 
 ## Overview
 
-`LocalDateTime` 같은 시간 형식을 url parameter 로 사용할 경우 기본 포맷에 맞지 않는다면 다음과 같은 에러 메세지를 보게 됩니다.
+When using time formats like `LocalDateTime` as URL parameters, if they do not match the default format, you may encounter an error message like the following:
 
 ```console
 Exception: Failed to convert value of type 'java.lang.String' to required type 'java.time.LocalDateTime';
 ```
 
-특정 포맷도 convert 할 수 있도록 하기 위해서는 어떤 설정을 해줘야 할까요? 이번 글에서는 변환 방법에 대해서 알아봅니다.
+What settings do you need to make to allow conversion for specific formats? This article explores the conversion methods.
 
 ## Contents
 
-간단한 샘플 예제를 하나 만들어 보겠습니다.
+Let's create a simple sample example.
 
 ```java
 public record Event(
@@ -29,7 +30,7 @@ public record Event(
 }
 ```
 
-event 의 이름과 발생 시간을 담고 있는 간단한 객체입니다. `record` 를 사용하여 만들어줬습니다.
+This is a simple object that contains the name and occurrence time of an event, created using `record`.
 
 ```java
 @RestController
@@ -43,15 +44,15 @@ public class EventController {
 }
 ```
 
-handler 는 전통적인 Controller model 을 사용해서 만들어줬습니다.
+The handler is created using the traditional Controller model.
 
 :::tip
 
-Spring WebFlux 에서는 Router function 을 사용하여 요청을 관리할 수 있지만, 이 글은 WebFlux 에 관한 내용이 아니므로 `@RestController` 를 통한 방식을 선택했습니다.
+In Spring WebFlux, you can manage requests using Router functions, but this article focuses on using `@RestController` as it is not about WebFlux.
 
 :::
 
-테스트 코드를 작성해보겠습니다.
+Let's write a test code.
 
 ```java
 @WebFluxTest
@@ -75,7 +76,7 @@ class EventControllerTest {
 
 ![image1](./1.webp)
 
-테스트 코드를 실행하면 아래와 같은 요청이 발생하는 것과 같습니다.
+When running the test code, it simulates the following request.
 
 ```bash
 $ http localhost:8080/event Accept=application/stream+json name==Spring time==2021-08-01T12:00
@@ -89,7 +90,7 @@ Content-Type: application/stream+json
 }
 ```
 
-기본 포맷으로 요청하면 정상적으로 응답을 받지만, 요청 포맷을 변경하면 어떨까요?
+If the request is made in the default format, a successful response is received. But what if the request format is changed?
 
 ![image2](./2.webp)
 
@@ -110,11 +111,11 @@ Content-Type: application/stream+json
 }
 ```
 
-보시는 바와 같이 특정 포맷으로 응답을 받고 싶은 경우는 별도의 설정이 필요합니다.
+As seen above, additional settings are required to receive responses in specific formats.
 
 ### 1. `@DateTimeFormat`
 
-가장 간단한 해결법은 변환하고 싶은 필드에 annotation 을 추가해주는 것입니다. 어떤 포맷으로 변환할 것인지 정의해주면 원하는 포맷으로 요청할 수 있습니다.
+The simplest solution is to add an annotation to the field you want to convert. By defining the format you want to convert to, you can request in the desired format.
 
 ```java
 public record Event(
@@ -126,21 +127,21 @@ public record Event(
 }
  ```
 
-다시 테스트를 실행해주면 정상적으로 통과하는 것을 확인할 수 있습니다.
+Running the test again will confirm that it passes successfully.
 
 :::info
 
-요청 포맷을 바꿀 수 있을 뿐이지 응답 포맷까지 변하진 않습니다. 응답 포맷 변경은 `@JsonFormat` 등의 annotation 을 통해서 설정 가능하지만 이 글에선 다루지 않습니다.
+Changing the request format does not change the response format. Response format changes can be set using annotations like `@JsonFormat`, but this is not covered in this article.
 
 :::
 
-간단하게 문제를 해결했지만, 항상 최선의 해결책은 아닙니다. 변환해야하는 필드가 많다면 하나하나 annotation 을 붙이는 건 꽤나 귀찮은 작업이 되고, 실수로 annotation 을 작성하지 않아서 버그가 발생할 수도 있습니다. `ArchUnit`[^fn_nth_2] 등의 test library 를 사용해서 체크하게 하는 것도 가능하지만, 코드를 파악하기 위해 들여야하는 노력이 늘어난다는 것은 부정할 수 없는 사실입니다.
+While this is a simple solution, it may not always be the best. If there are many fields that need conversion, manually adding annotations can be quite cumbersome and may lead to bugs if an annotation is accidentally omitted. Using test libraries like `ArchUnit`[^fn_nth_2] to check for this is possible, but it increases the effort required to understand the code.
 
 ### 2. `WebFluxConfigurer`
 
-`WebFluxConfigurer` 를 구현하여 formatter 를 등록해주면 `LocalDateTime` 마다 일일히 annotation 을 작성해야 하는 일을 피할 수 있습니다.
+By implementing `WebFluxConfigurer` and registering a formatter, you can avoid the need to add annotations to each `LocalDateTime` field individually.
 
-`Event` 에서 `@DateTimeFormat` 을 제거해준 뒤 설정을 구성합니다.
+Remove the `@DateTimeFormat` from `Event` and configure the settings as follows.
 
 ```java
 @Configuration
@@ -157,17 +158,17 @@ public class WebFluxConfig implements WebFluxConfigurer {
 
 :::danger
 
-`@EnableWebFlux` 를 사용하게되면 mapper 를 override 하기 때문에 애플리케이션이 의도한대로 동작하지 않을 수 있습니다.[^footnote]
+Using `@EnableWebFlux` can override the mapper, causing the application to not behave as intended.[^footnote]
 
 :::
 
-다시 테스트를 실행해보면 annotation 없이도 통과하는 것을 확인할 수 있습니다.
+Running the test again will show that it passes without any annotations.
 
 ![image4](./4.webp)
 
-### 특정 필드만 다른 포맷 적용하기
+### Applying Different Formats to Specific Fields
 
-간단합니다. field 에 직접 작성하는 방식인 `@DateTimeFormat` 의 우선도가 더 높기 때문에 원하는 필드에는 `@DateTimeFormat` 을 작성해주면 됩니다.
+This is simple. Since the method of directly adding `@DateTimeFormat` to the field takes precedence, you can add `@DateTimeFormat` to the desired field.
 
 ```java
 public record Event(
@@ -198,7 +199,7 @@ public record Event(
 
 :::tip
 
-URI 가 길어지면 UriComponentsBuilder 를 사용하는 것도 좋은 방법입니다.
+When the URI becomes long, using UriComponentsBuilder is a good approach.
 
 ```java
 String uri = UriComponentsBuilder.fromUriString("/event")
@@ -213,14 +214,14 @@ String uri = UriComponentsBuilder.fromUriString("/event")
 
 ## Conclusion
 
-`WebFluxConfigurer` 를 사용하는 방식은 전역적으로 일관된 포맷을 구현할 수 있습니다. 특정 포맷을 적용해야하는 필드가 여러 클래스에 걸쳐 분포한 경우, `@DateTimeFormat` 을 붙이는 것보다 훨씬 간편하게 적용할 수 있으니 상황에 맞게 적용하시면 됩니다.
+Using `WebFluxConfigurer` allows for globally consistent formats. If there are multiple fields across different classes that require specific formats, using `WebFluxConfigurer` is much easier than applying `@DateTimeFormat` to each field individually. Choose the appropriate method based on the situation.
 
-- `@DateTimeFormat` : 적용이 간단. 전역 설정보다 우선도가 높으므로 특정 필드만 다른 포맷을 사용해야할 경우 등 타겟팅하여 적용하는 것이 가능.
-- `WebFluxConfigurer` : 적용이 상대적으로 복잡하지만, 프로젝트 규모가 어느 정도 커져서 일관된 설정 적용이 필요할 경우 `@DateTimeFormat` 에 비해 압도적 유리. 일부 필드에 실수로 annotation 을 작성하지 않는 등의 휴먼 에러를 방지할 수 있음.
+- `@DateTimeFormat`: Simple to apply. Has higher precedence than global settings, allowing for targeting specific fields to use different formats.
+- `WebFluxConfigurer`: Relatively complex to apply, but advantageous in larger projects where consistent settings are needed. Helps prevent human errors like forgetting to add annotations to some fields compared to `@DateTimeFormat`.
 
 :::info
 
-모든 예제 코드는 [GitHub](https://github.com/songkg7/java-practice/blob/main/spring-webflux-parameter-sample/src/test/java/com/example/springwebfluxparametersample/controller/EventControllerTest.java) 에서 확인하실 수 있습니다.
+You can find all the example code on [GitHub](https://github.com/songkg7/java-practice/blob/main/spring-webflux-parameter-sample/src/test/java/com/example/springwebfluxparametersample/controller/EventControllerTest.java).
 
 :::
 
