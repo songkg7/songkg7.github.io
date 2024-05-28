@@ -5,6 +5,7 @@ aliases:
 tags: [webflux, localdatetime, url, parameter]
 categories: Java
 authors: haril
+description: "WebFlux 에서 Date type 을 url parameter 로 사용할 때의 주의점에 대해서 살펴봅니다"
 ---
 
 ## Overview
