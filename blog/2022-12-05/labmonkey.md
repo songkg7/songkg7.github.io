@@ -7,6 +7,13 @@ categories:
 authors: haril
 ---
 
+:::warning
+
+이 글은 24.05 기준 더 이상 유효하지 않습니다.
+대신 [테스트를 쉽고 편리하게, Fixture Monkey](https://haril.dev/blog/2024/02/03/Fixture-Monkey)를 참고해주세요.
+
+:::
+
 ## Overview
 
 `FixtureMonkey` 가 `0.4.x` 으로 업데이트되면서 많은 기능의 변경이 있었다. [이전 글](https://songkg7.github.io/posts/Fixture-monkey-overview/)[^footnote]을 작성한지 채 한달도 되지 않았는데 많은 수정이 발생해서(ㅠ) 당황스러웠지만, 커뮤니티가 활발한 신호라는 점으로 마음을 위로하면서 업데이트된 부분을 반영하여 새로 글을 작성한다.
