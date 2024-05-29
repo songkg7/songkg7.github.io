@@ -1,5 +1,5 @@
 ---
-title: "diff 를 좀 더 직관적으로, difftastic"
+title: "Making 'diff' More Intuitive, Difftastic"
 date: 2022-11-09 12:53:00 +0900
 aliases:
 tags: [tool, git, diff, difftastic]
@@ -9,8 +9,7 @@ authors: haril
 
 ## Overview
 
-`git diff` 를 편리하게 사용할 수 있도록 만들어주는 툴.
-터미널에서 `git diff` 명령어를 사용하는 경우가 잦을 경우 아주 유용하게 사용할 수 있다.
+Difftastic is a tool designed to make using `git diff` more convenient. It can be very useful for those who frequently use the `git diff` command in the terminal.
 
 ## Usage
 
@@ -18,16 +17,16 @@ authors: haril
 brew install difftastic
 ```
 
-global setting:
+Global setting:
 
 ```bash
 git config --global diff.external difft
 ```
 
-이제 `git diff` 명령어를 사용하면 기존보다 훨씬 직관적인 diff 결과를 볼 수 있다.
+Now, when you use the `git diff` command, you can see much more intuitive diff results compared to before.
 
 ![image](./1.webp)
 
 ## Reference
 
-- [difftastic](https://difftastic.wilfred.me.uk/introduction.html)
+- [Difftastic](https://difftastic.wilfred.me.uk/introduction.html)

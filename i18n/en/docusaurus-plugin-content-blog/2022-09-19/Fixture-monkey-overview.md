@@ -4,6 +4,7 @@ date: 2022-09-19 18:34:00 +0900
 tags: [test, naver, open-source]
 categories:
 authors: haril
+draft: true
 ---
 
 ![banner](./fixture-monkey-banner.png)
