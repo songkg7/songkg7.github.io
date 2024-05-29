@@ -267,7 +267,7 @@ public class LottoNumber implements Comparable<LottoNumber> {
 }
 ```
 
-![image](./1.webp)
+![image](./2.webp)
 
 테스트가 전부 통과하는 것을 확인할 수 있다.
 
@@ -312,7 +312,8 @@ Fixture monkey 공식 문서에는 `package-public` 이라고 되어있지만, �
 ...
 ```
 
-![image2](./2.webp)
+![image2](./1.webp)
+
 _위 method 에 의해 class 의 `NoArgsConstructor` 가 호출된다._
 
 그렇다면 `ReflectionUtils` 에 생성하고자 하는 class 의 생성자 정보를 전달하면 field 에 기본 생성자가 없더라도 생성이 가능할 것이다. 다음 코드는 Reflection 을 통해 private 생성자를 찾아낸 후, 해당 생성자로 객체를 생성하는 테스트이다.
