@@ -5,6 +5,7 @@ aliases:
 tags: [remind, life, 글또]
 categories: Essay
 authors: haril
+draft: true
 ---
 
 ## 들어가기 전에
