@@ -1,5 +1,5 @@
 ---
-title: "key generation error"
+title: "Key Generation Error"
 date: 2022-09-11 11:36:00 +0900
 aliases:
 tags: [gpg, keybase, security]
@@ -9,7 +9,7 @@ authors: haril
 
 :::info
 
-오류 해결 방법을 간단하게 공유합니다.
+Here is a simple solution to resolve the error.
 
 :::
 
@@ -17,7 +17,7 @@ authors: haril
 key generation error: Unknown signature subpacket: 34
 ```
 
-Keybase 에 gpg key 를 등록하려던 중 위와 같은 에러가 발생했다.  해결을 위해 방법을 찾다보니 github 에 다음과 같은 해결법이 등록되어 있었다.
+While trying to register a GPG key on Keybase, the above error occurred. In search of a solution, I found the following workaround on GitHub.
 
 ```bash
 $ gpg --edit-key mykey
@@ -42,8 +42,8 @@ Really update the preferences? (y/N) y
 gpg> save
 ```
 
-이후 정상 실행된다. 자세한 사항은 링크를 참조.
+After this, the operation should run smoothly. For more details, refer to the provided link.
 
 ## Reference
 
-- [github issue](https://github.com/keybase/keybase-issues/issues/4025)
+- [GitHub issue](https://github.com/keybase/keybase-issues/issues/4025)

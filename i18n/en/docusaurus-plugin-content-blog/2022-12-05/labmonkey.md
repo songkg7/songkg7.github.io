@@ -7,29 +7,36 @@ categories:
 authors: haril
 ---
 
+:::warning
+
+As of May 2024, this post is no longer valid.
+Instead, please refer to [Making Testing Easy and Convenient with Fixture Monkey](https://haril.dev/blog/2024/02/03/Fixture-Monkey).
+
+:::
+
 ## Overview
 
-`FixtureMonkey` 가 `0.4.x` 으로 업데이트되면서 많은 기능의 변경이 있었다. [이전 글](https://songkg7.github.io/posts/Fixture-monkey-overview/)[^footnote]을 작성한지 채 한달도 되지 않았는데 많은 수정이 발생해서(ㅠ) 당황스러웠지만, 커뮤니티가 활발한 신호라는 점으로 마음을 위로하면서 업데이트된 부분을 반영하여 새로 글을 작성한다.
+With the update to `FixtureMonkey` version `0.4.x`, there have been significant changes in functionality. It has only been a month since the [previous post](https://songkg7.github.io/posts/Fixture-monkey-overview)[^footnote], and there have been many modifications (ㅠ) which was a bit overwhelming, but taking comfort in the active community, I am writing a new post reflecting the updated features.
 
 ## Changes
 
 ### LabMonkey
 
-실험적인 기능이 추가된 인스턴스.
+An experimental feature has been added as an instance.
 
-`FixtureMonkey` 를 상속하여 기존 기능을 지원하면서 몇가지 메서드들이 추가되었다. 전체적인 사용방법은 비슷하니, `FixtureMonkey` 대신에 `LabMonkey` 를 사용하면 될 것 같다. `1.0.0` 이후로는 `LabMonkey` 의 기능을 `deprecated` 하고 같은 기능을 `FixtureMonkey` 에서 제공할 예정이라고 한다.
+`LabMonkey` inherits from `FixtureMonkey` and supports existing features while adding several new methods. The overall usage is similar, so it seems that using `LabMonkey` instead of `FixtureMonkey` would be appropriate. It is said that after version `1.0.0`, the functionality of `LabMonkey` will be deprecated, and the same features will be provided by `FixtureMonkey`.
 
 ```java
 private final LabMonkey fixture = LabMonkey.create();
 ```
 
-### 객체 생성 방식의 변경
+### Change in Object Creation Method
 
-`ArbitraryGenerator` 가 아닌 `ArbitraryIntrospector` 가 담당하도록 변경되었다.
+The responsibility has shifted from `ArbitraryGenerator` to `ArbitraryIntrospector`.
 
-### Record 지원
+### Record Support
 
-이제 `Record` 또한 `FixtureMonkey` 를 통해 생성할 수 있다.
+Now, you can also create `Record` through `FixtureMonkey`.
 
 ```java
 public record LottoRecord(int number) {}
@@ -57,9 +64,9 @@ class LottoRecordTest {
 lottoRecord: LottoRecord[number=-6]
 ```
 
-`ConstructorPropertiesArbitraryIntrospector` 를 사용하여 객체를 생성하면 Record 객체를 생성할 수 있다. `0.3.x` 버전에서는 `ConstructorProperties` annotation 이 필요했었는데 이젠 프로덕션 코드에 수정을 가하지 않아도 되니 꽤나 큰 변화라고 할 수 있겠다.
+By using `ConstructorPropertiesArbitraryIntrospector` to create objects, you can create Record objects. In version `0.3.x`, the `ConstructorProperties` annotation was required, but now you don't need to make changes to the production code, which is quite a significant change.
 
-이외에도 다양한 `Introspector` 가 존재하여 객체의 형태에 맞는 방식으로 객체 생성을 지원한다.
+In addition, various `Introspectors` exist to support object creation in a way that matches the shape of the object.
 
 ### Plugin
 
@@ -70,9 +77,9 @@ private final LabMonkey fixture = LabMonkey.labMonkeyBuilder()
     .build();
 ```
 
-`plugin()` 이라는 fluent api 를 통해 간편하게 plugin 을 추가할 수 있다. `JavaxValidationPlugin` 을 추가해주면 java bean validation 기능을 적용하여 객체를 생성할 수 있다.
+Through the fluent API `plugin()`, you can easily add plugins. By adding `JavaxValidationPlugin`, you can apply Java Bean Validation functionality to create objects.
 
-일종의 데코레이터 패턴이라고 생각되는데, 여러가지 서드파티 플러그인의 개발 및 적용이 용이해질 것으로 보인다.
+It seems like a kind of decorator pattern, making it easier to develop and apply various third-party plugins.
 
 ```java
 public record LottoRecord(
@@ -82,7 +89,7 @@ public record LottoRecord(
 ) {
     public LottoRecord {
         if (number < 1 || number > 45) {
-            throw new IllegalArgumentException("로또 번호는 1~45 사이의 숫자여야 합니다.");
+            throw new IllegalArgumentException("The lotto number must be between 1 and 45.");
         }
     }
 }
@@ -99,10 +106,10 @@ void shouldBetween1to45() {
 
 ## Conclusion
 
-이전 글에서 아쉽다고 언급했던 부분이 거의 대부분 개선되어서 정말 만족스럽게 사용 중이다. 근데 어째 document[^fn-nth-2] 가 이전에 비해 좀 부실해진거 같은데...
+Most of the areas that were mentioned as lacking in the previous post have been improved, and I am very satisfied with using it. But somehow, the documentation[^fn-nth-2] seems a bit lacking compared to before...
 
 ## Reference
 
-[^footnote]: [FixtureMonkey 0.3.0 - 객체생성전략](https://naver.github.io/fixture-monkey/kr/)
+[^footnote]: [FixtureMonkey 0.3.0 - Object Creation Strategy](https://naver.github.io/fixture-monkey/kr/)
 
 [^fn-nth-2]: [FixtureMonkey](https://naver.github.io/fixture-monkey/kr/)
