@@ -1,31 +1,79 @@
-2024년 5월 21일, 다중 접속 서버로의 여정
+---
+title: マルチコネクションサーバーへの旅
+date: 2024-05-21 16:27:00 +0900
+aliases:
+tags:
+  - ネットワーク
+  - ソケット
+  - マルチスレッド
+  - イベントループ
+  - カーネル
+  - ノンブロッキング
+  - NIO
+  - Java
+categories:
+authors: haril
+description: 複数のクライアントリクエストを同時に処理できるサーバーアプリケーションを実装することは今では非常に簡単です。Spring MVCだけを使えばすぐに実現できます。しかし、エンジニアとして、私はその基本原則に興味を持っています。この記事では、当たり前に思えることに疑問を投げかけることで、マルチコネクションサーバーを実装するために行われた考慮事項について振り返ります。
+image: https://i.imgur.com/bDTb83y.png
+---
 
-![배너](https://i.imgur.com/bDTb83y.png)
+![バナー](https://i.imgur.com/bDTb83y.png)
 
-## 개요
+## 概要
 
-여러 클라이언트 요청을 동시에 처리할 수 있는 서버 애플리케이션을 구현하는 것은 이제 매우 쉬워졌습니다. Spring MVC만 사용해도 쉽게 구현할 수 있습니다. 그러나 엔지니어로서, 그 이면의 원리에 대해 궁금해합니다. 이번 글에서는 당연하게 여겨지는 것들에 대해 '왜'라는 질문을 던지며, 다중 접속 서버를 구현하기 위한 고민을 되짚어보겠습니다.
+複数のクライアントリクエストを同時に処理できるサーバーアプリケーションを実装することは今では非常に簡単です。Spring MVCだけを使えばすぐに実現できます。しかし、エンジニアとして、私はその基本原則に興味を持っています。この記事では、当たり前に思えることに疑問を投げかけることで、マルチコネクションサーバーを実装するために行われた考慮事項について振り返ります。
 
 :::info
 
-예제 코드는 [GitHub](https://github.com/songkg7/journey-to-a-multi-connect-server)에서 확인할 수 있습니다.
+[GitHub](https://github.com/songkg7/journey-to-a-multi-connect-server)でサンプルコードを確認できます。
 
 :::
 
-## 소켓(Socket)
+## ソケット
 
-먼저 '소켓'에서 시작합니다. 네트워크 프로그래밍 관점에서 소켓은 '네트워크상에서 데이터를 주고받기 위해 파일처럼 사용되는 통신 엔드포인트'입니다. '파일처럼 사용되는' 이 설명이 중요한데, 파일 디스크립터(file descriptor, fd)를 통해 접근되고 파일과 유사한 I/O 연산을 지원하기 때문입니다.
+```mermaid
+---
+title: Journey
+---
+%%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': false}} }%%
+gitGraph
+    commit id: "Socket" type: HIGHLIGHT
+```
 
-소켓을 사용하여 서버 애플리케이션을 구현하려면 다음과 같은 과정을 거쳐야 합니다.
+最初の目的地は「ソケット」です。ネットワークプログラミングの観点から、ソケットはネットワークを介してデータを交換するためのファイルのように使用される通信エンドポイントです。"ファイルのように使用される"という表現は重要であり、ファイルディスクリプタ（fd）を介してアクセスされ、ファイルと同様のI/O操作をサポートしています。
 
-- socket()으로 소켓 생성
-- bind(), listen()으로 연결 준비
-- accept()로 연결 수락
-- 수락 후 바로 다른 소켓을 할당 = 다른 연결을 수락할 수 있어야 함
+:::info[なぜソケットはポートではなくfdで識別されるのか？]
 
-이 때 연결에 사용되는 소켓을 리스닝 소켓이라고 합니다. 이 리스닝 소켓은 연결을 수락하는 역할만 하므로, 클라이언트와의 연결에는 다른 소켓이 별도로 생성되어 사용됩니다.
+ソケットはIP、ポート、他のパーティのIPとポートを使用して識別できますが、fdを使用する方が好まれます。なぜなら、ソケットは接続が受け入れられるまで情報がなく、fdのような単純な整数だけでは不十分なデータが必要だからです。
 
-## 단일 프로세스 서버
+:::
+
+ソケットを使用してサーバーアプリケーションを実装するには、以下の手順を踏む必要があります：
+
+<!-- 省略 -->
+
+![](https://vos.line-scdn.net/landpress-content-v2_1761/1672029326745.png?updatedAt=1672029327000)
+
+- `socket()` でソケットを作成
+- `bind()`、`listen()` で接続の準備
+- `accept()` で接続を受け入れ
+- 接続を受け入れた直後に別のソケットを割り当てる = 他の接続を受け入れられる必要がある
+
+接続に使用されるソケットはリスニングソケットと呼ばれます。このリスニングソケットは接続を受け入れるだけであり、各クライアントとの通信には別のソケットが作成されて使用されます。
+
+サーバーアプリケーションの実装方法を見てきましたが、次はJavaでサーバーアプリケーションを実装してみましょう。
+
+## シングルプロセスサーバー
+
+```mermaid
+---
+title: Journey
+---
+%%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': false}} }%%
+gitGraph LR:
+    commit id: "Socket"
+    commit id: "Single Process" type: HIGHLIGHT
+```
 
 ```java
 try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -49,84 +97,32 @@ try (ServerSocket serverSocket = new ServerSocket(PORT)) {
 }
 ```
 
-소켓 개념을 기반으로 간단한 서버 애플리케이션이 완성되었습니다. 이제 여러분도 프레임워크를 사용하지 않고 서버 애플리케이션을 구현할 수 있게 되었습니다. 그러나 이 서버 애플리케이션에는 여러 가지 한계가 있습니다. **여러 요청을 동시에 처리하기 어렵다**는 점이 그 중 하나입니다.
+1. ポートを `ServerSocket` にバインドし、無限ループでクライアントリクエストを待機します。
+2. クライアントリクエストが発生すると、`accept()` を呼び出して接続を受け入れ、新しい `Socket` を作成します。
+3. ストリームを使用してデータの読み書きを行います。
 
-## 멀티 스레드 서버
+先に説明したソケットの概念を使用して、シンプルなサーバーアプリケーションが完成しました。この記事を読んでいるあなたも、フレームワークを使用せずにサーバーアプリケーションを実装できるようになりました 🎉。
 
-멀티 스레드 방식은 하나의 프로세스 안에서 요청이 들어올 때마다 별개의 스레드를 생성하여 처리를 위임하는 방식으로 구현됩니다. 이를 그림으로 나타내면 다음과 같습니다.
+しかし、このサーバーアプリケーションにはいくつかの欠点があります。複数のリクエストを同時に処理するのが難しいです。単一プロセスで動作するため、一度に1つのリクエストしか処理できず、前の接続が終了するまで次のリクエストを処理できません。
 
-클라이언트 관점에서 표현하면 아래와 같습니다.
+例を見てみましょう。
 
-코드로 구현해보면 아래와 같습니다.
+![](https://i.imgur.com/v84z6CT.gif)
 
-```java
-try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-    LOGGER.info("Server is running on port " + PORT);
+hello1の応答は問題なく返ってきますが、hello2の応答はhello1の接続が終了してから到着することがわかります。
 
-    while (true) {
-        Socket clientSocket = serverSocket.accept();
-        new Thread(new ClientHandler(clientSocket)).start();
-    }
-} catch (IOException e) {
-    LOGGER.severe("Could not listen on port " + PORT + ": " + e.getMessage());
-}
-```
+- 単一クライアントが接続する場合には問題ありませんが、複数のクライアントが接続すると問題が発生します。
+- 複数のクライアントが接続すると、最初の接続が終了するまで後続のクライアントはキューで待機する必要があります。
+- 複数のリクエストを同時に処理できないことは、リソースの効率的な利用を妨げます。
 
-이제는 동시에 여러 요청을 처리할 수 있게 되었습니다.
+この問題に対処するために、2つのアプローチが考えられます：
 
-## 멀티 플렉싱 서버
+- マルチプロセス
+- マルチスレッド
 
-멀티 플렉싱은 적은 스레드로 많은 요청을 처리할 수 있게 하는 기술입니다. 멀티 플렉싱에 대해 자세히 살펴보기 전에 Java의 I/O에 대해 이해할 필요가 있습니다.
+Javaで直接マルチプロセスを扱うのは難しいです。その後悔は置いておいて、マルチスレッドに移りましょう。
 
-### Java NIO
-
-Java NIO는 jdk 1.4부터 도입된 API로, 기존의 I/O API를 대체하기 위해 만들어졌습니다. Java I/O가 느린 이유는 JVM이 커널 메모리 영역에 직접 접근할 수 없었기 때문이었습니다. Java NIO에서는 ByteBuffer를 통해 커널 메모리 영역에 직접 접근할 수 있게 되었습니다.
-
-Java NIO에는 Channel, Buffer, Selector라는 핵심 컴포넌트가 있습니다.
-
-코드로 구현해보면 아래와 같습니다.
-
-멀티 플렉싱 서버를 구현하는 방법을 살펴보았습니다.
-
-## 이벤트 루프(Event Loop)
-
-이벤트 루프는 큐와 같은 자료구조에 이벤트가 발생하는지 무한루프를 돌며 지켜보다가, 이벤트를 처리할 수 있는 적절한 핸들러에 동작을 위임하여 처리하는 개념입니다.
-
-너무 어렵게 느껴지시나요? Netty를 사용해보신 적이 있다면 이미 멀티 플렉싱을 사용하고 계셨을 것입니다. Netty는 NIO 기반의 멀티 플렉싱을 사용하기 쉽도록 만들어진 프레임워크입니다.
-
-```
-
-```java
-// イベントループ
-while (true) {
-    selector.select();
-    Set<SelectionKey> selected = selector.selectedKeys();
-    for (SelectionKey selectionKey : selected) {
-        dispatch(selectionKey);
-    }
-    selected.clear();
-}
-```
-
-JVMのメインスレッドは、イベントが発生するまでループ内で待機し、適切なハンドラにイベントを委譲します。
-
-これにより、ノンブロッキングマルチプレキシングサーバーでなぜブロッキング動作を引き起こしてはいけないのかについても理解できます。基本的にメインスレッドのみが動作するため、ループの外でスレッドがブロックされると、selectを呼び出してイベントを委譲する動作自体が遅くなる可能性があるからです。
-
-同様に、計算集中型の作業（＝CPU集中型）はスレッドの動作自体を遅らせるため、イベントループとは相性が悪いです。このような作業が頻繁に発生する場合は、別のスレッドを生成して作業を委任することで、メインスレッドのループを妨げないように実装する必要があります。
-
-## 結論
-
-これまで、マルチコネクションサーバーを実装する際の悩みや一歩一歩を見てきました。
-
-- 単一プロセスでは複数の接続を処理できず、
-- マルチプロセスやマルチスレッドはリソースを多く必要としましたが、
-    - スレッドプールはリソースの問題を解決しましたが、多くのリクエストを同時に処理するにはまだ不十分でした。
-- マルチプレキシングを使用して1つのスレッドでも多くのリクエストを処理できるようにします。
-    - どのリクエストが処理の準備ができているかを知ることができるセレクタが重要でした。
-
-この旅はここまでです。何だか寂しい気持ちがします。
-
-あ、実はまだ訪れていない場所が1つ残っています。本当に興味深いトピックですが、次の旅のために取っておきます。
+## マルチスレッドサーバー
 
 ```mermaid
 ---
@@ -134,23 +130,123 @@ title: Journey
 ---
 %%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': false}} }%%
 gitGraph LR:
-    commit id: "ソケット"
-    commit id: "単一プロセス"
+    commit id: "Socket"
+    commit id: "Single Process"
+    branch multi
+    commit id: "Multi Process" type: REVERSE
+    checkout main
+    commit id: "Multi Thread" type: HIGHLIGHT
+```
+
+```java
+try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+    LOGGER.info("Server is running on port " + PORT);
+
+    while (true) {
+        Socket clientSocket = serverSocket.accept(); // メインスレッドがリクエストを受け入れてクライアントソケットを作成
+        new Thread(new ClientHandler(clientSocket)).start(); // ワーカースレッドに委任
+    }
+} catch (IOException e) {
+    LOGGER.severe("Could not listen on port " + PORT + ": " + e.getMessage());
+}
+```
+
+```java
+public class ClientHandler implements Runnable {
+    // 省略...
+
+    @Override
+    public void run() {
+        try (
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)
+        ) {
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                out.println("Echo: " + inputLine); // 受信したメッセージをエコーバック
+            }
+        } catch (IOException e) {
+            LOGGER.severe("Error handling client: " + e.getMessage());
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                LOGGER.severe("Failed to close client socket: " + e.getMessage());
+            }
+        }
+    }
+}
+```
+
+![](https://i.imgur.com/Pf0zk2b.gif)
+
+各リクエストごとに新しいスレッドを作成することで、複数のリクエストを同時に処理できるようになりました。では、ここで旅は終わりでしょうか？JVMの特性を考慮すると、さらなる最適化の余地があるように見えます。
+
+- **スレッドの作成と管理はリソースを消費するタスク** であり、Javaはスレッドを作成する際にスタック領域を割り当て、CPUアーキテクチャによっては約1MBになることがあります。
+- もし10,000のリクエストが同時に発生した場合、サーバーはスレッドリソースだけで10GB以上のメモリが必要になります。
+- サーバーリソースが無限ではないため、スレッドの最大数を制限する必要があります。これが **スレッドプール** の概念が登場する理由です。
+- Spring MVCはこれらの考えに基づいて開発されました。
+
+最適化が完了しました。[いくつかの実験](https://haril.dev/blog/2023/11/10/Spring-MVC-Traffic-Testing)を通じて、このフレームワークが [c10k問題](http://www.kegel.com/c10k.html) を簡単に処理できることが証明されました。しかし、何かが違和感を覚えるのはなぜでしょうか 🤔。
+
+- スレッドがブロックされるほど、アプリケーションの動作が非効率になります。これはコンテキストスイッチ中に競合が発生するためです。
+- スレッドは、ソケットにデータが到着したかどうかを確認して読み取るために、限られたCPUリソースを競合します。
+- 言い換えれば、ネットワークリクエストの数が増えるにつれて、アプリケーションの処理が遅くなります。
+- **スレッドプールを使用すると、同時に処理できるリクエストの最大数に制限がある** ことを意味します。
+- より高い目標を目指すエンジニアとして、この制限を突破したいと考えています。
+
+## マルチプレクシングサーバー
+
+```mermaid
+---
+title: Journey
+---
+%%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': false}} }%%
+gitGraph
+    commit id: "Socket"
+    commit id: "Single Process"
     branch mp
-    commit id: "マルチプロセス" type: REVERSE
+    commit id: "Multi Process" type: REVERSE
     checkout main
-    commit id: "マルチスレッド"
-    branch lt
-    commit id: "軽量スレッド" type: HIGHLIGHT tag: "to be..."
-    checkout main
-    commit id: "Java NIO"
-    commit id: "マルチプレキシング"
-    commit id: "イベントループ"
+    commit id: "Multi Thread"
+    commit id: "Multiplexing" type: HIGHLIGHT
 ```
 
-## 参考
+スレッドがブロックされることは、サーバーアプリケーションにとって負担が大きいです。スレッドがブロックされることなく多くのリクエストを処理する方法は何でしょうか？
 
-- https://engineering.linecorp.com/ko/blog/do-not-block-the-event-loop-part1
-- https://mark-kim.blog/understanding-non-blocking-io-and-nio/
-- https://oliveyoung.tech/blog/2023-10-02/c10-problem/
+答えはマルチプレクシングにあります。マルチプレクシングは、少ないスレッドで多くのリクエストを処理できる技術です。マルチプレクシングを使用することで、約10万の同時接続を容易に処理できるサーバーを実装できます。今回の旅のメインコースです。
+
+マルチプレクシングに入る前に、JavaのI/Oを理解する必要があります。
+
+### Java NIO
+
+```mermaid
+---
+title: Journey
+---
+%%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': false}} }%%
+gitGraph
+    commit id: "Socket"
+    commit id: "Single Process"
+    branch mp
+    commit id: "Multi Process" type: REVERSE
+    checkout main
+    commit id: "Multi Thread"
+    commit id: "Java NIO" type: HIGHLIGHT
+    commit id: "Multiplexing"
 ```
+
+Java NIOは、既存のI/O APIを置き換えるためにJDK 1.4以降で導入されたAPIです。なぜJava I/Oが遅かったのでしょうか？
+
+- Javaはカーネルメモリに直接アクセスできなかったため、カーネルバッファをJVMメモリにコピーする処理が必要で、ブロッキングモードで動作していました。
+- データがJVMメモリ（ヒープ）にコピーされた後、ガベージコレクションが必要で、追加のオーバーヘッドが発生しました。
+- NIOは、カーネルメモリに直接アクセスできるAPIである ByteBuffer を導入しました。
+- これにより、カーネルスペースからのコピーが不要となり、ゼロコピーが実現されました。
+
+Java NIOには3つの主要なコンポーネントがあります：**Channel、Buffer、Selector**。
+
+#### Channel
+
+サーバーとクライアント間でデータを交換する際に、チャネルはバッファ（ByteBuffer）を使用してデータの読み書きを行います。
+
+- FileChannel: ファイルへのデータ
