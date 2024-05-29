@@ -9,7 +9,7 @@ authors: haril
 
 :::warning
 
-As of May 24, this post is no longer valid.
+As of May 2024, this post is no longer valid.
 Instead, please refer to [Making Testing Easy and Convenient with Fixture Monkey](https://haril.dev/blog/2024/02/03/Fixture-Monkey).
 
 :::
