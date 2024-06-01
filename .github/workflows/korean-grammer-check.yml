@@ -1,0 +1,12 @@
+name: Check Korean Grammar in Markdown Files
+
+on: push
+
+jobs:
+  Check-Korean-Grammar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Grammar Check
+        uses: Kangdyu/korean-grammar-check-action@v1
