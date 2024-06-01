@@ -5,6 +5,7 @@ aliases:
 tags: [ spring, batch, changes ]
 categories: [ Spring Batch ]
 authors: haril
+description: "Changes in Spring Batch 5.0"
 ---
 
 Here's a summary of the changes in Spring Batch 5.0.

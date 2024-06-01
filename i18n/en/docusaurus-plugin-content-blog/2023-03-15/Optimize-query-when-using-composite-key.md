@@ -175,7 +175,12 @@ void test() {
 The successful execution confirms that it is working as intended, and I proceeded to run the batch.
 
 ![image](./hive_webtoon_q3.webp)
-_Within the Webtoon Hive_
+
+> _Guy: "is it over?"_
+>
+> _Boy: "Shut up, It'll happen again!"_
+>
+> -- _Within the Webtoon Hive_
 
 However, the `out of range` error occurred, indicating that the query was not recognized as having changed.
 

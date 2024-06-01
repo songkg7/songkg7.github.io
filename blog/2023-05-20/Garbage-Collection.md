@@ -27,7 +27,7 @@ Heap 영역은 new 연산자 등으로 생성된 객체와 배열 등을 저장�
 public class Main {
  public static void main(String[] args) {
   Person person = new Person("a", "곧 참조되지 않음");
-  person = new Person("b", "참조가 유지됨.")
+  person = new Person("b", "참조가 유지됨.");
  }
 }
 ```
