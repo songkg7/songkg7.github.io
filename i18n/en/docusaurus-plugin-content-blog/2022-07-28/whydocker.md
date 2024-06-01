@@ -4,6 +4,7 @@ date: 2022-07-28 19:29:00 +0900
 tags: [Infra, docker]
 categories: [DevOps]
 authors: haril
+description: "Docker is a containerization technology that allows you to create and use Linux containers. This article explains the benefits of using Docker containers and when to use them."
 ---
 
 :::info
@@ -14,8 +15,11 @@ This article is written for internal information sharing and is explained based 
 
 ## What is Docker?
 
-Docker
-: A containerization technology that allows you to create and use Linux containers, and also the name of the largest company supporting this technology as well as the name of the open-source project.
+:::info
+
+A containerization technology that allows you to create and use Linux containers, and also the name of the largest company supporting this technology as well as the name of the open-source project.
+
+:::
 
 ![deploy-history](./deploy-history.webp)
 _The image everyone has seen at least once when searching for Docker_
@@ -109,27 +113,25 @@ http localhost/ping
 
 Since port 80 is mapped to the container's port 8080, you can see that communication with the container works well.
 
-:::tip
+:::tip[**Commonly Used Docker Run Options**]
 
-> **Commonly Used Docker Run Options**
->
-> `--name`
-> : Assign a name to the container
->
-> `-p`
-> : Publish a container's port(s) to the host
->
-> `--rm`
-> : Automatically remove the container when it exits
->
-> `-i`
-> : Interactive, keep STDIN open even if not attached
->
-> `-t`
-> : Allocate a pseudo-TTY, creating an environment similar to a terminal
->
-> `-v`
-> : Bind mount a volume
+`--name`
+: Assign a name to the container
+
+`-p`
+: Publish a container's port(s) to the host
+
+`--rm`
+: Automatically remove the container when it exits
+
+`-i`
+: Interactive, keep STDIN open even if not attached
+
+`-t`
+: Allocate a pseudo-TTY, creating an environment similar to a terminal
+
+`-v`
+: Bind mount a volume
 
 :::
 
