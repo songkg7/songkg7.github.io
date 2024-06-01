@@ -28,7 +28,7 @@
     "react-dom": "^18.0.0",
     "rehype-katex": "7",
     "remark-math": "6",
-    "sass": "^1.77.0"
+    "sass": "^1.77.4"
   },
   "devDependencies": {
     "@docusaurus/eslint-plugin": "^3.4.0",
