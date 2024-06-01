@@ -1,5 +1,5 @@
 ---
-title: "[Jacoco] Merging Jacoco Reports for Multi-Module Projects"
+title: "[Jacoco] Aggregating Jacoco Reports for Multi-Module Projects"
 date: 2022-07-29 23:04:00 +0900
 tags: [jacoco, java, gradle, test, aggregation-report]
 categories: [Java]
