@@ -27,7 +27,7 @@ How does it resolve it? The JVM identifies **unreachable objects** as targets fo
 public class Main {
  public static void main(String[] args) {
   Person person = new Person("a", "soon to be unreferenced");
-  person = new Person("b", "reference maintained.")
+  person = new Person("b", "reference maintained.");
  }
 }
 ```
