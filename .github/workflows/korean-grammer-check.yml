@@ -10,3 +10,5 @@ jobs:
         uses: actions/checkout@v4
       - name: Grammar Check
         uses: Kangdyu/korean-grammar-check-action@v1
+        with:
+          path: "blog"
