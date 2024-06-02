@@ -5,6 +5,7 @@ aliases: null
 tags: [spatial-index, index, postgis, geometry]
 categories: null
 authors: haril
+description: "この記事では、既存の非効率な実装について議論し、それを改善するために試みた方法を記録します。"
 ---
 
 ![banner](./postgres-r-tree.png)
@@ -14,6 +15,7 @@ authors: haril
 ## 既存の問題点
 
 ![](https://i.imgur.com/wPORK6n.png)
+
 _複数のデータベースに分散されたテーブルを単一のクエリで結合することは不可能ではなかったが、困難だった..._
 
 1. 特定の座標がエリア「a」に含まれているか？
@@ -48,6 +50,7 @@ JOIN port AS p ON st_contains(p.geom, a.geom);
 ```
 
 ![](https://i.imgur.com/aMFmfCh.png)
+
 _素晴らしい..._
 
 ## 結果
