@@ -1,5 +1,5 @@
 ---
-title: "Javaを深掘り：Hello Worldへの道 - パート3"
+title: "JavaからHello Worldお出力するまで"
 date: 2024-01-07 17:08:34 +0900
 aliases: null
 tags: [ java, jvm ]
