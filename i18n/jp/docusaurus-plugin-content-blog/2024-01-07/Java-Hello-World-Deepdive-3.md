@@ -219,4 +219,38 @@ _Javaネイティブインターフェースの使用については別の記事
 
 JIT（Just In Time）コンパイラは、インタープリタの欠点を克服するためにJava 1.1で導入されました。
 
-JITコンパイラは、バイトコードを実行時に機械語にコンパイルし、Javaアプリケーションの実行速度を向上さ
+JITコンパイラは、バイトコードを実行時に機械語にコンパイルし、Javaアプリケーションの実行速度を向上させます。頻繁に実行される部分（ホットコード）を検出してコンパイルします。
+
+JIT関連の動作を確認する際には、以下のキーワードを使用できます。
+
+-XX:+PrintCompilation: JIT関連のログを出力します
+-Djava.compiler=NONE: JITを無効にします。パフォーマンスの低下を観察できます。
+
+ガベージコレクター
+ガベージコレクターは重要なコンポーネントであり、別のドキュメントに記載されていますので、今回は省略します。
+
+GCの最適化は一般的ではありません。
+しかし、GC操作による500ms以上の遅延が発生する場合があり、高トラフィックやキャッシュの厳しいTTLを扱うシナリオでは、500msの遅延が重大な問題となることがあります。
+
+## 結論
+
+Javaは間違いなく複雑な言語です。
+
+面接では、次のような質問をよく受けます。
+
+Javaについてどのくらい詳しいですか？
+
+これで、もっと自信を持って答えられるようになるでしょう。
+
+えっと…🤔 ちょうど「Hello World」くらいです。
+
+## 参考文献
+
+- [inpa blog](https://inpa.tistory.com/entry/JAVA-%E2%98%95-%ED%81%B4%EB%9E%98%EC%8A%A4%EB%8A%94-%EC%96%B8%EC%A0%9C-%EB%A9%94%EB%AA%A8%EB%A6%AC%EC%97%90-%EB%A1%9C%EB%94%A9-%EC%B4%88%EA%B8%B0%ED%99%94-%EB%90%98%EB%8A%94%EA%B0%80-%E2%9D%93#jvm%EC%9D%98_%ED%81%B4%EB%9E%98%EC%8A%A4_%EB%A1%9C%EB%8D%94_class_loader)
+- https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.5
+- https://www.baeldung.com/java-jvm-run-time-data-areas
+- https://sgcomputer.tistory.com/64
+- https://johngrib.github.io/wiki/java/run-time-constant-pool/
+- https://johngrib.github.io/wiki/jvm-stack/
+- https://code-run.tistory.com/8
+
