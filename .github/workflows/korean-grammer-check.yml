@@ -12,3 +12,4 @@ jobs:
         uses: Kangdyu/korean-grammar-check-action@v1
         with:
           path: "blog"
+          check: "updated"
