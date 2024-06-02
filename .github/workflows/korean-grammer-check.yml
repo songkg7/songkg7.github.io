@@ -1,7 +1,11 @@
 name: Check Korean Grammar in Markdown Files
 
-on: push
-
+on:
+  push:
+    paths:
+      - 'blog/**/*.md'
+      - 'docs/**/*.md'
+  
 jobs:
   Check-Korean-Grammar:
     runs-on: ubuntu-latest
@@ -11,5 +15,4 @@ jobs:
       - name: Grammar Check
         uses: Kangdyu/korean-grammar-check-action@v1
         with:
-          path: "blog"
           check: "updated"
