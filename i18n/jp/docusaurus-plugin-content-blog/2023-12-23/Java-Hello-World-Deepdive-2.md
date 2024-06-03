@@ -1,5 +1,5 @@
 ---
-title: "Javaを深掘り：Hello Worldへの道 - パート2"
+title: "JavaからHello Worldお出力するまで 2"
 date: 2023-12-23 01:01:35 +0900
 aliases: null
 tags: [ java, compile, javac, javap, instruction, operand, opcode ]
