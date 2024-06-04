@@ -1,5 +1,5 @@
 ---
-title: "Saving EC2 Costs with Jenkins"
+title: "JenkinsでEC2コストを節約する方法"
 date: 2023-07-01 19:49:28 +0900
 aliases: 
 tags: [jenkins, aws, ec2, edd]
@@ -8,18 +8,18 @@ mermaid: true
 authors: haril
 ---
 
-I would like to share a very simple method for optimizing resource costs when dealing with batch applications that need to run at specific times and under specific conditions.
+特定の時間や条件で実行する必要があるバッチアプリケーションのリソースコストを最適化するための非常にシンプルな方法を共有したいと思います。
 
-## Problem
+## 問題
 
-1. Batches are only executed at specific times. For tasks like calculations, which need to run at regular intervals like daily, monthly, or yearly.
-2. Speed of response is not crucial; ensuring that the batch runs is the priority.
-3. Maintaining an EC2 instance for 24 hours just for resources needed at specific times is inefficient.
-4. Is it possible to have the EC2 instance ready only when the cloud server resources are needed?
+1. バッチは特定の時間にのみ実行されます。例えば、日次、月次、年次などの定期的な計算タスク。
+2. 応答速度は重要ではなく、バッチが実行されることが優先されます。
+3. 特定の時間に必要なリソースのために24時間EC2インスタンスを維持するのは非効率です。
+4. クラウドサーバーのリソースが必要なときだけEC2インスタンスを準備することは可能でしょうか？
 
-Of course, it is possible. While there are various automation solutions like AWS ECS and AWS EKS, let's assume managing batches and EC2 servers directly with Jenkins and set up the environment.
+もちろん可能です。AWS ECSやAWS EKSなどの自動化ソリューションもありますが、ここではJenkinsを使ってバッチとEC2サーバーを直接管理し、環境を設定する方法を考えます。
 
-## Architecture
+## アーキテクチャ
 
 ```mermaid
 sequenceDiagram
@@ -34,43 +34,43 @@ sequenceDiagram
     deactivate EC2
 ```
 
-With this infrastructure design, you can ensure that costs are incurred only when resources are needed for batch execution.
+このインフラストラクチャ設計により、バッチ実行のためにリソースが必要なときだけコストが発生するようにできます。
 
 ## Jenkins
 
-### Jenkins Node Management Policy
+### Jenkinsノード管理ポリシー
 
 ![image](./Pasted-image-20230617191854.webp)
 
-Activates the node only when there are requests waiting in the queue, minimizing unnecessary error logs. Additionally, it transitions to idle state if there is no activity for 1 minute.
+キューにリクエストが待機しているときのみノードをアクティブにし、不要なエラーログを最小限に抑えます。また、1分間アクティビティがない場合はアイドル状態に移行します。
 
 ## AWS CLI
 
-### Installing AWS CLI
+### AWS CLIのインストール
 
-With AWS CLI, you can manage AWS resources in a terminal environment. Use the following command to retrieve a list of currently running instances:
+AWS CLIを使用すると、ターミナル環境でAWSリソースを管理できます。以下のコマンドを使用して、現在実行中のインスタンスのリストを取得できます：
 
 ```bash
 aws ec2 describe-instances
 ```
 
-Once you have checked the information for the desired resource, you can specify the target and execute a specific action. The commands are as follows:
+必要なリソースの情報を確認したら、ターゲットを指定して特定のアクションを実行できます。コマンドは以下の通りです：
 
-#### EC2 start
+#### EC2の起動
 
 ```bash
 aws ec2 start-instances --instance-ids {instanceId}
 ```
 
-#### EC2 stop
+#### EC2の停止
 
 ```bash
 aws ec2 stop-instances --instance-ids {instanceId}
 ```
 
-## Scheduling
+## スケジューリング
 
-By writing a cron expression for the batch to run once a month, you can set it up easily.
+バッチを月に一度実行するためのcron式を書いて、簡単に設定できます。
 
 ![image](./Pasted-image-20230701193759.webp)
 
@@ -78,10 +78,10 @@ By writing a cron expression for the batch to run once a month, you can set it u
 H 9 1 * *
 ```
 
-Now, the EC2 instance will remain in a stopped state most of the time and will be activated by Jenkins once a month to process the batch.
+これで、EC2インスタンスはほとんどの時間停止状態にあり、月に一度Jenkinsによってバッチ処理のために起動されます。
 
-## Conclusion
+## 結論
 
-Keeping an EC2 instance in a running state when not in use is inefficient in terms of cost. This article has shown that with Jenkins and simple commands, you can use EC2 only when needed.
+使用していないときにEC2インスタンスを稼働状態にしておくのはコスト面で非効率です。この記事では、Jenkinsと簡単なコマンドを使用して、必要なときだけEC2を利用する方法を示しました。
 
-While higher-level cloud orchestration tools like EKS can elegantly solve such issues, sometimes a simple approach can be the most efficient. I hope you choose the method that suits your situation best as I conclude this article.
+EKSのような高レベルのクラウドオーケストレーションツールもこのような問題をエレガントに解決できますが、時にはシンプルなアプローチが最も効率的であることもあります。この記事を締めくくるにあたり、あなたの状況に最適な方法を選んでいただければ幸いです。
