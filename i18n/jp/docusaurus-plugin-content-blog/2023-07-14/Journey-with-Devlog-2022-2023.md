@@ -1,117 +1,87 @@
 ---
-title: "A Yearlong Blogging Journey"
+title: "1年間のブログ旅"
 date: 2023-07-14 19:22:54 +0900
 aliases:
-tags: [ essay, review ]
-categories: [ Essay ]
+tags: [ エッセイ, レビュー ]
+categories: [ エッセイ ]
 authors: haril
 ---
 
-## Overview
+## 概要
 
-This post holds a significant meaning for me. It is intended to be the final entry of the blog journey I have been on
-since the beginning of the year. As a review, I will summarize my blogging experience up to this point.
+この投稿は私にとって非常に意味深いものです。今年の初めから続けてきたブログ旅の最終エントリーとして、これまでのブログ経験を振り返り、まとめることを目的としています。
 
-## Criteria for Choosing a Blogging Platform
+## ブログプラットフォーム選びの基準
 
-I was looking for a platform that met the following criteria to facilitate convenient posting:
+便利に投稿できるプラットフォームを探していて、以下の基準を満たすものを求めていました：
 
-- Easy use of Markdown
-- Convenient image uploading
-- Ongoing maintenance (especially for open-source platforms)
+- Markdownの簡単な使用
+- 便利な画像アップロード
+- 継続的なメンテナンス（特にオープンソースプラットフォームの場合）
 
-While platforms like Tistory lacked robust Markdown support and had cumbersome image uploading processes, Velog,
-although popular among developers, seemed neglected recently, so I decided against it. In the end, I found GitHub Page +
-Jekyll to be the most rational choice as it fully supports Markdown, makes image uploading easy, and allows for
-long-term maintenance. Although managing Jekyll requires some knowledge of Ruby, I had a basic understanding and
-committed to learning as needed, and have been operating with this setup to date.
+TistoryのようなプラットフォームはMarkdownのサポートが不十分で、画像のアップロードが面倒でした。Velogは開発者の間で人気があるものの、最近は放置されているように感じたため、選びませんでした。最終的に、GitHub Pages + JekyllがMarkdownを完全にサポートし、画像のアップロードも簡単で、長期的なメンテナンスが可能であるため、最も合理的な選択だと判断しました。Jekyllの管理にはRubyの知識が必要ですが、基本的な理解があったので、必要に応じて学びながら運用してきました。
 
-## SEO Struggles
+## SEOの苦労
 
-Despite my efforts to get all pages indexed, things haven't gone as smoothly as I hoped. When will the crawling finally
-start?
+全てのページをインデックスさせるために努力しましたが、思ったようには進みませんでした。クロールがいつ始まるのか、待ち遠しいです。
 
-However, this journey has led me to study the field more and realize the importance of patience. Even though it's taking
-time for the pages to get indexed, I believe that with increased traffic, indexing will happen naturally. Gradually, I
-have noticed an increase in the number of indexed pages. While I am publishing content faster than the indexing speed, I
-have to accept that I cannot control the time it takes for the pages to get indexed and appear in search results due to
-Google's crawling policies.
+しかし、この旅を通じて、SEOの分野を学び、忍耐の重要性を実感しました。ページがインデックスされるまで時間がかかるものの、トラフィックが増えれば自然にインデックスされると信じています。徐々にインデックスされるページ数が増えてきました。コンテンツの公開速度がインデックス速度を上回っているため、Googleのクロールポリシーにより、ページがインデックスされて検索結果に表示されるまでの時間をコントロールできないことを受け入れなければなりません。
 
 ![image](./Pasted-image-20230623112820.webp)
 
-## Evolution of Content
+## コンテンツの進化
 
-Initially, when I started my blog on Tistory, I focused on algorithm problem-solving as I was diving into algorithm
-studies.
+最初にTistoryでブログを始めたときは、アルゴリズムの問題解決に焦点を当てていました。
 
 ![image](./Pasted-image-20230714183142.webp)
 
-As I delved into practical work, I realized that algorithm solutions are better explained on algorithmic problem-solving
-platforms, and simply listing knowledge felt redundant compared to consulting official documentation. I did not want my
-blog to become just another mundane one.
+実務に取り組む中で、アルゴリズムの解決策はアルゴリズム問題解決プラットフォームで説明する方が良いと感じ、単に知識を列挙することは公式ドキュメントを参照するのに比べて冗長だと感じました。私のブログがただの平凡なものになるのは避けたかったのです。
 
-My desire to create a blog that is **distinctive and personal, setting it apart from others** has continued, driving me
-to enhance the quality and uniqueness of my content. Some posts that I find personally satisfying
-include [my journey of creating open-source projects](https://haril.dev/en/blog/2023/02/22/develop-obsidian-plugin)
-and [implementing concepts rather than just reading about them](https://haril.dev/en/blog/2023/06/04/Consistent-Hashing).
+**他のブログとは一線を画し、個性的で独自のものにしたい**という願望が続き、コンテンツの質と独自性を向上させるために努力してきました。個人的に満足している投稿には、[オープンソースプロジェクトを作成する旅](https://haril.dev/en/blog/2023/02/22/develop-obsidian-plugin)や[概念を読むだけでなく実装する](https://haril.dev/en/blog/2023/06/04/Consistent-Hashing)ものがあります。
 
 ![image](./Pasted-image-20230714184733.webp)
 
 :::info
 
-In 2024, it evolved further into a blog using Docusaurus 😄.
+2024年には、Docusaurusを使用したブログに進化しました😄。
 
 :::
 
-## Open-Sourcing Obsidian Plugin
+## Obsidianプラグインのオープンソース化
 
-I have developed a plugin called [O2](https://github.com/songkg7/o2) specifically for blog posting. It facilitates the
-continuity between Obsidian and Jekyll tasks. Developing this plugin required me to learn TypeScript as well 😅.
+ブログ投稿専用のプラグインとして、[O2](https://github.com/songkg7/o2)を開発しました。これはObsidianとJekyllのタスクを連携させるものです。このプラグインを開発するために、TypeScriptも学びました😅。
 
-Fortunately, around 400 users have joined me in using this plugin as of July 2023. ~~Although most probably uninstalled
-it within 10 minutes... DAU 1...~~
+幸いなことに、2023年7月時点で約400人のユーザーがこのプラグインを使用しています。~~おそらくほとんどの人が10分以内にアンインストールしたでしょうが... DAU 1...~~
 
 ![image](./Pasted-image-20230714182237.webp)
 
-Initially, there were many bugs, but now, after addressing numerous minor issues, the plugin has entered a stable phase.
-If you are an Obsidian user who uses Jekyll as a blogging platform, I would appreciate it if you could show some
-interest in this plugin!
+最初は多くのバグがありましたが、現在では多くの小さな問題を解決し、プラグインは安定した段階に入りました。もしObsidianユーザーでJekyllをブログプラットフォームとして使用している方がいれば、このプラグインに興味を持っていただけると嬉しいです！
 
 ![image](./Pasted-image-20230714192108.webp)
 
-I have also obtained the `plugin dev` role in the Obsidian Discord Community and am actively participating. Feel free to
-ask any Obsidian-related questions!
+また、Obsidian Discordコミュニティで`plugin dev`の役割を取得し、積極的に参加しています。Obsidianに関する質問があれば、気軽にお尋ねください！
 
-## Growth Metrics
+## 成長指標
 
-To maintain consistent motivation and direction when starting my blog, I believed that using Google Analytics was
-essential. Seeing the graph gradually trend upwards gave me a sense of accomplishment. Some argue that having few
-initial blog visitors can have a negative impact, but personally, it motivated me. It sparked a desire to attract more
-people to my blog.
+ブログを始める際に一貫したモチベーションと方向性を維持するために、Google Analyticsを使用することが重要だと考えました。グラフが徐々に上昇するのを見ると、達成感を感じました。初期のブログ訪問者が少ないことがネガティブな影響を与えるという意見もありますが、個人的にはそれがモチベーションになりました。もっと多くの人にブログを訪れてもらいたいという気持ちが湧きました。
 
-Below is the growth rate of my blog over the past year.
+以下は、過去1年間のブログの成長率です。
 
 ![image](./Pasted-image-20230623111947.webp)
 
-Despite the dynamic appearance of the graph, the numbers are not as high compared to many influential bloggers. That's
-the paradox of statistics... Nevertheless, the overall upward trend is encouraging.
+グラフは動的に見えますが、影響力のある多くのブロガーと比べると数字はそれほど高くありません。それが統計のパラドックスです... それでも、全体的な上昇傾向は励みになります。
 
-Participating in the writing program has made me pay more attention to the quality of my posts, and as a result,
-external links have started to generate more traffic. Especially, being curated frequently on the **Serfit community
-site** has significantly boosted traffic. I am grateful to the curator who selected my mediocre posts. I will strive to
-write more diligently and refine my work in the future.
+ライティングプログラムに参加することで、投稿の質により注意を払うようになり、その結果、外部リンクが増え、トラフィックが増加しました。特に、**Serfitコミュニティサイト**で頻繁にキュレーションされることで、トラフィックが大幅に増加しました。私の平凡な投稿を選んでくれたキュレーターに感謝します。今後も一生懸命に執筆し、作品を磨いていきます。
 
-## Future Goals
+## 今後の目標
 
-When summarizing my goals for the second half of this year and the next year, they can be outlined as follows:
+今年後半と来年の目標をまとめると、以下のようになります：
 
-1. Strive to publish high-quality, distinctive, and practical posts beyond simple knowledge sharing.
-2. Reach over 30,000 new users.
-3. Publish at least two posts per month.
-4. Start posting in English for language learning purposes.
+1. 単なる知識共有を超えた、高品質で独自性のある実用的な投稿を目指す。
+2. 新規ユーザーを30,000人以上獲得する。
+3. 月に少なくとも2つの投稿を公開する。
+4. 英語学習のために英語での投稿を開始する。
 
-I am particularly pondering the best approach and platform for English posts. In the future, I would like to post in
-languages other than English, so **considering multilingual support** will be crucial. As I progress through the writing
-program (please select me for the 9th cohort), I will further refine these plans.
+特に英語の投稿に最適なアプローチとプラットフォームを考えています。将来的には英語以外の言語でも投稿したいので、**多言語対応を考慮する**ことが重要です。ライティングプログラムを進める中で（第9期に選ばれますように）、これらの計画をさらに洗練させていきます。
 
-Thank you for accompanying me on my journey so far. I look forward to your continued support 🙏.
+これまでの旅にお付き合いいただき、ありがとうございました。今後ともよろしくお願いいたします🙏。
