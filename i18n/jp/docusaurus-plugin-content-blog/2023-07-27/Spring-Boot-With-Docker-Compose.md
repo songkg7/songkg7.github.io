@@ -1,5 +1,5 @@
 ---
-title: "Exploring Docker Compose Support in Spring Boot 3.1"
+title: "Spring Boot 3.1におけるDocker Composeサポートの探求"
 date: 2023-07-27 14:28:05 +0900
 aliases: 
 tags: [docker, springboot]
@@ -7,27 +7,27 @@ categories:
 authors: haril
 ---
 
-Let's take a brief look at the Docker Compose Support introduced in Spring Boot 3.1.
+Spring Boot 3.1で導入されたDocker Composeサポートについて簡単に見ていきましょう。
 
 :::info
 
-Please provide feedback if there are any inaccuracies!
+不正確な点があればフィードバックをお願いします！
 
 :::
 
-## Overview
+## 概要
 
-When developing with the Spring framework, it seems that using Docker for setting up DB environments is more common than installing them directly on the local machine. Typically, the workflow involves:
+Springフレームワークで開発する際、DB環境をローカルマシンに直接インストールするよりも、Dockerを使用してセットアップする方が一般的なようです。通常のワークフローは以下の通りです：
 
-1. Using `docker run` before bootRun to prepare the DB in a running state
-2. Performing development and validation tasks using bootRun
-3. Stopping bootRun and using `docker stop` to stop the container DB
+1. `bootRun`の前に`docker run`を使用してDBを起動状態にする
+2. `bootRun`を使用して開発および検証作業を行う
+3. `bootRun`を停止し、`docker stop`を使用してコンテナDBを停止する
 
-The process of running and stopping Docker before and after development tasks used to be quite cumbersome. However, starting from Spring Boot 3.1, you can use a `docker-compose.yaml` file to synchronize the lifecycle of Spring and Docker containers.
+開発作業の前後にDockerを実行および停止するプロセスは非常に面倒でした。しかし、Spring Boot 3.1からは、`docker-compose.yaml`ファイルを使用してSpringとDockerコンテナのライフサイクルを同期させることができます。
 
-## Contents
+## 内容
 
-First, add the dependency:
+まず、依存関係を追加します：
 
 ```groovy
 dependencies {
@@ -37,7 +37,7 @@ dependencies {
 }
 ```
 
-Next, create a compose file as follows:
+次に、以下のようにcomposeファイルを作成します：
 
 ```yaml
 services:
@@ -48,17 +48,17 @@ services:
       - 'discovery.type=single-node'
       - 'xpack.security.enabled=false'
     ports:
-      - '9200' # random port mapping
+      - '9200' # ランダムポートマッピング
       - '9300'
 ```
 
 ![image](./Pasted-image-20230727132521.webp)
 
-During bootRun, the compose file is automatically recognized, and the `docker compose up` operation is executed first.
+`bootRun`の際に、composeファイルが自動的に認識され、`docker compose up`操作が最初に実行されます。
 
-However, if you are mapping the container port to a random host port, you may need to update the `application.yml` every time `docker compose down` is triggered. Fortunately, starting from Spring Boot 3.1, once you write the compose file, Spring Boot takes care of the rest. It's incredibly convenient!
+ただし、コンテナポートをランダムなホストポートにマッピングしている場合、`docker compose down`がトリガーされるたびに`application.yml`を更新する必要があるかもしれません。幸いなことに、Spring Boot 3.1からは、composeファイルを書くだけでSpring Bootが残りの作業を引き受けてくれます。非常に便利です！
 
-If you need to change the path to the compose file, simply modify the `file` property:
+composeファイルのパスを変更する必要がある場合は、`file`プロパティを変更するだけです：
 
 ```yaml
 spring:
@@ -67,7 +67,7 @@ spring:
       file: infrastructure/compose.yaml
 ```
 
-There are also properties related to lifecycle management, allowing you to appropriately adjust the container lifecycle. If you don't want the container to stop every time you shut down Boot, you can use the `start_only` option:
+ライフサイクル管理に関連するプロパティもあり、コンテナのライフサイクルを適切に調整できます。Bootをシャットダウンするたびにコンテナを停止したくない場合は、`start_only`オプションを使用できます：
 
 ```yaml
 spring:
@@ -76,16 +76,16 @@ spring:
       lifecycle-management: start_and_stop # none, start_only
 ```
 
-There are various other options available, so exploring them should help you choose what you need.
+他にもさまざまなオプションがあるので、探求してみると良いでしょう。
 
 ![image](./Pasted-image-20230727142925.webp)
 
-## Conclusion
+## 結論
 
-No matter how much test code you write, verifying the interaction with the actual DB was essential during the development process. Setting up that environment felt like a tedious chore. While container technology made configuration much simpler, remembering to run `docker` commands before and after starting Spring Boot was definitely a hassle.
+どれだけテストコードを書いても、実際のDBとの相互作用を検証することは開発プロセスにおいて不可欠でした。その環境をセットアップすることは面倒な作業に感じられました。コンテナ技術により設定は非常に簡単になりましたが、Spring Bootを起動する前後に`docker`コマンドを実行することを忘れないようにするのは手間でした。
 
-Now, starting from Spring Boot 3.1, developers can avoid situations where they forget to start or stop containers, preventing memory consumption. It allows developers to focus more on development. The seamless integration of Docker with Spring is both fascinating and convenient. Give it a try!
+しかし、Spring Boot 3.1からは、コンテナの起動や停止を忘れることがなくなり、メモリ消費を防ぐことができます。これにより、開発者は開発にもっと集中できるようになります。DockerとSpringのシームレスな統合は非常に魅力的で便利です。ぜひ試してみてください！
 
-## Reference
+## 参考
 
-- [Docker Compose Support in Spring Boot 3.1](https://spring.io/blog/2023/06/21/docker-compose-support-in-spring-boot-3-1)
+- [Spring Boot 3.1におけるDocker Composeサポート](https://spring.io/blog/2023/06/21/docker-compose-support-in-spring-boot-3-1)
