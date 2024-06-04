@@ -1,24 +1,24 @@
 ---
-title: "Changes in Spring Batch 5.0"
+title: "Spring Batch 5.0の変更点"
 date: 2023-06-17 19:46:19 +0900
 aliases:
 tags: [ spring, batch, changes ]
 categories: [ Spring Batch ]
 authors: haril
-description: "Changes in Spring Batch 5.0"
+description: "Spring Batch 5.0の変更点"
 ---
 
-Here's a summary of the changes in Spring Batch 5.0.
+ここでは、Spring Batch 5.0の変更点についてまとめます。
 
-## What's new?
+## 新しい点は？
 
-### `@EnableBatchProcessing` is no longer recommended
+### `@EnableBatchProcessing`は推奨されなくなりました
 
 ```java
 @AutoConfiguration(after = { HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, DatabasePopulator.class })
 @ConditionalOnBean({ DataSource.class, PlatformTransactionManager.class })
-@ConditionalOnMissingBean(value = DefaultBatchConfiguration.class, annotation = EnableBatchProcessing.class) // 5.0 부터 추가되었습니다.
+@ConditionalOnMissingBean(value = DefaultBatchConfiguration.class, annotation = EnableBatchProcessing.class) // 5.0から追加されました。
 @EnableConfigurationProperties(BatchProperties.class)
 @Import(DatabaseInitializationDependencyConfigurer.class)
 public class BatchAutoConfiguration {
@@ -26,40 +26,29 @@ public class BatchAutoConfiguration {
 }
 ```
 
-In the past, you could activate Spring Batch's Spring Boot auto-configuration using the `@EnableBatchProcessing`
-annotation. However, now you need to remove it to use Spring Boot's auto-configuration.
-Specifying `@EnableBatchProcessing` or inheriting from `DefaultBatchConfiguration` now pushes back Spring Boot's
-auto-configuration and is used for customizing application settings.
+以前は、`@EnableBatchProcessing`アノテーションを使用してSpring BatchのSpring Boot自動構成を有効にすることができました。しかし、現在ではこれを削除してSpring Bootの自動構成を使用する必要があります。
+`@EnableBatchProcessing`を指定したり、`DefaultBatchConfiguration`を継承すると、Spring Bootの自動構成が後回しにされ、アプリケーション設定のカスタマイズに使用されます。
 
-Therefore, using `@EnableBatchProcessing` or `DefaultBatchConfiguration` will cause default settings
-like `spring.batch.jdbc.initialize-schema` not to work. Additionally, Jobs won't run automatically when Boot is started,
-so an implementation of a Runner is required.
+そのため、`@EnableBatchProcessing`や`DefaultBatchConfiguration`を使用すると、`spring.batch.jdbc.initialize-schema`のようなデフォルト設定が機能しなくなります。さらに、Bootが起動したときにジョブが自動的に実行されなくなるため、Runnerの実装が必要です。
 
-### Multiple Job Execution is no longer supported
+### 複数ジョブの実行がサポートされなくなりました
 
-Previously, if there were multiple Jobs in a batch, you could execute them all at once. However, now Boot will execute a
-Job when it detects a single one. If there are multiple Jobs in the context, you need to specify the Job to be executed
-using `spring.batch.job.name` when starting Boot.
+以前は、バッチ内に複数のジョブがある場合、それらを一度に実行することができました。しかし、現在ではBootが単一のジョブを検出するとそれを実行します。コンテキストに複数のジョブがある場合、Bootを起動する際に`spring.batch.job.name`を使用して実行するジョブを指定する必要があります。
 
-### Expanded JobParameter support
+### JobParameterのサポートが拡張されました
 
-In Spring Batch v4, Job parameters could only be of types `Long`, `String`, `Date`, and `Double`. In v5, you can now
-implement converters to use any type as a JobParameter. However, the default conversion service in Spring Batch still
-does not support `LocalDate` and `LocalDateTime`, causing exceptions. Although you can resolve this by implementing a
-converter for the default conversion service, it is problematic that even though `JobParametersBuilder` provides related
-methods, the conversion does not actually occur and throws an exception.
-An [issue](https://github.com/spring-projects/spring-batch/issues/4257) has been opened regarding this, and it is
-expected to be fixed in `5.0.1`.
+Spring Batch v4では、ジョブパラメータは`Long`、`String`、`Date`、`Double`の型のみを使用できましたが、v5ではコンバータを実装することで任意の型をJobParameterとして使用できるようになりました。しかし、Spring Batchのデフォルトの変換サービスは依然として`LocalDate`や`LocalDateTime`をサポートしておらず、例外が発生します。デフォルトの変換サービスに対してコンバータを実装することでこれを解決できますが、`JobParametersBuilder`が関連メソッドを提供しているにもかかわらず、実際には変換が行われず例外が発生するのは問題です。
+この問題については[issue](https://github.com/spring-projects/spring-batch/issues/4257)がオープンされており、`5.0.1`で修正される予定です。
 
 ```java
 JobParameters jobParameters = jobLauncherTestUtils.getUniqueJobParametersBuilder()
-		.addLocalDate("date", LocalDate.now()) // if you use this method, it will throw an exception even though it is provided.
+		.addLocalDate("date", LocalDate.now()) // このメソッドを使用すると、提供されているにもかかわらず例外が発生します。
 		.toJobParameters();
 ```
 
 ![image](./fixedConversionService.webp)
 
-The issue was resolved in the release of 5.0.1 on 2023-02-23.
+この問題は2023-02-23にリリースされた5.0.1で解決されました。
 
 ### initializeSchema
 
@@ -79,9 +68,9 @@ spring:
       mode: always
 ```
 
-Specify the `currentSchema` option for proper functioning.
+正しく機能させるために`currentSchema`オプションを指定してください。
 
-## Reference
+## 参考文献
 
 - [Spring Boot 3.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide#spring-batch-changes)
 - [What's New in Spring Batch 5.0](https://docs.spring.io/spring-batch/docs/current/reference/html/whatsnew.html#job-parameters-handling-updates)
