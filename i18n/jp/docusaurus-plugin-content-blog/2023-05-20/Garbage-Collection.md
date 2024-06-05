@@ -1,5 +1,5 @@
 ---
-title: "Understanding Garbage Collection"
+title: "ガベージコレクションの理解"
 date: 2023-05-20 10:12:00 +0900
 aliases: GC
 tags: [gc, jvm, garbage-collection]
@@ -7,54 +7,54 @@ categories:
 authors: haril
 ---
 
-## Overview
+## 概要
 
-Let's delve into the topic of Garbage Collection (GC) in the JVM.
+JVMにおけるガベージコレクション（GC）のトピックについて掘り下げてみましょう。
 
-## What is GC?
+## GCとは？
 
-The JVM memory is divided into several regions.
+JVMのメモリは複数の領域に分かれています。
 
 ![image](./5.webp)
 
-The Heap region is where objects and arrays created by operations like `new` are stored. Objects or arrays created in the Heap region can be referenced by other objects. GC occurs precisely in this Heap region.
+ヒープ領域は、`new`などの操作で作成されたオブジェクトや配列が格納される場所です。ヒープ領域で作成されたオブジェクトや配列は他のオブジェクトから参照されることがあります。GCはまさにこのヒープ領域で行われます。
 
-If a Java program continues to run without terminating, data will keep piling up in memory. GC resolves this issue.
+Javaプログラムが終了せずに実行を続けると、メモリにデータが蓄積され続けます。GCはこの問題を解決します。
 
-How does it resolve it? The JVM identifies **unreachable objects** as targets for GC. Understanding which objects become unreachable can be grasped by looking at the following code.
+どうやって解決するのでしょうか？JVMは**到達不能なオブジェクト**をGCの対象として識別します。どのオブジェクトが到達不能になるかを理解するためには、以下のコードを見てみましょう。
 
 ```java
 public class Main {
  public static void main(String[] args) {
-  Person person = new Person("a", "soon to be unreferenced");
-  person = new Person("b", "reference maintained.");
+  Person person = new Person("a", "すぐに参照されなくなる");
+  person = new Person("b", "参照が維持される");
  }
 }
 ```
 
-When `person` is initially initialized, the created `a` is immediately reassigned to `b` on the next line, becoming an unreachable object. Now, `a` will be released from memory during the next GC.
+`person`が最初に初期化されると、作成された`a`は次の行で`b`に再割り当てされ、到達不能なオブジェクトになります。次のGCで`a`はメモリから解放されます。
 
-## Stop the World
+## ストップ・ザ・ワールド
 
 ![image](./the-world-jojo.gif)
-_The World! Time, halt! - JoJo's Bizarre Adventure_
+_ザ・ワールド！時よ止まれ！ - ジョジョの奇妙な冒険_
 
-Stopping the application's execution to perform GC. **When a "Stop the World" event occurs, all threads except the one executing GC are paused.** Once the GC operation is completed, the paused tasks resume. Regardless of the GC algorithm used, "Stop the World" events occur, and GC tuning typically aims to reduce the time spent in this paused state.
+アプリケーションの実行を停止してGCを行います。**「ストップ・ザ・ワールド」イベントが発生すると、GCを実行しているスレッド以外のすべてのスレッドが一時停止します。** GC操作が完了すると、一時停止していたタスクが再開されます。使用されるGCアルゴリズムに関係なく、「ストップ・ザ・ワールド」イベントは発生し、GCのチューニングは通常、この一時停止状態の時間を短縮することを目的としています。
 
 :::warning
 
-Java does not explicitly deallocate memory in program code. Occasionally setting an object to `null` to deallocate it is not a major issue, but calling `System.gc()` can significantly impact system performance and should never be used. Furthermore, `System.gc()` does not guarantee that GC will actually occur.
+Javaではプログラムコード内で明示的にメモリを解放することはありません。オブジェクトを`null`に設定して解放することは大きな問題ではありませんが、`System.gc()`を呼び出すとシステムのパフォーマンスに大きな影響を与える可能性があり、絶対に使用すべきではありません。さらに、`System.gc()`は実際にGCが発生することを保証しません。
 
 :::
 
-## Two Areas Where GC Occurs
+## GCが発生する2つの領域
 
-Since developers do not explicitly deallocate memory in Java, the Garbage Collector is responsible for identifying and removing no longer needed (garbage) objects. The Garbage Collector operates under two main assumptions:
+Javaでは開発者が明示的にメモリを解放しないため、ガベージコレクタが不要になった（ガベージ）オブジェクトを識別して削除する役割を担います。ガベージコレクタは2つの主要な仮定に基づいて動作します：
 
-- Most objects quickly become unreachable.
-- There are very few references from old objects to young objects.
+- ほとんどのオブジェクトはすぐに到達不能になる。
+- 古いオブジェクトから若いオブジェクトへの参照は非常に少ない。
 
-### Most objects quickly become unreachable
+### ほとんどのオブジェクトはすぐに到達不能になる
 
 ```java
 for (int i = 0; i < 10000; i++) {
@@ -63,51 +63,51 @@ for (int i = 0; i < 10000; i++) {
 }
 ```
 
-The 10,000 `NewObject` instances are used within the loop and are not needed outside it. If these objects continue to occupy memory, resources for executing other code will gradually diminish.
+このループ内で使用される10,000個の`NewObject`インスタンスは、ループ外では必要ありません。これらのオブジェクトがメモリを占有し続けると、他のコードを実行するためのリソースが徐々に減少します。
 
-### Few references from old objects to young objects
+### 古いオブジェクトから若いオブジェクトへの参照は非常に少ない
 
-Consider the following code snippet for clarification.
+以下のコードスニペットを考えてみましょう。
 
 ```java
 Model model = new Model("value");
 doSomething(model);
 
-// model is no longer used
+// modelはもう使用されない
 ```
 
-The initially created `model` is used within `doSomething` but is unlikely to be used much afterward. While there may be cases where it is reused, GC is designed with the assumption that such occurrences are rare. Looking at statistics from Oracle, most objects are cleaned up by GC shortly after being created, validating this assumption.
+最初に作成された`model`は`doSomething`内で使用されますが、その後はあまり使用されることはありません。再利用される場合もありますが、GCはそのようなケースが稀であるという仮定のもとで設計されています。Oracleの統計を見ると、ほとんどのオブジェクトは作成されてからすぐにGCによってクリーンアップされることがわかります。
 
 ![image](./1.webp)
 
-This assumption is known as the **weak generational hypothesis**. To maximize the benefits of this hypothesis, the HotSpot VM divides the physical space into two main areas: the Young Generation and the Old Generation.
+この仮定は**弱い世代仮説**として知られています。この仮説の利点を最大限に活用するために、HotSpot VMは物理的なスペースを2つの主要な領域に分けています：Young GenerationとOld Generationです。
 
 ![image](./2.webp)
 
-- Young Generation: This area primarily houses newly created objects. Since most objects quickly become unreachable, many objects are created and then disappear in the Young Generation. When objects disappear from this area, it triggers a Minor GC.
-- Old Generation: Objects that survive in the Young Generation without becoming unreachable are moved to the Old Generation. This area is typically larger than the Young Generation, and since it is larger, GC occurs less frequently here. When objects disappear from this area, it triggers a Major GC (or Full GC).
+- Young Generation: この領域には主に新しく作成されたオブジェクトが格納されます。ほとんどのオブジェクトはすぐに到達不能になるため、多くのオブジェクトがYoung Generationで作成され、消滅します。この領域からオブジェクトが消滅すると、Minor GCがトリガーされます。
+- Old Generation: Young Generationで到達不能にならずに生き残ったオブジェクトはOld Generationに移動されます。この領域は通常、Young Generationよりも大きく、GCの頻度も少なくなります。この領域からオブジェクトが消滅すると、Major GC（またはFull GC）がトリガーされます。
 
-Each object in the Young Generation has an age bit that increments each time it survives a Minor GC. When the age bit exceeds a setting called **MaxTenuringThreshold**, the object is moved to the Old Generation. However, even if the age bit does not exceed the setting, an object can be moved to the Old Generation if there is insufficient memory in the Survivor space.
+Young Generationの各オブジェクトには、Minor GCを生き延びるたびにインクリメントされる年齢ビットがあります。この年齢ビットが**MaxTenuringThreshold**という設定を超えると、オブジェクトはOld Generationに移動されます。ただし、年齢ビットが設定を超えなくても、Survivorスペースに十分なメモリがない場合、オブジェクトはOld Generationに移動されることがあります。
 
 :::info
 
-The Permanent space is where the addresses of created objects are stored. It is used by the class loader to store meta-information about loaded classes and methods. Prior to Java 7, it existed within the Heap.
+Permanentスペースは、作成されたオブジェクトのアドレスが格納される場所です。クラスローダーがロードされたクラスやメソッドに関するメタ情報を格納するために使用されます。Java 7以前では、ヒープ内に存在していました。
 
 :::
 
-## Types of GC
+## GCの種類
 
-The Old Generation triggers GC when it becomes full. Understanding the different GC methods will help in comprehending the procedures involved.
+Old Generationが満杯になるとGCがトリガーされます。異なるGC方法を理解することで、関連する手続きを理解するのに役立ちます。
 
 ### Serial GC
 
 > -XX:+UseSerialGC
 
-To understand Serial GC, one must first grasp the Mark-Sweep-Compact algorithm. The first step of this algorithm involves identifying live objects in the Old Generation (Mark). Next, it sweeps through the heap from the front, retaining only live objects (Sweep). In the final step, it fills the heap from the front to ensure objects are stacked contiguously, dividing the heap into sections with and without objects (Compaction).
+Serial GCを理解するためには、まずMark-Sweep-Compactアルゴリズムを理解する必要があります。このアルゴリズムの最初のステップは、Old Generation内の生存オブジェクトを識別することです（Mark）。次に、ヒープの前から後ろまでスイープし、生存オブジェクトだけを保持します（Sweep）。最後のステップでは、オブジェクトが連続して積み重なるようにヒープを前から埋めていき、オブジェクトがあるセクションとないセクションに分けます（Compaction）。
 
 :::warning
 
-Serial GC is suitable for systems with limited memory and CPU cores. However, using Serial GC can significantly impact application performance.
+Serial GCはメモリとCPUコアが限られたシステムに適しています。ただし、Serial GCを使用するとアプリケーションのパフォーマンスに大きな影響を与える可能性があります。
 
 :::
 
@@ -115,53 +115,53 @@ Serial GC is suitable for systems with limited memory and CPU cores. However, us
 
 > -XX:+UseParallelGC
 
-- Default GC in Java 8
+- Java 8のデフォルトGC
 
-While the basic algorithm is similar to Serial GC, Parallel GC performs Minor GC in the Young Generation using multiple threads.
+基本的なアルゴリズムはSerial GCと似ていますが、Parallel GCはYoung GenerationでのMinor GCを複数のスレッドで実行します。
 
 ### Parallel Old GC
 
 > -XX:+UseParallelOldGC
 
-- An improved version of Parallel GC
+- Parallel GCの改良版
 
-As the name suggests, this GC method is related to the Old Generation. Unlike ParallelGC, which only uses multiple threads for the Young Generation, Parallel Old GC performs GC using multiple threads in the Old Generation as well.
+名前が示すように、このGC方法はOld Generationに関連しています。ParallelGCがYoung Generationのみで複数のスレッドを使用するのに対し、Parallel Old GCはOld Generationでも複数のスレッドを使用してGCを実行します。
 
-### CMS GC (Concurrent Mark Sweep)
+### CMS GC（Concurrent Mark Sweep）
 
-This GC was designed to minimize "Stop the World" time by allowing application threads and GC threads to run concurrently. Due to the multi-step process of identifying GC targets, CPU usage is higher compared to other GC methods.
+このGCは、アプリケーションスレッドとGCスレッドが同時に実行されることで「ストップ・ザ・ワールド」時間を最小限に抑えるように設計されています。GCターゲットを識別するための多段階プロセスのため、他のGC方法と比較してCPU使用率が高くなります。
 
-Ultimately, CMS GC was deprecated starting from Java 9 and **completely discontinued in Java 14**.
+最終的に、CMS GCはJava 9から非推奨となり、**Java 14で完全に廃止されました**。
 
-### G1GC (Garbage First)
+### G1GC（Garbage First）
 
 > -XX:+UseG1GC
 
-- Released in JDK 7 to replace CMS GC
-- Default GC in Java 9+
-- Recommended for situations requiring more than 4GB of heap memory and where a "Stop the World" time of around 0.5 seconds is acceptable (For smaller heaps, other algorithms are recommended)
+- CMS GCを置き換えるためにJDK 7でリリース
+- Java 9以降のデフォルトGC
+- 4GB以上のヒープメモリが必要で、「ストップ・ザ・ワールド」時間が約0.5秒で許容される場合に推奨（小さなヒープの場合は他のアルゴリズムが推奨されます）
 
-G1GC requires a fresh approach as it is a completely redesigned GC method.
+G1GCは完全に再設計されたGC方法であり、新しいアプローチが必要です。
 
-Q. Considering G1GC is the default in later versions, what are the pros and cons compared to the previous CMS?
+Q. G1GCが後のバージョンでデフォルトとなっていることを考えると、以前のCMSと比較しての利点と欠点は何ですか？
 
-- Pros
-  - G1GC performs compaction while scanning, reducing "Stop the World" time.
-  - Provides the ability to compress free memory space without additional "Stop the World" pauses.
-  - String Deduplication Optimization
-  - Tuning options for size, count, etc.
-- Cons
-  - During Full GC, it operates single-threaded.
-  - Applications with small heap sizes may experience frequent Full GC events.
+- 利点
+  - G1GCはスキャン中にコンパクションを行い、「ストップ・ザ・ワールド」時間を短縮します。
+  - 追加の「ストップ・ザ・ワールド」ポーズなしで空きメモリスペースを圧縮する能力を提供します。
+  - 文字列重複排除の最適化
+  - サイズ、カウントなどのチューニングオプション
+- 欠点
+  - Full GC中はシングルスレッドで動作します。
+  - 小さなヒープサイズのアプリケーションでは頻繁にFull GCイベントが発生する可能性があります。
 
 ### Shenandoah GC
 
 > -XX:+UseShenandoahGC
 
-- Released in Java 12
-- Developed by Red Hat
-- Addresses memory fragmentation issues in CMS and pause issues in G1
-- Known for strong concurrency and lightweight GC logic, ensuring consistent pause times regardless of heap size
+- Java 12でリリース
+- Red Hatによって開発
+- CMSのメモリ断片化問題とG1のポーズ問題に対処
+- 強力な並行性と軽量なGCロジックで知られ、ヒープサイズに関係なく一貫したポーズ時間を保証
 
 ![image](./3.webp)
 
@@ -169,22 +169,22 @@ Q. Considering G1GC is the default in later versions, what are the pros and cons
 
 > -XX:+UnlockExperimentalVMOptions -XX:+UseZGC
 
-- Released in Java 15
-- Designed for low-latency processing of large memory sizes (8MB to 16TB)
-- Utilizes ZPages similar to G1's Regions, but ZPages are dynamically managed in 2MB multiples (adjusting region sizes dynamically to accommodate large objects)
-- One of ZGC's key advantages is that **"Stop the World" time never exceeds 10ms regardless of heap size**
+- Java 15でリリース
+- 大規模メモリサイズ（8MBから16TB）の低レイテンシ処理用に設計
+- G1のリージョンに似たZPagesを使用しますが、ZPagesは2MBの倍数で動的に管理されます（大きなオブジェクトに対応するためにリージョンサイズを動的に調整）
+- ZGCの主要な利点の1つは、**ヒープサイズに関係なく「ストップ・ザ・ワールド」時間が10msを超えないことです**
 
 ![image](./4.webp)
 
-## Conclusion
+## 結論
 
-While there are various GC types available, in most cases, using the default GC provided is sufficient. Tuning GC requires significant effort, involving tasks such as analyzing GC logs and heap dumps. Analyzing GC logs will be covered in a separate article.
+さまざまなGCタイプが利用可能ですが、ほとんどの場合、デフォルトのGCを使用するだけで十分です。GCのチューニングには多大な労力が必要であり、GCログやヒープダンプの分析などのタスクが含まれます。GCログの分析については別の記事で取り上げます。
 
-## Reference
+## 参考文献
 
 - [Naver D2](https://d2.naver.com/helloworld/1329)
 - [tecoble](https://tecoble.techcourse.co.kr/post/2021-08-30-jvm-gc/)
 - [Oracle](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/generations.html)
 - [How Java Garbage Collection Works](https://mirinae312.github.io/develop/2018/06/04/jvm_gc.html)
-- [Java Garbage Collection Principles](https://inpa.tistory.com/entry/JAVA-☕-가비지-컬렉션GC-동작-원리-알고리즘-💯-총정리)
+- [Java Garbage Collection Principles](https://inpa.tistory.com/entry/JAVA-☕-がビジ-コレクションGC-動作-原理-アルゴリズム-💯-総まとめ)
 - [Baeldung](https://www.baeldung.com/jvm-garbage-collectors)
