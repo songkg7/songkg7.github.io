@@ -1,166 +1,135 @@
 ---
-title: "[System Design Interview] Chapter 5: Consistent Hashing"
+title: "[システムデザイン面接] 第5章: 一貫性ハッシュ"
 date: 2023-06-04 16:46:46 +0900
-tags: [ hash, algorithm, consistent, system-design, consistent-hashing, architecture ]
-categories: [ System Design ]
+tags: [ ハッシュ, アルゴリズム, 一貫性, システムデザイン, 一貫性ハッシュ, アーキテクチャ ]
+categories: [ システムデザイン ]
 authors: haril
 ---
 
-What are the essential components needed to design a large-scale system?
+大規模なシステムを設計するために必要な基本的なコンポーネントは何でしょうか？
 
-In this article, we will directly implement and discuss Consistent Hashing, which is commonly used in routing systems,
-and talk about it based on data.
+この記事では、ルーティングシステムで一般的に使用される一貫性ハッシュを直接実装し、データに基づいて議論します。
 
 :::info
 
-You can check the complete code on [Github](https://github.com/songkg7/consistent-hashing-sample).
+完全なコードは[Github](https://github.com/songkg7/consistent-hashing-sample)で確認できます。
 
 :::
 
-Since the article is quite lengthy, from now on, we will use '~' for convenience in explanations. 🙏
+この記事はかなり長いので、説明の便宜上、以降は「~」を使用します。🙏
 
-## What is Hashing?
+## ハッシュとは？
 
-Before delving into Consistent Hashing, let's briefly touch on hashing.
+一貫性ハッシュに入る前に、まずハッシュについて簡単に触れておきましょう。
 
-The dictionary definition of hashing is 'a mathematical function that takes an arbitrary length data string as input and
-generates a fixed-size output, typically a hash value or hash code consisting of numbers and strings.'
+辞書的な定義によると、ハッシュとは「任意の長さのデータ文字列を入力として受け取り、固定サイズの出力（通常はハッシュ値またはハッシュコード）を生成する数学的関数」です。
 
-In simple terms, it means that the same input string will always return the same hash code. This characteristic of
-hashing is used for various purposes such as encryption and file integrity verification.
+簡単に言えば、同じ入力文字列は常に同じハッシュコードを返すということです。このハッシュの特性は、暗号化やファイルの整合性検証など、さまざまな目的で使用されます。
 
-## So, What is Consistent Hashing?
+## では、一貫性ハッシュとは？
 
-Consistent Hashing is a technique used to evenly distribute data among distributed servers or services.
+一貫性ハッシュは、分散サーバーやサービス間でデータを均等に分散させるための技術です。
 
-Even without using Consistent Hashing, it is not impossible to evenly distribute data. However, **Consistent Hashing is
-focused on making horizontal scaling easier**. Before exploring Consistent Hashing, let's understand why Consistent
-Hashing emerged through a simple hash routing method.
+一貫性ハッシュを使用しなくても、データを均等に分散させることは不可能ではありません。しかし、一貫性ハッシュは**水平スケーリングを容易にすることに焦点を当てています**。一貫性ハッシュを探る前に、簡単なハッシュルーティング方法を通じて一貫性ハッシュがなぜ登場したのかを理解しましょう。
 
-### Node-Based Hash Routing Method
+### ノードベースのハッシュルーティング方法
 
 > hash(key) % n
 
 ![image](./Pasted-image-20230523203910.webp)
 
-This method efficiently distributes traffic while being simple.
+この方法はシンプルでありながら効率的にトラフィックを分散させます。
 
-However, it has a significant weakness in horizontal scaling. When the node list changes, there is a high probability
-that traffic will be redistributed, leading to routing to new nodes instead of existing nodes.
+しかし、水平スケーリングには大きな弱点があります。ノードリストが変更されると、トラフィックが再分配される可能性が高く、新しいノードにルーティングされることになります。
 
-If you are managing traffic by caching on specific nodes, if a node leaves the group for some reason, it can cause **a
-massive cache miss**, leading to service disruptions.
+特定のノードでキャッシュを管理している場合、ノードがグループから離れると**大規模なキャッシュミス**が発生し、サービスの中断を引き起こす可能性があります。
 
 ![image](./Pasted-image-20230523204056.webp)
 
-In an experiment with four nodes, it was observed that **if only one node leaves, the cache hit rate drops drastically
-to 27%**. We will examine the experimental method in detail in the following paragraphs.
+4つのノードで実験したところ、**1つのノードが離れるだけでキャッシュヒット率が27%に急落**することが観察されました。実験方法の詳細は以下の段落で説明します。
 
-### Consistent Hash Routing Method
+### 一貫性ハッシュルーティング方法
 
-Consistent Hashing is a concept designed to minimize the possibility of massive cache misses.
+一貫性ハッシュは、大規模なキャッシュミスの可能性を最小限に抑えるために設計された概念です。
 
 ![image](./Pasted-image-20230601132426.webp)
 
-The idea is simple. Create a kind of ring by connecting the start and end of the hash space, then place nodes on the
-hash space above the ring. Each node is allocated its hash space and waits for traffic.
+アイデアはシンプルです。ハッシュ空間の開始と終了をリングで接続し、その上にノードを配置します。各ノードは自分のハッシュ空間を割り当てられ、トラフィックを待ちます。
 
 :::info
 
-The hash function used to place nodes is independent of modulo operations.
+ノードを配置するために使用されるハッシュ関数は、モジュロ演算とは独立しています。
 
 :::
 
-Now, let's assume a situation where traffic enters this router implemented with Consistent Hashing.
+次に、この一貫性ハッシュを実装したルーターにトラフィックが入る状況を仮定しましょう。
 
 ![image](./Pasted-image-20230601133003.webp)
 
-Traffic passed through the hash function is routed towards the nearest node on the ring. Node B caches `key1` in
-preparation for future requests.
+ハッシュ関数を通過したトラフィックは、リング上の最も近いノードにルーティングされます。ノードBは将来のリクエストに備えて`key1`をキャッシュします。
 
-Even in the scenario of a high volume of traffic, traffic will be routed to their respective nodes following the same
-principle.
+大量のトラフィックが発生しても、トラフィックは同じ原則に従ってそれぞれのノードにルーティングされます。
 
-#### Advantages of Consistent Hashing
+#### 一貫性ハッシュの利点
 
-##### Low probability of cache misses even when the node list changes
+##### ノードリストが変更されてもキャッシュミスの確率が低い
 
-Let's consider a situation where Node E is added.
+ノードEが追加される状況を考えてみましょう。
 
 ![image](./Pasted-image-20230601133345.webp)
 
-Previously entered keys are placed at the same points as before. Some keys that were placed between Nodes D and C now
-point to the new Node E, causing cache misses. However, the rest of the keys placed in other spaces do not experience
-cache misses.
+以前に入力されたキーは同じポイントに配置されます。ノードDとCの間に配置された一部のキーは新しいノードEを指すようになり、キャッシュミスが発生します。しかし、他のスペースに配置されたキーはキャッシュミスを経験しません。
 
-Even if there is a network error causing Node C to disappear, the results are similar.
+ネットワークエラーでノードCが消える場合でも、結果は同様です。
 
 ![image](./Pasted-image-20230601133814.webp)
 
-Keys that were directed to Node C now route to Node D, causing cache misses. However, the keys placed in other spaces do
-not experience cache misses.
+ノードCに向かっていたキーはノードDにルーティングされ、キャッシュミスが発生します。しかし、他のスペースに配置されたキーはキャッシュミスを経験しません。
 
-In conclusion, regardless of any changes in the node list, only keys directly related to the changed nodes experience
-cache misses. This increases the cache hit rate compared to node-based hash routing, improving overall system
-performance.
+結論として、ノードリストに変更があっても、変更されたノードに直接関連するキーだけがキャッシュミスを経験します。これにより、ノードベースのハッシュルーティングと比較してキャッシュヒット率が向上し、システム全体のパフォーマンスが向上します。
 
-#### Disadvantages of Consistent Hashing
+#### 一貫性ハッシュの欠点
 
-Like all other designs, Consistent Hashing, which may seem elegant, also has its drawbacks.
+他のすべての設計と同様に、一見エレガントに見える一貫性ハッシュにも欠点があります。
 
-##### Difficult to maintain uniform partitions
+##### 均一なパーティションの維持が難しい
 
 ![image](./Pasted-image-20230523204228.webp)
-_Nodes with different sizes of hash spaces are placed on the ring._
+_異なるサイズのハッシュ空間を持つノードがリング上に配置されています。_
 
-It is very difficult to predict the results of a hash function without knowing which key will be generated. Therefore,
-Consistent Hashing, which determines the position on the ring based on the hash result, cannot guarantee that nodes will
-have uniform hash spaces and be distributed evenly on the ring.
+どのキーが生成されるかを知らずにハッシュ関数の結果を予測するのは非常に難しいです。したがって、ハッシュ結果に基づいてリング上の位置を決定する一貫性ハッシュは、ノードが均一なハッシュ空間を持ち、リング上に均等に分散されることを保証できません。
 
-##### Difficult to achieve uniform distribution
+##### 均一な分散の達成が難しい
 
 ![image](./Pasted-image-20230523204258.webp)
-_If a node's hash space is too wide, traffic can be concentrated._
+_ノードのハッシュ空間が異常に広い場合、トラフィックが集中する可能性があります。_
 
-This problem arises because nodes are not evenly distributed on the hash ring. If Node D's hash space is abnormally
-larger than other nodes, it can lead to a hotspot issue where traffic is concentrated on a specific node, causing
-overall system failure.
+この問題は、ノードがハッシュリング上に均等に分散されていないために発生します。ノードDのハッシュ空間が他のノードよりも異常に広い場合、特定のノードにトラフィックが集中し、システム全体の障害を引き起こすホットスポット問題が発生する可能性があります。
 
-## Virtual Nodes
+## 仮想ノード
 
-The hash space is finite. Therefore, if there are a large number of nodes placed in the hash space, the standard
-deviation decreases, meaning that even if one node is removed, the next node will not be heavily burdened. The problem
-lies in the fact that in the real world, **the number of physical nodes equates to cost**.
+ハッシュ空間は有限です。したがって、ハッシュ空間に配置されるノードの数が多いほど、標準偏差が減少し、1つのノードが削除されても次のノードに大きな負担がかかりません。問題は、現実の世界では**物理ノードの数がコストに直結する**ことです。
 
-To address this, virtual nodes, which mimic physical nodes, are implemented to solve this intelligently.
+これに対処するために、物理ノードを模倣する仮想ノードが実装され、これを賢く解決します。
 
 ![image](./Pasted-image-20230523204810.webp)
 
-Virtual nodes internally point to the hash value of the physical nodes. Think of them as a kind of duplication magic.
-The main physical node is not placed on the hash ring, only the replicated virtual nodes wait for traffic on the hash
-ring. When traffic is allocated to a virtual node, it is routed based on the hash value of the actual node it
-represents.
+仮想ノードは内部的に物理ノードのハッシュ値を指します。これを一種の複製マジックと考えてください。主要な物理ノードはハッシュリング上に配置されず、複製された仮想ノードだけがハッシュリング上でトラフィックを待ちます。トラフィックが仮想ノードに割り当てられると、それはそれが表す実際のノードのハッシュ値に基づいてルーティングされます。
 
-## DIY Consistent Hashing
+## DIY一貫性ハッシュ
 
 > DIY: Do It Yourself
 
-So far, we have discussed the theoretical aspects. Personally, I believe that there is no better way to learn a concept
-than **implementing it yourself**. Let's implement it.
+これまで理論的な側面を議論してきました。個人的には、概念を学ぶ最良の方法は**自分で実装すること**だと信じています。実装してみましょう。
 
-### Choosing a Hash Algorithm
+### ハッシュアルゴリズムの選択
 
-It may seem obvious since the name includes hashing, but when implementing Consistent Hashing, selecting an appropriate
-hash algorithm is crucial. The speed of the hash function is directly related to performance. Commonly used hash
-algorithms are MD5 and SHA-256.
+名前にハッシュが含まれているので当然のように思えるかもしれませんが、一貫性ハッシュを実装する際には適切なハッシュアルゴリズムを選択することが重要です。ハッシュ関数の速度はパフォーマンスに直接関係します。一般的に使用されるハッシュアルゴリズムはMD5とSHA-256です。
 
-- MD5: Suitable for applications where speed is more important than security. Has a smaller hash space compared to
-  SHA-256. 2^128
-- SHA-256: Has a longer hash size and stronger encryption properties. Slower than MD5. With a very large hash space of
-  about 2^256, collisions are almost non-existent.
+- MD5: セキュリティよりも速度が重要なアプリケーションに適しています。SHA-256に比べてハッシュ空間が小さいです。2^128
+- SHA-256: より長いハッシュサイズと強力な暗号化特性を持ちます。MD5よりも遅いです。約2^256の非常に大きなハッシュ空間を持ち、衝突はほとんどありません。
 
-For routing, speed is more important than security, and since there are fewer concerns about hash collisions, MD5 is
-considered sufficient for implementing the hash function.
+ルーティングでは、セキュリティよりも速度が重要であり、ハッシュ衝突の懸念が少ないため、MD5はハッシュ関数の実装に十分と考えられます。
 
 ```java
 public class MD5Hash implements HashAlgorithm {
@@ -191,16 +160,16 @@ public class MD5Hash implements HashAlgorithm {
 
 :::tip
 
-In Java, you can conveniently implement a hash function using the MD5 algorithm through `MessageDigest`.
+Javaでは、`MessageDigest`を使用してMD5アルゴリズムを使用したハッシュ関数を便利に実装できます。
 
 :::
 
-### Hash Ring
+### ハッシュリング
 
 ```java
-// Hash the businessKey and find the hashed value (node) placed on the ring.
+// businessKeyをハッシュし、リング上に配置されたハッシュ値（ノード）を見つけます。
 public T routeNode(String businessKey) {
-    if (ring.isEmpty()) { // If the ring is empty, it means there are no nodes, so return null
+    if (ring.isEmpty()) { // リングが空の場合、ノードがないことを意味するのでnullを返します
         return null;
     }
     Long hashOfBusinessKey = this.hashAlgorithm.hash(businessKey);
@@ -216,124 +185,81 @@ public T routeNode(String businessKey) {
 }
 ```
 
-The hash ring is implemented using a `TreeMap`. Since `TreeMap` maintains keys (hash values) in ascending order upon
-storage, we can use the `tailMap(key)` method to find values greater than the key (hash value) and connect them to the
-largest key if a larger key cannot be found.
+ハッシュリングは`TreeMap`を使用して実装されています。`TreeMap`はキー（ハッシュ値）を昇順に保持するため、`tailMap(key)`メソッドを使用してキー（ハッシュ値）より大きい値を見つけ、より大きなキーが見つからない場合は最大のキーに接続できます。
 
 :::info
 
-If you are not familiar with `TreeMap`, please refer to this [link](https://coding-factory.tistory.com/557).
+`TreeMap`に慣れていない場合は、この[リンク](https://coding-factory.tistory.com/557)を参照してください。
 
 :::
 
-### Testing
+### テスト
 
-How effective is Consistent Hashing compared to the standard routing method? Now that we have implemented it ourselves,
-let's resolve this question. The rough test design is as follows:
+一貫性ハッシュは標準的なルーティング方法と比較してどれほど効果的でしょうか？自分で実装したので、この疑問を解決しましょう。大まかなテスト設計は次のとおりです：
 
-- Process 1 million requests, then introduce changes to the node list and assume the same traffic comes in again.
-- 4 physical nodes
+- 100万件のリクエストを処理し、その後ノードリストに変更を加え、同じトラフィックが再度発生することを仮定します。
+- 4つの物理ノード
 
-The numerical data was quantified through a simple test code[^fn-nth-1], and when graphed, it revealed six cases. Let's
-look at each one.
+数値データは簡単なテストコード[^fn-nth-1]を通じて定量化され、グラフ化すると6つのケースが明らかになりました。それぞれのケースを見てみましょう。
 
-#### Case 1: Simple Hash, No Node Changes
+#### ケース1: シンプルハッシュ、ノード変更なし
 
 ![image](./Pasted-image-20230601150740.webp)
 
-After sending 1 million requests and then another 1 million of the same requests, since there were no changes in the
-nodes, the cache hit rate was 100% from the second request onwards.
+100万件のリクエストを送信し、その後同じリクエストをもう100万件送信した場合、ノードに変更がなかったため、2回目のリクエスト以降のキャッシュヒット率は100%でした。
 
 :::info
 
-Although the cache hit rate was low, the possibility of cache hits even in the first request (gray graph) was due to the
-random nature of the keys used in the test, resulting in a low probability of duplicate key values.
+キャッシュヒット率が低かったとしても、最初のリクエスト（灰色のグラフ）でキャッシュヒットの可能性があったのは、テストで使用されたキーがランダムであり、重複キーの確率が低かったためです。
 
 :::
 
-Looking at the heights of the graphs for the nodes, we can see that the routing using `hash % N` is indeed distributing
-all traffic very evenly.
+ノードごとのグラフの高さを見ると、`hash % N`を使用したルーティングがすべてのトラフィックを非常に均等に分散させていることがわかります。
 
-#### Case 2: Simple Hash, 1 Node Departure
+#### ケース2: シンプルハッシュ、1ノードの離脱
 
 ![image](./Pasted-image-20230601150807.webp)
 
-The cache hit rate, indicated by the green graph, significantly decreased. With Node 1 departing, the traffic was
-distributed to Nodes 2, 3, and 4. While some traffic luckily hit the cache on the same nodes as before, most of it was
-directed to different nodes, resulting in cache misses.
+緑のグラフで示されるキャッシュヒット率が大幅に低下しました。ノード1が離脱すると、トラフィックはノード2、3、4に分散されました。運良く同じノードでキャッシュヒットしたトラフィックもありましたが、大部分は異なるノードに向かい、キャッシュミスが発生しました。
 
-#### Case 3: Consistent Hash, No Node Changes, No Virtual Nodes
+#### ケース3: 一貫性ハッシュ、ノード変更なし、仮想ノードなし
 
 ![image](./Pasted-image-20230601153047.webp)
 
 :::info
 
-Considering that physical nodes are not placed on the hash ring, using only one virtual node practically means not using
-virtual nodes.
+物理ノードがハッシュリング上に配置されないことを考えると、仮想ノードを1つだけ使用することは実質的に仮想ノードを使用しないことを意味します。
 
 :::
 
-Similar to Case 1, the red graph rises first as cache hits cannot occur immediately in the first request. By the second
-request, the cache hit rate is 100%, aligning the heights of the green and red graphs.
+ケース1と同様に、最初のリクエストではキャッシュヒットがすぐに発生しないため、赤いグラフが最初に上昇します。2回目のリクエストではキャッシュヒット率が100%となり、緑と赤のグラフの高さが一致します。
 
-However, it can be observed that the heights of the graphs for each node are different, indicating the drawback of
-Consistent Hashing—**uneven traffic distribution due to non-uniform partitions**.
+しかし、各ノードのグラフの高さが異なることが観察され、一貫性ハッシュの欠点である**均一でないパーティションによるトラフィックの不均等分散**が示されています。
 
-#### Case 4: Consistent Hash, 1 Node Departure, No Virtual Nodes
+#### ケース4: 一貫性ハッシュ、1ノードの離脱、仮想ノードなし
 
 ![image](./SCR-20230601-nxtx.webp)
 
-After Node 1 departs, the cache hit rate overwhelmingly improved compared to Case 2.
+ノード1が離脱した後、キャッシュヒット率はケース2と比較して圧倒的に改善されました。
 
-Upon closer inspection, it can be seen that the traffic originally directed to Node 1 then moved to Node 2 in the second
-traffic wave. Node 2 processed around 450,000 requests, including cache hits, which is more than twice the amount
-processed by Node 3 with 220,000 requests. Meanwhile, the traffic to Nodes 3 and 4 remained unchanged. This illustrates
-the advantage of Consistent Hashing while also highlighting a kind of **hotspot phenomenon**.
+詳細に見ると、元々ノード1に向かっていたトラフィックが2回目のトラフィック波でノード2に移動したことがわかります。ノード2は約45万件のリクエストを処理し、これはノード3が処理した22万件のリクエストの2倍以上です。一方、ノード3と4へのトラフィックは変わりませんでした。これにより、一貫性ハッシュの利点が示されると同時に、一種の**ホットスポット現象**が強調されました。
 
-#### Case 5: Consistent Hash, 1 Node Departure, 10 Virtual Nodes
+#### ケース5: 一貫性ハッシュ、1ノードの離脱、10仮想ノード
 
-To achieve uniform partitioning and resolve the hotspot issue, let's apply virtual nodes.
+均一なパーティションを達成し、ホットスポット問題を解決するために、仮想ノードを適用してみましょう。
 
 ![image](./Pasted-image-20230601155340.webp)
 
-Overall, there is a change in the graphs. The traffic that was supposed to go to Node 1 is now divided among Nodes 2, 3,
-and 4. Although the partitions are not evenly distributed, the hotspot issue is gradually being resolved compared to
-Case 4. Since 10 virtual nodes seem insufficient, let's increase them further.
+全体的にグラフに変化があります。ノード1に向かっていたトラフィックがノード2、3、4に分散されました。パーティションは均等に分配されていませんが、ケース4と比較してホットスポット問題が徐々に解決されていることがわかります。10仮想ノードでは不十分なようなので、さらに増やしてみましょう。
 
-#### Case 6: Consistent Hash, 1 Node Departure, 100 Virtual Nodes
+#### ケース6: 一貫性ハッシュ、1ノードの離脱、100仮想ノード
 
 ![image](./Pasted-image-20230601160256.webp)
 
-Finally, the graphs for Nodes 2, 3, and 4 are similar. After Node 1's departure, there are 100 virtual nodes per
-physical node on the hash ring, totaling 300 virtual nodes. In summary:
+最後に、ノード2、3、4のグラフが似ています。ノード1が離脱した後、各物理ノードに100の仮想ノードがハッシュリング上に配置され、合計300の仮想ノードが存在します。まとめると：
 
-- It can be seen that traffic is evenly distributed enough to withstand Case 1.
-- Even if Node 1 departs, the traffic intended for Node 1 is spread across multiple nodes, preventing the hotspot issue.
-- Apart from the traffic directed to Node 1, the cache still hits.
+- ケース1に耐えられるほどトラフィックが均等に分散されていることがわかります。
+- ノード1が離脱しても、ノード1に向かっていたトラフィックが複数のノードに分散され、ホットスポット問題が防止されます。
+- ノード1に向かっていたトラフィック以外はキャッシュヒットが発生します。
 
-By placing a sufficient number of virtual nodes, the routing method using Consistent Hashing has become highly
-advantageous for horizontal scaling compared to the remaining operations, as observed.
-
-## Conclusion
-
-We have examined Consistent Hashing as discussed in Chapter 5 of the fundamentals of large-scale system design. We hope
-this has helped you understand what Consistent Hashing is, and why it exists to solve certain problems.
-
-Although not mentioned in a separate case, I was concerned about how many virtual nodes should be added to achieve a
-perfectly uniform distribution. Therefore, I increased the number of virtual nodes to 10,000 and found that adding more
-virtual nodes had minimal effect. Theoretically, increasing virtual nodes should converge the variance to zero and
-achieve a uniform distribution. However, increasing virtual nodes means having many instances on the hash ring, leading
-to unnecessary overhead. It requires the task of finding and organizing virtual nodes on the hash ring whenever a new
-node is added or removed[^fn-nth-2]. In a live environment, please set an appropriate number of virtual nodes based on
-data.
-
-## Reference
-
-- [How Does Java HashMap Work](https://d2.naver.com/helloworld/831311)
-- [Designing Consistent Hashing](https://donghyeon.dev/%EC%9D%B8%ED%94%84%EB%9D%BC/2022/03/20/%EC%95%88%EC%A0%95-%ED%95%B4%EC%8B%9C-%EC%84%A4%EA%B3%84/)
-- [Lonor/websocket-cluster](https://github.com/Lonor/websocket-cluster)
-
-[^fn-nth-1]: [SimpleHashRouterTest](https://github.com/songkg7/consistent-hashing-sample/blob/main/src/test/java/com/example/consistenthashingsample/router/SimpleHashRouterTest.java)
-
-[^fn-nth-2]: In particular, for a Hash Ring implemented using TreeMap, massive insertions and deletions are somewhat
-inefficient as the internal elements need to be rearranged each time.
+十分な数の仮想ノードを配置することで、一貫性ハッシュを使用したルーティング方法が残りの操作と比較して水平スケーリングに非常に有利で
