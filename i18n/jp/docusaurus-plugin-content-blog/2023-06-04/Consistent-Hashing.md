@@ -1,8 +1,8 @@
 ---
 title: "[システムデザイン面接] 第5章: 一貫性ハッシュ"
 date: 2023-06-04 16:46:46 +0900
-tags: [ ハッシュ, アルゴリズム, 一貫性, システムデザイン, 一貫性ハッシュ, アーキテクチャ ]
-categories: [ システムデザイン ]
+tags: [ hash, algorithm, consistent, system-design, consistent-hashing, architecture ]
+categories: [system-design]
 authors: haril
 ---
 
@@ -262,4 +262,21 @@ public T routeNode(String businessKey) {
 - ノード1が離脱しても、ノード1に向かっていたトラフィックが複数のノードに分散され、ホットスポット問題が防止されます。
 - ノード1に向かっていたトラフィック以外はキャッシュヒットが発生します。
 
-十分な数の仮想ノードを配置することで、一貫性ハッシュを使用したルーティング方法が残りの操作と比較して水平スケーリングに非常に有利で
+十分な数の仮想ノードを配置することで、一貫ハッシュ法を用いたルーティング方法が他の操作に比べて水平スケーリングに非常に有利であることが観察されました。
+
+## 結論
+
+第5章で説明されている大規模システム設計の基本をもとに、一貫ハッシュ法について検討しました。一貫ハッシュ法が何であるか、そしてなぜ特定の問題を解決するために存在するのかを理解するのに役立ったことを願っています。
+
+別のケースで言及されていませんが、完全に均一な分布を達成するためにいくつの仮想ノードを追加すべきか気になりました。そこで、仮想ノードの数を10,000に増やしてみましたが、仮想ノードを増やしても効果はほとんどありませんでした。理論的には、仮想ノードを増やすと分散はゼロに収束し、均一な分布が達成されるはずです。しかし、仮想ノードを増やすということは、ハッシュリング上に多くのインスタンスが存在することを意味し、不要なオーバーヘッドが発生します。新しいノードが追加されたり削除されたりするたびに、ハッシュリング上の仮想ノードを見つけて整理する作業が必要になります。実運用環境では、データに基づいて適切な仮想ノードの数を設定してください。
+
+## 参考文献
+
+- [How Does Java HashMap Work](https://d2.naver.com/helloworld/831311)
+- [Designing Consistent Hashing](https://donghyeon.dev/%EC%9D%B8%ED%94%84%EB%9D%BC/2022/03/20/%EC%95%88%EC%A0%95-%ED%95%B4%EC%8B%9C-%EC%84%A4%EA%B3%84/)
+- [Lonor/websocket-cluster](https://github.com/Lonor/websocket-cluster)
+
+[^fn-nth-1]: [SimpleHashRouterTest](https://github.com/songkg7/consistent-hashing-sample/blob/main/src/test/java/com/example/consistenthashingsample/router/SimpleHashRouterTest.java)
+
+[^fn-nth-2]: In particular, for a Hash Ring implemented using TreeMap, massive insertions and deletions are somewhat
+inefficient as the internal elements need to be rearranged each time.
