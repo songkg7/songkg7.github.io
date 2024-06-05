@@ -37,6 +37,7 @@ public class Main {
 ## ストップ・ザ・ワールド
 
 ![image](./the-world-jojo.gif)
+
 _ザ・ワールド！時よ止まれ！ - ジョジョの奇妙な冒険_
 
 アプリケーションの実行を停止してGCを行います。**「ストップ・ザ・ワールド」イベントが発生すると、GCを実行しているスレッド以外のすべてのスレッドが一時停止します。** GC操作が完了すると、一時停止していたタスクが再開されます。使用されるGCアルゴリズムに関係なく、「ストップ・ザ・ワールド」イベントは発生し、GCのチューニングは通常、この一時停止状態の時間を短縮することを目的としています。
@@ -186,5 +187,5 @@ Q. G1GCが後のバージョンでデフォルトとなっていることを考�
 - [tecoble](https://tecoble.techcourse.co.kr/post/2021-08-30-jvm-gc/)
 - [Oracle](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/generations.html)
 - [How Java Garbage Collection Works](https://mirinae312.github.io/develop/2018/06/04/jvm_gc.html)
-- [Java Garbage Collection Principles](https://inpa.tistory.com/entry/JAVA-☕-がビジ-コレクションGC-動作-原理-アルゴリズム-💯-総まとめ)
+- [Java Garbage Collection Principles](https://inpa.tistory.com/entry/JAVA-☕-가비지-컬렉션GC-동작-원리-알고리즘-💯-총정리)
 - [Baeldung](https://www.baeldung.com/jvm-garbage-collectors)
