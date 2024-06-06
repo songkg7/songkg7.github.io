@@ -1,5 +1,5 @@
 ---
-title: "Optimizing Images for Blog Search Exposure"
+title: "ブログ検索露出のための画像最適化"
 aliases:
 tags: [ webp, imagemin, obsidian, jekyll, seo, javascript ]
 categories:
@@ -8,67 +8,54 @@ mermaid: true
 authors: haril
 ---
 
-In the process of automating blog posting, we discuss image optimization for SEO. This is a story of failure rather than
-success, where we had to resort to Plan B.
+ブログ投稿の自動化プロセスにおいて、SEOのための画像最適化について議論します。これは成功の話ではなく、むしろ失敗の話であり、最終的にはプランBに頼ることになりました。
 
 :::info
 
-You can check the code on [GitHub](https://github.com/songkg7/songkg7.github.io/tree/master/tools).
+コードは[GitHub](https://github.com/songkg7/songkg7.github.io/tree/master/tools)で確認できます。
 
 :::
 
-## Identifying the Problem
+## 問題の特定
 
-For SEO optimization, it is best to have images in blog posts as small as possible. This improves the efficiency of
-search engine crawling bots, speeds up page loading, and positively impacts user experience.
+SEO最適化のためには、ブログ投稿内の画像をできるだけ小さくするのが最善です。これにより、検索エンジンのクロールボットの効率が向上し、ページの読み込み速度が速くなり、ユーザーエクスペリエンスにも良い影響を与えます。
 
-So, which image format should we use? 🤔
+では、どの画像フォーマットを使用すべきでしょうか？ 🤔
 
-Google has developed an image format called **WebP** to address this issue and actively recommends its use. For Google,
-which profits from advertising, image optimization is directly related to profitability as it allows users to quickly
-reach website ads.
+Googleはこの問題に対処するために**WebP**という画像フォーマットを開発し、その使用を積極的に推奨しています。広告から利益を得るGoogleにとって、画像の最適化はユーザーがウェブサイトの広告に迅速にアクセスできるようにするため、利益に直結します。
 
-In fact, converting a jpg file of about 2.8MB to webp reduced it to around 47kb. That's **more than a 1/50 reduction!**
-Although some quality loss occurred, it was hardly noticeable on the webpage.
+実際、約2.8MBのjpgファイルをwebpに変換すると、約47kbに減少しました。これは**50分の1以上の削減**です！ 多少の画質の低下はありましたが、ウェブページ上ではほとんど気になりませんでした。
 
 ![image](./1.webp)
 
-With this level of improvement, the motivation to solve the problem was more than enough. Let's gather information to
-implement it.
+このレベルの改善があれば、問題を解決するモチベーションは十分です。実装するための情報を集めましょう。
 
-## Approach to the Solution
+## 解決へのアプローチ
 
-### Plan A. Adding to O2 as a Feature
+### プランA. O2への機能追加
 
-We have a plugin called [O2](https://github.com/songkg7/o2) that we developed for blog posting. Since we thought that
-including the `WebP` conversion task as part of this plugin's functionality would be the most ideal way, we first
-attempted this approach.
+ブログ投稿のために開発したプラグイン[O2](https://github.com/songkg7/o2)があります。このプラグインの機能の一部として`WebP`変換タスクを含めるのが最も理想的だと考え、まずこのアプローチを試みました。
 
-While `sharp` is the most famous library for image processing, it is OS-dependent and cannot be used with Obsidian
-plugins. To confirm this, I asked about it in the Obsidian community and received a clear answer that it cannot be used.
+画像処理で最も有名なライブラリは`sharp`ですが、これはOS依存であり、Obsidianプラグインでは使用できません。これを確認するためにObsidianコミュニティで質問したところ、使用できないという明確な回答を得ました。
 
 ![image](./Pasted-image-20230418152006.webp)
 
 ![image](./Pasted-image-20230418152135.webp)
 
 ![image](./Pasted-image-20230418152325.webp)
-_Related community conversation_
+_関連するコミュニティの会話_
 
-Unable to use `sharp`, we decided to use `imagemin` as an alternative.
+`sharp`が使用できないため、代替として`imagemin`を使用することにしました。
 
-However, there was a critical issue: `imagemin` requires the platform to be node for it to work when running esbuild,
-but the Obsidian plugin required the platform to be a browser. Setting it to neutral, which should work on both
-platforms, didn't work on either...
+しかし、重大な問題がありました：`imagemin`はesbuildを実行する際にプラットフォームがnodeであることを要求しますが、Obsidianプラグインはプラットフォームがブラウザであることを要求します。両方のプラットフォームで動作するはずのneutralに設定しても、どちらでも動作しませんでした...
 
 ![image](./Pasted-image-20230418173447.webp)
 
-Since we couldn't find a suitable library to apply to O2 immediately, we decided to implement a simple script to handle
-the format conversion task.
+O2に適用できる適切なライブラリをすぐに見つけることができなかったため、フォーマット変換タスクを処理するための簡単なスクリプトを実装することにしました。
 
-### Plan B. npm script
+### プランB. npmスクリプト
 
-Instead of adding functionality to the plugin, we can easily convert formats by scripting directly within the Jekyll
-project.
+プラグインに機能を追加する代わりに、Jekyllプロジェクト内で直接スクリプトを使ってフォーマットを簡単に変換できます。
 
 ```javascript
 async function deleteFilesInDirectory(dir) {
@@ -106,14 +93,12 @@ async function convertImages(dir) {
 })();
 ```
 
-While this method allows for quick implementation of the desired functionality, it requires users to manually relink the
-changed images to the markdown document outside of the process controlled by O2.
+この方法では、望む機能を迅速に実装できますが、ユーザーがO2の制御外で変更された画像を手動でマークダウン文書に再リンクする必要があります。
 
-If we must use this method, we decided to use regular expressions to change the image extensions linked in all files
-to `webp`, thereby skipping the task of relinking images in the document.
+この方法を使用する場合、正規表現を使用してすべてのファイルにリンクされた画像の拡張子を`webp`に変更し、文書内で画像を再リンクするタスクをスキップすることにしました。
 
 ```javascript
-// omitted
+// 省略
 async function updateMarkdownFile(dir) {
     const files = fs.readdirSync(dir);
 
@@ -139,28 +124,28 @@ async function updateMarkdownFile(dir) {
 })();
 ```
 
-Then, we wrote a script to run when publishing a blog post.
+次に、ブログ投稿を公開する際に実行するスクリプトを書きました。
 
 ```bash
 #!/usr/bin/env bash
 
-echo "Image optimization️...🖼️"
+echo "画像最適化中...🖼️"
 node tools/imagemin.js
 
 git add .
 git commit -m "post: publishing"
 
-echo "Pushing...📦"
+echo "プッシュ中...📦"
 git push origin master
 
-echo "Done! 🎉"
+echo "完了！ 🎉"
 ```
 
 ```bash
 ./tools/publish
 ```
 
-Directly running sh in the terminal somehow felt inelegant. Let's add it to `package.json` for a cleaner usage.
+ターミナルで直接shを実行するのはなんとなくエレガントではないと感じました。`package.json`に追加して、よりクリーンに使用できるようにしましょう。
 
 ```json
 {
@@ -175,36 +160,33 @@ npm run publish
 ```
 
 ![image](./Pasted-image-20230426164025.webp)
-_It works quite well._
+_かなりうまくいきます。_
 
-For now, we concluded it this way.
+とりあえず、これで結論を出しました。
 
-## Conclusion
+## 結論
 
-Through this process, the blog posting pipeline has transformed as follows:
+このプロセスを通じて、ブログ投稿のパイプラインは次のように変わりました：
 
-**Before**
-
-```mermaid
-flowchart LR
-    A[Write Post] --> B[Run O2] --> C[Convert Images] --> D[Modify Markdown Links] --> E[git push]
-```
-
-**After**
+**以前**
 
 ```mermaid
 flowchart LR
-    A[Write Post] --> B[Run O2] --> D[Publish]
+    A[投稿を書く] --> B[O2を実行] --> C[画像を変換] --> D[マークダウンリンクを修正] --> E[git push]
 ```
 
-Looking at the results alone, it doesn't seem that bad, does it...? 🤔
+**現在**
 
-We wanted to add the image format conversion feature as part of the O2 plugin functionality, but for various reasons, we
-couldn't apply it (for now), which is somewhat disappointing. The methods using JS and sh require additional actions
-from the user and are not easy to maintain. We need to consistently think about how to bring this feature into O2
-internally.
+```mermaid
+flowchart LR
+    A[投稿を書く] --> B[O2を実行] --> D[公開]
+```
 
-## Reference
+結果だけを見ると、それほど悪くないように見えますね...? 🤔
+
+画像フォーマット変換機能をO2プラグインの一部として追加したかったのですが、さまざまな理由で適用できませんでした（今のところ）。JSとshを使用する方法は、ユーザーに追加のアクションを要求し、メンテナンスが容易ではありません。この機能を内部的にO2に取り込む方法を一貫して考える必要があります。
+
+## 参考文献
 
 - [Sharp](https://sharp.pixelplumbing.com/)
 - [Imagemin](https://github.com/imagemin/imagemin)
