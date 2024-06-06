@@ -1,5 +1,5 @@
 ---
-title: "Getting the Most Out of chezmoi"
+title: "chezmoiを最大限に活用する方法"
 date: 2023-04-08 18:26:00 +0900
 aliases: 
 tags: [chezmoi, dotfiles]
@@ -7,25 +7,25 @@ categories:
 authors: haril
 ---
 
-Following on from the [previous post](https://haril.dev/blog/2023/03/26/chezmoi-awesome-dotfile-manager), I'll share some ways to make better use of chezmoi.
+[前回の記事](https://haril.dev/blog/2023/03/26/chezmoi-awesome-dotfile-manager)に続いて、chezmoiをより効果的に活用する方法をいくつか紹介します。
 
 :::info
 
-You can check out the settings I'm currently using [here](https://github.com/songkg7/dotfiles).
+現在使用している設定は[こちら](https://github.com/songkg7/dotfiles)で確認できます。
 
 :::
 
-## How to Use It
+## 使い方
 
-You can find the usage of chezmoi commands with `chezmoi help` and in the official documentation. In this post, I'll explain some advanced ways to use chezmoi more conveniently.
+chezmoiのコマンドの使い方は`chezmoi help`や公式ドキュメントで確認できますが、この記事ではchezmoiをより便利に使うための高度な方法を説明します。
 
-### Settings
+### 設定
 
-chezmoi uses the `~/.config/chezmoi/chezmoi.toml` file for settings. If you need tool-specific settings, you can define them in this file. It supports not only `toml` but also `yaml` and `json`, so you can write in a format you are familiar with. Since the official documentation guides with `toml`, I'll also explain using `toml` as the default.
+chezmoiは設定ファイルとして`~/.config/chezmoi/chezmoi.toml`を使用します。ツール固有の設定が必要な場合、このファイルに定義できます。`toml`だけでなく、`yaml`や`json`もサポートしているので、慣れた形式で記述できます。公式ドキュメントでは`toml`を使っているので、ここでもデフォルトとして`toml`を使って説明します。
 
-#### Setting Merge Tool and Default Editor
+#### マージツールとデフォルトエディタの設定
 
-**chezmoi uses vi as the default editor**. Since I mainly use nvim, I'll show you how to modify it to use nvim as the default editor.
+**chezmoiのデフォルトエディタはviです**。私は主にnvimを使っているので、デフォルトエディタをnvimに変更する方法を紹介します。
 
 ```bash
 chezmoi edit-config
@@ -40,7 +40,7 @@ chezmoi edit-config
     args = ["-d", "{% raw %}{{ .Destination }}{% endraw %}", "{% raw %}{{ .Source }}{% endraw %}", "{% raw %}{{ .Target }}{% endraw %}"]
 ```
 
-If you use VScode, you can set it up like this:
+VScodeを使っている場合は、次のように設定できます：
 
 ```toml
 [edit]
@@ -48,24 +48,24 @@ If you use VScode, you can set it up like this:
     args = ["--wait"]
 ```
 
-#### Managing gitconfig Using Templates
+#### テンプレートを使ったgitconfigの管理
 
-Sometimes you may need separate configurations rather than uniform settings. For example, you might need different gitconfig settings for work and personal environments. In such cases where only specific data needs to be separated while the rest remains similar, chezmoi allows you to control this through a method called templates, which inject environment variables.
+一部の設定を統一するのではなく、環境ごとに異なる設定が必要な場合があります。例えば、仕事用と個人用で異なるgitconfig設定が必要な場合です。このように特定のデータだけを分けたい場合、chezmoiではテンプレートという方法を使って環境変数を注入することができます。
 
-First, create a gitconfig file:
+まず、gitconfigファイルを作成します：
 
 ```bash
 mkdir ~/.config/git
 touch ~/.config/git/config
 ```
 
-Register gitconfig as a template to enable the use of variables:
+gitconfigをテンプレートとして登録し、変数の使用を可能にします：
 
 ```bash
 chezmoi add --template ~/.config/git/config
 ```
 
-Write the parts where data substitution is needed:
+データの置換が必要な部分を記述します：
 
 ```bash
 chezmoi edit ~/.config/git/config
@@ -77,12 +77,12 @@ chezmoi edit ~/.config/git/config
     email = {% raw %}{{ .email }}{% endraw %}
 ```
 
-These curly braces will be filled with variables defined in the local environment. You can check the default variable list with `chezmoi data`.
+これらの中括弧はローカル環境で定義された変数で埋められます。デフォルトの変数リストは`chezmoi data`で確認できます。
 
-Write the variables in `chezmoi.toml`:
+変数を`chezmoi.toml`に記述します：
 
 ```bash
-# Write local settings instead of `chezmoi edit-config`.
+# `chezmoi edit-config`の代わりにローカル設定を記述します。
 vi ~/.config/chezmoi/chezmoi.toml
 ```
 
@@ -92,21 +92,21 @@ vi ~/.config/chezmoi/chezmoi.toml
     email = "private@gmail.com"
 ```
 
-After writing all this, try using `chezmoi apply -vn` or `chezmoi init -vn` to see the template variables filled with data values in the config file that is generated.
+これらをすべて記述した後、`chezmoi apply -vn`や`chezmoi init -vn`を使って、テンプレート変数がデータ値で埋められたconfigファイルが生成されるのを確認してみてください。
 
-#### Auto Commit and Push
+#### 自動コミットとプッシュ
 
-Simply editing dotfiles with `chezmoi edit` does not automatically reflect changes to the git in the local repository.
+`chezmoi edit`でdotfilesを編集するだけでは、ローカルリポジトリのgitに変更が自動的に反映されません。
 
 ```bash
-# You have to do it manually.
+# 手動で行う必要があります。
 chezmoi cd
 git add .
 git commit -m "update something"
 git push
 ```
 
-To automate this process, you need to add settings to `chezmoi.toml`.
+このプロセスを自動化するには、`chezmoi.toml`に設定を追加する必要があります。
 
 ```toml
 # `~/.config/chezmoi/chezmoi.toml`
@@ -116,26 +116,26 @@ To automate this process, you need to add settings to `chezmoi.toml`.
     autoPush = true
 ```
 
-However, if you automate the push as well, sensitive files could accidentally be uploaded to the remote repository. Therefore, personally, I recommend **activating only the auto option until commit**.
+ただし、プッシュも自動化すると、機密ファイルが誤ってリモートリポジトリにアップロードされる可能性があります。したがって、個人的には**コミットまでの自動オプションのみを有効にすることをお勧めします**。
 
-### Managing Brew Packages
+### Brewパッケージの管理
 
-If you find a useful tool at work, don't forget to install it in your personal environment too. Let's manage it with chezmoi.
+仕事で便利なツールを見つけたら、個人環境にもインストールするのを忘れないようにしましょう。chezmoiで管理しましょう。
 
 ```bash
 chezmoi cd
 vi run_once_before_install-packages-darwin.sh.tmpl
 ```
 
-The `run_once_` is a script keyword used by chezmoi. It is used when you want to run a script only if it has not been executed before. By using the `before_` keyword, you can run the script before creating dotfiles. The script written using these keywords is executed in two cases:
+`run_once_`はchezmoiが使用するスクリプトキーワードで、一度も実行されていない場合にのみスクリプトを実行したいときに使用します。`before_`キーワードを使用することで、dotfilesを作成する前にスクリプトを実行できます。これらのキーワードを使用して記述されたスクリプトは、次の2つの場合に実行されます：
 
-- When it has never been executed before (initial setup)
-- When the script itself has been modified (update)
+- 初回セットアップ時（これまでに一度も実行されていない場合）
+- スクリプト自体が変更された場合（更新）
 
-By scripting brew bundle using these keywords, you can have uniform brew packages across all environments. Here is the script I am using:
+これらのキーワードを使用してbrew bundleをスクリプト化することで、すべての環境で統一されたbrewパッケージを持つことができます。以下は私が使用しているスクリプトです：
 
 ```bash
-# Only run on MacOS
+# MacOSでのみ実行
 {% raw %}{{- if eq .chezmoi.os "darwin" -}}{% endraw %}
 #!/bin/bash
 
@@ -175,38 +175,38 @@ CASKS=(
     google-chrome
 )
 
-# Install Homebrew if not already installed
+# Homebrewがインストールされていない場合はインストール
 if test ! $(which brew); then
-   printf '\n\n\e[33mHomebrew not found. \e[0mInstalling Homebrew...'
+   printf '\n\n\e[33mHomebrewが見つかりません。 \e[0mHomebrewをインストールします...'
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 else
-  printf '\n\n\e[0mHomebrew found. Continuing...'
+  printf '\n\n\e[0mHomebrewが見つかりました。続行します...'
 fi
 
-# Update homebrew packages
-printf '\nInitiating Homebrew update...\n'
+# Homebrewパッケージを更新
+printf '\nHomebrewの更新を開始します...\n'
 brew update
 
-printf '\nInstalling packages...\n'
+printf '\nパッケージをインストールしています...\n'
 brew install ${PACKAGES[@]}
 
-printf '\n\nRemoving out of date packages...\n'
+printf '\n\n古いパッケージを削除しています...\n'
 brew cleanup
 
-printf '\n\nInstalling cask apps...\n'
+printf '\n\ncaskアプリをインストールしています...\n'
 brew install --cask ${CASKS[@]}
 
 {% raw %}{{ end -}}{% endraw %}
 ```
 
-Even if you are not familiar with sh, it shouldn't be too difficult to understand. Define the `PACKAGES` list for packages installed with `brew install` and `CASKS` for applications installed with `brew install --cask`. The installation process will be carried out by the script.
+shに詳しくなくても、それほど難しくないはずです。`brew install`でインストールするパッケージのリストを`PACKAGES`に、`brew install --cask`でインストールするアプリケーションのリストを`CASKS`に定義します。インストールプロセスはスクリプトによって実行されます。
 
-Scripting is a relatively complex feature among the functionalities available in chezmoi. There are various ways to apply it, and the same function can be defined differently. For more detailed usage, refer to the [official documentation](https://www.chezmoi.io/user-guide/use-scripts-to-perform-actions/#set-environment-variables).
+スクリプト化はchezmoiの機能の中でも比較的複雑な機能です。適用方法はさまざまで、同じ機能を異なる方法で定義することもできます。詳細な使用方法については、[公式ドキュメント](https://www.chezmoi.io/user-guide/use-scripts-to-perform-actions/#set-environment-variables)を参照してください。
 
-## Conclusion
+## 結論
 
-In this post, I summarized useful chezmoi settings following the basic usage explained in the previous post. The usage of the script I introduced at the end may seem somewhat complex, contrary to the title of basic settings, but once applied, it can be very convenient to use.
+この記事では、前回の記事で説明した基本的な使い方に続いて、便利なchezmoiの設定をまとめました。最後に紹介したスクリプトの使用は、基本設定のタイトルに反してやや複雑に見えるかもしれませんが、一度適用すれば非常に便利に使えるようになります。
 
-## Reference
+## 参考
 
 - [chezmoi](https://www.chezmoi.io/user-guide/command-overview/)
