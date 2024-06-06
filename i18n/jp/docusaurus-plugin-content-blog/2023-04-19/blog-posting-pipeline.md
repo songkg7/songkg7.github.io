@@ -1,83 +1,83 @@
 ---
-title: "What Does It Mean to Write Well? - Writing Pipeline"
+title: "良い文章を書くとはどういうことか？ - ライティングパイプライン"
 date: 2023-04-19 18:23:00 +0900
 aliases: 
-tags: [blog, posting]
+tags: [ブログ, 投稿]
 categories: 
 mermaid: true
 authors: haril
 ---
 
-I mostly use the Markdown editor Obsidian for writing, and host my blog on GitHub pages. To maintain the habit of writing without interruption across these two different platforms, I'll share how I go about it.
+私は主にMarkdownエディタのObsidianを使って執筆し、ブログはGitHub Pagesでホストしています。この2つの異なるプラットフォームで中断せずに書く習慣を維持するために、私の方法を共有します。
 
 :::info
 
-This post was inspired by a presentation by [Sungyun](https://github.com/zzsza) from 글또(geultto).
+この投稿は、[Sungyun](https://github.com/zzsza)さんの글또(geultto)でのプレゼンテーションに触発されました。
 
 :::
 
-## Gathering Material
+## 素材の収集
 
-In various situations like work, side projects, or studying, I often come across topics I don't know much about. Each time this happens, I create a new note immediately[^fn-nth-1]. In this note, I write a brief summary of 1-2 lines focusing on the keywords I didn't know well.
+仕事やサイドプロジェクト、勉強などのさまざまな状況で、知らないトピックに出会うことがよくあります。そのたびに、新しいノートをすぐに作成します[^fn-nth-1]。このノートには、よく知らなかったキーワードに焦点を当てて、1～2行の簡単な要約を書きます。
 
-I don't try to organize in detail from the beginning. I'm not familiar with the topic yet, so it can be tiring. Moreover, the newly learned information may not be immediately important. However, to prevent creating notes on the same topic later, I pay attention to the note title or tag for easy searching.
+最初から詳細に整理しようとはしません。まだトピックに詳しくないので、疲れることがあります。また、新しく学んだ情報がすぐに重要であるとは限りません。しかし、後で同じトピックについてのノートを作成しないように、ノートのタイトルやタグに注意を払い、簡単に検索できるようにします。
 
-The key point is that **this process is ongoing**. If similar notes on the topic already exist, they will be enriched. Through repetition, eventually, a good post will emerge.
+重要なポイントは、このプロセスが**継続的である**ことです。すでに同じトピックに関するノートが存在する場合、それらは充実していきます。繰り返しを通じて、最終的には良い投稿が生まれます。
 
-The initially created notes are stored in a directory named "inbox."
+最初に作成されたノートは「inbox」というディレクトリに保存されます。
 
 ```mermaid
 flowchart LR
-    Writer -- Idea --> inbox(inbox)
+    Writer -- アイデア --> inbox(inbox)
 ```
 
-## Learning and Organizing
+## 学習と整理
 
-The notes pile up in the inbox... I need to clear them out, right?
+ノートがinboxに積み重なっていきます... それを片付ける必要がありますよね？
 
-Once I find material that is useful and easy to organize, I study the topic and write a rough draft. Up to this point, I write not for blog purposes but for my own learning. Since it's just a simple memo, the writing style and expression are somewhat flexible. ~~I might add some humor to make the structure of the post more interesting...~~
+有用で整理しやすい素材を見つけたら、そのトピックを勉強し、ラフなドラフトを書きます。この段階では、ブログのためではなく、自分の学習のために書いています。簡単なメモなので、書き方や表現は多少柔軟です。~~投稿の構造を面白くするために、ユーモアを加えることもあります...~~
 
-After writing this draft, I evaluate it to determine if it's suitable for posting on the blog. If the topic has been overly covered in other communities or blogs, I tend not to post it separately for the sake of differentiation.
+このドラフトを書いた後、それがブログに投稿するのに適しているかどうかを評価します。もし他のコミュニティやブログで過度にカバーされているトピックであれば、差別化のために別途投稿しないことが多いです。
 
 :::info
 
-However, for content related to personal experiences, such as introducing solutions to problems or sharing personal experiences, even if similar posts exist on other blogs, I try to write them as my feelings and perspectives may differ.
+しかし、問題の解決策を紹介したり、個人的な経験を共有したりするような個人的な経験に関連するコンテンツについては、他のブログに似た投稿があっても、自分の感情や視点が異なるため、書くようにしています。
 
 :::
 
-The organized posts are moved to the backlog directory.
+整理された投稿は、backlogディレクトリに移動されます。
 
 ```mermaid
 flowchart LR
-    Writer -. Idea .- inbox(inbox) -- Draft Completed! --> backlog(backlog)
+    Writer -. アイデア .- inbox(inbox) -- ドラフト完成！ --> backlog(backlog)
 ```
 
-## Selecting Blog Posts
+## ブログ投稿の選定
 
-While not as many as in the inbox, a certain number of somewhat completed posts accumulate in the backlog. Around 10 posts linger there like a buffer. Over time, if my thoughts on the content change, requiring edits, or if incorrect information is found necessitating further study, some posts are demoted back to the inbox. This serves as a minimal verification process I can personally do to prevent spreading incorrect information. The surviving posts, after enduring all the hardships, are refined from personal learning posts to posts meant for others to see.
+inboxほどではありませんが、backlogにはある程度完成した投稿が蓄積されます。そこには約10件の投稿がバッファのように存在します。時間が経つと、内容に対する考えが変わり、編集が必要になったり、誤った情報が見つかり再度勉強が必要になったりする場合、いくつかの投稿は再びinboxに降格されます。これは、誤った情報の拡散を防ぐために私が個人的に行う最小限の検証プロセスです。すべての困難を乗り越えた投稿は、個人的な学習投稿から他の人が見るための投稿に洗練されます。
 
-Once a post is satisfactory, it is moved to the directory "ready" for blog publication.
+投稿が満足のいくものになったら、「ready」ディレクトリに移動し、ブログの公開準備が整います。
 
 ```mermaid
 flowchart LR
-    Writer -. Idea .- inbox(inbox) -. Draft Completed .- backlog(backlog)
-    backlog -- Ready for Publishing --> ready(ready)
+    Writer -. アイデア .- inbox(inbox) -. ドラフト完成 .- backlog(backlog)
+    backlog -- 公開準備完了 --> ready(ready)
 ```
 
-## Uploading
+## アップロード
 
-Once all preparations for uploading are complete, I use O2 to convert the notes in "ready" to Markdown format and move them to the Jekyll project folder.
+アップロードの準備が整ったら、O2を使用して「ready」にあるノートをMarkdown形式に変換し、Jekyllプロジェクトフォルダに移動します。
 
 :::info
 
-[O2](https://github.com/songkg7/o2) is a community plugin for Obsidian that converts notes written in Obsidian to Markdown format.
+[O2](https://github.com/songkg7/o2)は、Obsidianで書かれたノートをMarkdown形式に変換するためのコミュニティプラグインです。
 
 :::
 
 ![gif](./ezgif.com-video-to-gif.gif)
-_You can see how the image links are automatically converted._
+_画像リンクが自動的に変換される様子がわかります。_
 
-The notes in "ready" are copied to the published directory before being moved to the Jekyll project, where they are stored for backup. All Obsidian-specific syntax is converted to basic Markdown, and if there are attachments, they are copied to the Jekyll project folder along with the notes. Although the attachment file paths change, causing Markdown links that worked in Obsidian to break, there's no need to worry as all this is automated by O2[^fn-nth-2]. 😄 [^fn-nth-3]
+「ready」にあるノートは、Jekyllプロジェクトに移動する前に公開ディレクトリにコピーされ、バックアップとして保存されます。すべてのObsidian固有の構文は基本的なMarkdownに変換され、添付ファイルがある場合はノートと一緒にJekyllプロジェクトフォルダにコピーされます。添付ファイルのパスが変更されるため、Obsidianで機能していたMarkdownリンクが壊れることがありますが、すべてがO2によって自動化されているため心配いりません[^fn-nth-2]。😄 [^fn-nth-3]
 
 ```mermaid
 flowchart TB
@@ -86,63 +86,63 @@ flowchart TB
     posts
     end
     subgraph Obsidian
-    ready -. Copy .-> published
+    ready -. コピー .-> published
     end
     subgraph github [songkg7.github.io]
     end
-    VScode -- push --> github
+    VScode -- プッシュ --> github
 ```
 
-Now, I switch tools from Obsidian to VScode. Managing a Jekyll blog sometimes requires dealing with code. This goes beyond what a simple Markdown editor can handle, so continuing to work in Obsidian may present some challenges.
+ここで、ツールをObsidianからVScodeに切り替えます。Jekyllブログの管理にはコードを扱う必要があることがあります。これは単純なMarkdownエディタでは対応できないため、Obsidianで作業を続けるといくつかの課題が生じるかもしれません。
 
-I briefly review the syntax and context, then run `npm run publish` to complete the blog post publication process.
+文法やコンテキストを簡単に確認し、`npm run publish`を実行してブログ投稿の公開プロセスを完了します。
 
 :::info
 
-You can learn more about publishing in [this post](https://songkg7.github.io/posts/Image-optimazation-for-SEO/).
+公開についての詳細は[この投稿](https://songkg7.github.io/posts/Image-optimazation-for-SEO/)で学ぶことができます。
 
 :::
 
-## Proofreading
+## 校正
 
-I regularly review the posts to catch any unnoticed grammatical errors or awkward expressions and refine them gradually. This process doesn't have a set end point; just check the blog from time to time and make corrections consistently.
+定期的に投稿を見直し、見逃した文法の誤りや不自然な表現を修正し、徐々に洗練させていきます。このプロセスには明確な終わりはなく、時々ブログをチェックして一貫して修正を行います。
 
-The blog post pipeline ends here, but I'll briefly explain how to utilize it to write better posts.
+ブログ投稿のパイプラインはここで終了しますが、より良い投稿を書くための活用方法を簡単に説明します。
 
-## Optional. Data Analysis
+## オプション. データ分析
 
-Obsidian provides a graph view feature. By utilizing this feature, you can visualize how your notes are organically connected and use it for data analysis.
+Obsidianにはグラフビュー機能があります。この機能を利用することで、ノートが有機的にどのように接続されているかを視覚化し、データ分析に活用できます。
 
 ![image](./obsidian-graph-view-20230417.webp)
-_In the graph, only the bright green nodes are posts published on the blog._
+_グラフでは、明るい緑色のノードだけがブログに公開された投稿です。_
 
-Most notes are still on topics I'm studying or posts that didn't make the cut for blog publication. From this graph, you can infer the following:
+ほとんどのノートはまだ勉強中のトピックや、ブログ公開に至らなかった投稿です。このグラフから以下のことが推測できます：
 
-- Nodes in the center with many edges but not published as blog posts likely cover very common topics that I chose not to publish. ~~Or maybe I was just lazy...~~
-- Nodes scattered on the outer edges without edges represent fragmented knowledge that I haven't delved deeply into yet. Since they are not linked to any topic, they need further study to connect them internally 😂. These nodes need to be linked internally by learning more about related topics.
-- Posts on the outermost edges that have been published represent impulsively published posts during the process of acquiring new knowledge. Since they were impulsively published, it's important to periodically review them for any errors in the content.
+- 中心に多くのエッジがあるがブログ投稿として公開されていないノードは、非常に一般的なトピックをカバーしている可能性が高く、公開しないことを選んだものです。~~または単に怠けていたかもしれません...~~
+- 外縁に散らばってエッジがないノードは、まだ深く掘り下げていない断片的な知識を表しています。これらはどのトピックにもリンクされていないため、関連するトピックを学んで内部的に接続する必要があります😂。これらのノードは、関連するトピックを学ぶことで内部的にリンクする必要があります。
+- 外縁にあり、公開された投稿は、新しい知識を取得する過程で衝動的に公開された投稿を表しています。衝動的に公開されたため、定期的に見直して内容に誤りがないか確認することが重要です。
 
-Based on this objective data, I strive to expand my knowledge by checking how much I know and what I don't know regularly. 🧐
+この客観的なデータに基づいて、自分がどれだけ知っているか、何を知らないかを定期的に確認し、知識を広げるよう努めています。🧐
 
-## Conclusion
+## 結論
 
-In this post, I introduced my writing pipeline and how I use Obsidian for data analysis to accurately understand myself. I hope writing becomes a natural part of your daily life, not just a task!
+この投稿では、私のライティングパイプラインと、Obsidianを使ったデータ分析を通じて自分を正確に理解する方法を紹介しました。書くことが単なる作業ではなく、日常の一部になることを願っています！
 
-- Quickly jot down emerging ideas to enable writing without losing the context of your work, making it possible to write consistently. Choose and utilize the appropriate tools according to the situation.
-- To make writing feel less like a chore, it's more efficient to add a few minutes consistently each day rather than holding onto writing for hours from scratch. 
-- Blog publication can be a tedious task, so automate it as much as possible to keep the workflow simple. Focus on writing!
-- Assess how much you know and what you don't know (self-objectification). This helps greatly in selecting blog post topics and determining the direction of your learning.
+- 新たに浮かんだアイデアを素早くメモすることで、作業の文脈を失わずに書くことができ、一貫して書くことが可能になります。状況に応じて適切なツールを選び、活用しましょう。
+- 書くことが苦痛に感じないようにするためには、毎日数分ずつ一貫して追加する方が、何時間もかけて一から書くよりも効率的です。
+- ブログの公開は面倒な作業になることがあるため、できるだけ自動化してワークフローをシンプルに保ちましょう。執筆に集中しましょう！
+- 自分がどれだけ知っているか、何を知らないかを評価する（自己客観化）。これはブログ投稿のトピックを選定し、学習の方向性を決定するのに大いに役立ちます。
 
 :::info
 
-All my writing, including drafts that are not posted on the blog, is managed publicly on [GitHub](https://github.com/songkg7/haril-vault).
+ブログに投稿されていないドラフトを含むすべての執筆は、[GitHub](https://github.com/songkg7/haril-vault)で公開されています。
 
 :::
 
 --- 
 
-[^fn-nth-1]: I've always kept notes nearby since I studied music in the past. It seemed like the best time to come up with something was when I was about to fall asleep. It doesn't seem much different now. Bugs solutions always seem to come to mind just before falling asleep...
+[^fn-nth-1]: 音楽を勉強していた頃から、常にノートを手元に置いていました。何か思いつくのは寝る直前が一番多かったようです。今もあまり変わりません。バグの解決策も寝る直前に思いつくことが多いです...
 
-[^fn-nth-2]: [O2 Plugin Development Story](https://haril.dev/blog/2023/02/22/develop-obsidian-plugin)
+[^fn-nth-2]: [O2プラグイン開発ストーリー](https://haril.dev/blog/2023/02/22/develop-obsidian-plugin)
 
-[^fn-nth-3]: Although new bug issues are added with each post... 😭 ~~???: That's a feature~~
+[^fn-nth-3]: 各投稿に新しいバグの問題が追加されることもありますが... 😭 ~~???: それは機能です~~
