@@ -2,10 +2,11 @@
 title: "良い文章を書くとはどういうことか？ - ライティングパイプライン"
 date: 2023-04-19 18:23:00 +0900
 aliases: 
-tags: [ブログ, 投稿]
+tags: [blog, pipeline]
 categories: 
 mermaid: true
 authors: haril
+description: "良い文章を書くとはどういうことか? ライティングパイプラインを紹介します。"
 ---
 
 私は主にMarkdownエディタのObsidianを使って執筆し、ブログはGitHub Pagesでホストしています。この2つの異なるプラットフォームで中断せずに書く習慣を維持するために、私の方法を共有します。
@@ -75,6 +76,7 @@ flowchart LR
 :::
 
 ![gif](./ezgif.com-video-to-gif.gif)
+
 _画像リンクが自動的に変換される様子がわかります。_
 
 「ready」にあるノートは、Jekyllプロジェクトに移動する前に公開ディレクトリにコピーされ、バックアップとして保存されます。すべてのObsidian固有の構文は基本的なMarkdownに変換され、添付ファイルがある場合はノートと一緒にJekyllプロジェクトフォルダにコピーされます。添付ファイルのパスが変更されるため、Obsidianで機能していたMarkdownリンクが壊れることがありますが、すべてがO2によって自動化されているため心配いりません[^fn-nth-2]。😄 [^fn-nth-3]
@@ -88,7 +90,7 @@ flowchart TB
     subgraph Obsidian
     ready -. コピー .-> published
     end
-    subgraph github [songkg7.github.io]
+    subgraph github [haril.dev]
     end
     VScode -- プッシュ --> github
 ```
@@ -99,7 +101,7 @@ flowchart TB
 
 :::info
 
-公開についての詳細は[この投稿](https://songkg7.github.io/posts/Image-optimazation-for-SEO/)で学ぶことができます。
+公開についての詳細は[この投稿](https://haril.dev/jp/blog/2023/04/26/Image-optimazation-for-SEO)で学ぶことができます。
 
 :::
 
