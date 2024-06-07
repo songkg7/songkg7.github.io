@@ -88,7 +88,7 @@ flowchart TB
     subgraph Obsidian
     ready -. Copy .-> published
     end
-    subgraph github [songkg7.github.io]
+    subgraph github [haril.dev]
     end
     VScode -- push --> github
 ```

@@ -9,7 +9,7 @@ export default function Comments(): JSX.Element {
         <div>
             <Giscus
                 id="comments"
-                repo="songkg7/songkg7.github.io"
+                repo="songkg7/haril.dev"
                 repoId="R_kgDOL2FYyw"
                 category="General"
                 categoryId="DIC_kwDOL2FYy84CfI7R"

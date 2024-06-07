@@ -18,7 +18,7 @@ const config: Config = {
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
     organizationName: 'songkg7', // Usually your GitHub org/user name.
-    projectName: 'songkg7.github.io', // Usually your repo name.
+    projectName: 'haril.dev', // Usually your repo name.
     trailingSlash: false,
 
     onBrokenLinks: 'throw',
@@ -83,7 +83,7 @@ const config: Config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        'https://github.com/songkg7/songkg7.github.io/blob/main/',
+                        'https://github.com/songkg7/haril.dev/blob/main/',
                 },
                 blog: {
                     showReadingTime: true,
@@ -99,7 +99,7 @@ const config: Config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        'https://github.com/songkg7/songkg7.github.io/blob/main/'
+                        'https://github.com/songkg7/haril.dev/blob/main/'
                 },
                 theme: {
                     customCss: './src/css/custom.scss',
