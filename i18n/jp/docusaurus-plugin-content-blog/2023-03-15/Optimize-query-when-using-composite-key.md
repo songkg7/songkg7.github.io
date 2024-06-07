@@ -5,6 +5,7 @@ aliases:
 tags: [ spring, batch, sql, pagination, optimize, postgresql ]
 categories: [ Spring Batch ]
 authors: haril
+description: "Spring Batchを使用して数百万件のデータを持つテーブルをクエリする際に直面した問題とその解決策について説明します。"
 ---
 
 この記事では、Spring Batchを使用して数百万件のデータを持つテーブルをクエリする際に直面した問題とその解決策について説明します。
@@ -165,9 +166,7 @@ void test() {
 
 > _Guy: "終わったのか？"_
 >
-> _Boy: "黙れ、また起こるぞ！"_
->
-> -- _Within the Webtoon Hive_
+> _Boy: "黙れ、そんなこと言ったらまた起きるって！"_
 
 しかし、`out of range`エラーが発生し、クエリが変更されたことが認識されていないことがわかりました。
 
