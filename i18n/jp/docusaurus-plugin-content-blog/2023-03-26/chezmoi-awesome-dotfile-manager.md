@@ -5,6 +5,7 @@ aliases: chezmoi
 tags: [chezmoi, dotfile, dotfiles]
 categories: 
 authors: haril
+description: "Chezmoiを使用して、異なるデバイス間でドットファイルを簡単に管理する方法を紹介します。"
 ---
 
 新しいMacBookを手に入れた後、開発環境を再設定することに圧倒されたことはありませんか？または、仕事中に素晴らしいツールを見つけたけれど、自宅の個人環境で再設定するのが面倒だと感じたことはありませんか？設定をGitHubにプッシュするのをセキュリティの懸念からためらったことはありませんか？
