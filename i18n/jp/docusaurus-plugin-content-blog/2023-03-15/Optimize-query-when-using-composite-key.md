@@ -1,5 +1,5 @@
 ---
-title: "Optimizing Pagination in Spring Batch with Composite Keys"
+title: "Spring Batchで複合キーを使用したページネーションの最適化"
 date: 2023-03-15 13:28:00 +0900
 aliases:
 tags: [ spring, batch, sql, pagination, optimize, postgresql ]
@@ -7,22 +7,20 @@ categories: [ Spring Batch ]
 authors: haril
 ---
 
-In this article, I will discuss the issues and solutions encountered when querying a table with millions of data using
-Spring Batch.
+この記事では、Spring Batchを使用して数百万件のデータを持つテーブルをクエリする際に直面した問題とその解決策について説明します。
 
-## Environment
+## 環境
 
 - Spring Batch 5.0.1
 - PostgreSQL 11
 
-## Problem
+## 問題
 
-While using `JdbcPagingItemReader` to query a large table, I noticed a significant slowdown in query performance over
-time and decided to investigate the code in detail.
+`JdbcPagingItemReader`を使用して大規模なテーブルをクエリしていると、時間の経過とともにクエリのパフォーマンスが著しく低下することに気付き、コードを詳細に調査することにしました。
 
-### Default Behavior
+### デフォルトの動作
 
-The following query is automatically generated and executed by the `PagingQueryProvider`:
+`PagingQueryProvider`によって自動生成され実行されるクエリは次の通りです：
 
 ```sql
 SELECT *
@@ -32,20 +30,17 @@ ORDER BY id
 LIMIT 1000;
 ```
 
-In Spring Batch, when using `JdbcPagingItemReader`, instead of using an offset, it generates a where clause for
-pagination. This allows for fast retrieval of data even from tables with millions of records without any delays.
+Spring Batchでは、`JdbcPagingItemReader`を使用する際にオフセットを使用する代わりに、ページネーションのためのwhere句を生成します。これにより、数百万件のレコードを持つテーブルからでも遅延なくデータを高速に取得できます。
 
 :::tip
 
-Even with `LIMIT`, using `OFFSET` means reading all previous data again. Therefore, as the amount of data to be read
-increases, the performance degrades. For more information, refer to the article[^fn-nth-1].
+`LIMIT`を使用しても、`OFFSET`を使用すると以前のデータをすべて再度読み込むことになります。そのため、読み込むデータ量が増えるとパフォーマンスが低下します。詳細については、この記事[^fn-nth-1]を参照してください。
 
 :::
 
-### Using Multiple Sorting Conditions
+### 複数のソート条件を使用する場合
 
-**The problem arises when querying a table with composite keys**. When a composite key consisting of 3 columns is used
-as the sort key, the generated query looks like this:
+**複合キーを使用するテーブルをクエリする際に問題が発生します**。3つのカラムからなる複合キーをソートキーとして使用すると、生成されるクエリは次のようになります：
 
 ```sql
 SELECT *
@@ -57,9 +52,7 @@ ORDER BY create_at, user_id, content_no
 LIMIT 1000;
 ```
 
-However, **queries with OR operations in the where clause do not utilize indexes effectively**. OR operations require
-executing multiple conditions, making it difficult for the optimizer to make accurate decisions. When I examined
-the `explain` output, I found the following results:
+しかし、**where句にOR操作が含まれるクエリはインデックスを効果的に利用できません**。OR操作は複数の条件を実行する必要があり、オプティマイザが正確な判断を下すのが難しくなります。`explain`の出力を調べたところ、次のような結果が得られました：
 
 ```log
 Limit  (cost=0.56..1902.12 rows=1000 width=327) (actual time=29065.549..29070.808 rows=1000 loops=1)
@@ -70,11 +63,9 @@ Planning Time: 0.152 ms
 Execution Time: 29070.915 ms
 ```
 
-With a query execution time close to 30 seconds, most of the data is discarded during filtering on the index, resulting
-in unnecessary time wastage.
+クエリの実行時間が30秒近くかかり、インデックス上でフィルタリング中にほとんどのデータが破棄され、不要な時間が浪費されています。
 
-Since PostgreSQL manages composite keys as tuples, writing queries using tuples allows for utilizing the advantages of
-Index scan even in complex where clauses.
+PostgreSQLは複合キーをタプルとして管理しているため、タプルを使用してクエリを書くことで、複雑なwhere句でもインデックススキャンの利点を活用できます。
 
 ```sql
 SELECT *
@@ -92,34 +83,30 @@ Planning Time: 0.276 ms
 Execution Time: 11.475 ms
 ```
 
-It can be observed that data is directly retrieved through the index without discarding any data through filtering.
+フィルタリングによってデータを破棄することなく、インデックスを通じて直接データが取得されていることがわかります。
 
-Therefore, when the query executed by `JdbcPagingItemReader` uses tuples, it means that even when using composite keys
-as sort keys, processing can be done very quickly.
+したがって、`JdbcPagingItemReader`が実行するクエリがタプルを使用する場合、複合キーをソートキーとして使用しても、非常に迅速に処理を行うことができます。
 
-Let's dive into the code immediately.
+では、コードに入りましょう。
 
-## Modifying PagingQueryProvider
+## PagingQueryProviderの修正
 
-### Analysis
+### 分析
 
-As mentioned earlier, the responsibility of generating queries lies with the `PagingQueryProvider`. Since I am using
-PostgreSQL, the `PostgresPagingQueryProvider` is selected and used.
+前述のように、クエリ生成の責任は`PagingQueryProvider`にあります。私はPostgreSQLを使用しているため、`PostgresPagingQueryProvider`が選択され使用されています。
 
 ![image](./PostgresPagingQueryProvider.webp)
-_The generated query differs based on whether it includes a `group by` clause._
+_生成されるクエリは、`group by`句を含むかどうかによって異なります。_
 
-By examining `SqlPagingQueryUtils`'s `buildSortConditions`, we can see how the problematic query is generated.
+`SqlPagingQueryUtils`の`buildSortConditions`を調べると、問題のあるクエリがどのように生成されるかがわかります。
 
 ![image](./Screenshot-2023-03-14-오후-6.03.14.webp)
 
-Within the nested for loop, we can see how the query is generated based on the sort key.
+ネストされたforループ内で、ソートキーに基づいてクエリが生成される様子がわかります。
 
-### Customizing `buildSortConditions`
+### `buildSortConditions`のカスタマイズ
 
-Having directly inspected the code responsible for query generation, I decided to modify this code to achieve the
-desired behavior. However, direct overriding of this code is not possible, so I created a new class
-called `PostgresOptimizingQueryProvider` and re-implemented the code within this class.
+クエリ生成の責任を持つコードを直接確認した後、このコードを修正して望ましい動作を実現することにしました。しかし、このコードを直接オーバーライドすることはできないため、`PostgresOptimizingQueryProvider`という新しいクラスを作成し、このクラス内でコードを再実装しました。
 
 ```java
 private String buildSortConditions(StringBuilder sql) {
@@ -132,7 +119,7 @@ private String buildSortConditions(StringBuilder sql) {
     } else if (is(sortKeys, order -> order == Order.DESCENDING)) {
         sql.append(") < (");
     } else {
-        throw new IllegalStateException("Cannot mix ascending and descending sort keys"); // Limitation of tuples
+        throw new IllegalStateException("Cannot mix ascending and descending sort keys"); // タプルの制限
     }
     sortKeys.keySet().forEach(key -> sql.append("?, "));
     sql.delete(sql.length() - 2, sql.length());
@@ -141,13 +128,13 @@ private String buildSortConditions(StringBuilder sql) {
 }
 ```
 
-### Test Code
+### テストコード
 
-To ensure that the newly implemented section works correctly, I validated it through a test code.
+新しく実装した部分が正しく動作することを確認するために、テストコードを通じて検証しました。
 
 ```java
 @Test
-@DisplayName("The Where clause generated instead of Offset is (create_at, user_id, content_no) > (?, ?, ?).")
+@DisplayName("Offsetの代わりに生成されるWhere句は(create_at, user_id, content_no) > (?, ?, ?)です。")
 void test() {
     // given
     PostgresOptimizingQueryProvider queryProvider = new PostgresOptimizingQueryProvider();
@@ -172,85 +159,76 @@ void test() {
 
 ![image](./Screenshot-2023-03-14-오후-6.09.40.webp)
 
-The successful execution confirms that it is working as intended, and I proceeded to run the batch.
+正常に実行されることを確認し、バッチを実行しました。
 
 ![image](./hive_webtoon_q3.webp)
 
-> _Guy: "is it over?"_
+> _Guy: "終わったのか？"_
 >
-> _Boy: "Shut up, It'll happen again!"_
+> _Boy: "黙れ、また起こるぞ！"_
 >
 > -- _Within the Webtoon Hive_
 
-However, the `out of range` error occurred, indicating that the query was not recognized as having changed.
+しかし、`out of range`エラーが発生し、クエリが変更されたことが認識されていないことがわかりました。
 
 ![image](./Screenshot-2023-03-13-오후-6.02.40.webp)
 
-It seems that the parameter injection part is not automatically recognized just because the query has changed, so let's
-debug again to find the parameter injection part.
+クエリが変更されたからといって、パラメータの注入部分が自動的に認識されるわけではないようなので、再度デバッグしてパラメータの注入部分を見つけましょう。
 
 ## JdbcOptimizedPagingItemReader
 
-The parameter is directly created by `JdbcPagingItemReader`, and I found that the number of parameters to be injected
-into SQL is increased by iterating through `getParameterList` in `JdbcPagingItemReader`.
+パラメータは`JdbcPagingItemReader`によって直接作成され、`JdbcPagingItemReader`の`getParameterList`を繰り返してSQLに注入するパラメータの数が増えることがわかりました。
 
 ![image](./Screenshot-2023-03-13-오후-5.14.05.webp)
 
-I thought I could just override this method, but unfortunately it is not possible because it is `private`. After much
-thought, I copied the entire `JdbcPagingItemReader` and modified only the `getParameterList` part.
+このメソッドをオーバーライドするだけで済むと思いましたが、残念ながらそれは不可能です。多くの考えの末、`JdbcPagingItemReader`全体をコピーし、`getParameterList`部分だけを修正しました。
 
-The `getParameterList` method is overridden in `JdbcOptimizedPagingItemReader` as follows:
+`JdbcOptimizedPagingItemReader`では、`getParameterList`メソッドが次のようにオーバーライドされています：
 
 ```java
 private List<Object> getParameterList(Map<String, Object> values, Map<String, Object> sortKeyValue) {
     // ...
-    // Returns the parameters that need to be set in the where clause without increasing them.
+    // where句に設定する必要があるパラメータを増やさずに返します。
     return new ArrayList<>(sortKeyValue.values());
 }
 ```
 
-There is no need to add `sortKeyValue`, so it is directly added to `parameterList` and returned.
+`sortKeyValue`を追加する必要はないので、直接`parameterList`に追加して返します。
 
-Now, let's run the batch again.
+では、再度バッチを実行してみましょう。
 
-The first query is executed without requiring parameters,
+最初のクエリはパラメータを必要とせずに実行されます、
 
 ```log
 2023-03-13T17:43:14.240+09:00 DEBUG 70125 --- [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [SELECT * FROM large_table ORDER BY create_at ASC, user_id ASC, content_no ASC LIMIT 2000]
 ```
 
-The subsequent query execution receives parameters from the previous query.
+次のクエリ実行は前のクエリからパラメータを受け取ります。
 
 ```log
 2023-03-13T17:43:14.253+09:00 DEBUG 70125 --- [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [SELECT * FROM large_table WHERE (create_at, user_id, content_no) > (?, ?, ?) ORDER BY create_at ASC, user_id ASC, content_no ASC LIMIT 2000]
 ```
 
-The queries are executed exactly as intended! 🎉
+クエリは意図した通りに実行されました！ 🎉
 
-For pagination processing with over 10 million records, queries that used to take around 30 seconds now run in the range
-of 0.1 seconds, representing a significant performance improvement of nearly 300 times.
+1000万件以上のレコードを持つページネーション処理では、以前は約30秒かかっていたクエリが0.1秒程度で実行されるようになり、約300倍のパフォーマンス向上を実現しました。
 
 ![image](./Screenshot-2023-03-13-오후-6.11.34.webp)
 
-Now, regardless of the amount of data, queries can be read within milliseconds without worrying about performance
-degradation. 😎
+これで、データ量に関係なく、パフォーマンスの低下を心配することなくミリ秒単位でクエリを読み取ることができます。 😎
 
-## Conclusion
+## 結論
 
-In this article, I introduced the method used to optimize Spring Batch in an environment with composite keys. However,
-there is a drawback to this method: all columns that make up the composite key must have the same sorting condition.
-If `desc` or `asc` are mixed within the index condition generated by the composite key, a separate index must be used to
-resolve this issue 😢
+この記事では、複合キーを持つ環境でSpring Batchを最適化する方法を紹介しました。しかし、この方法には欠点があります。それは、複合キーを構成するすべてのカラムが同じソート条件を持たなければならないことです。複合キーによって生成されるインデックス条件内で`desc`や`asc`が混在している場合、この問題を解決するために別のインデックスを使用する必要があります 😢
 
-Let's summarize today's content in one line and conclude the article.
+今日の内容を一行でまとめて記事を締めくくりましょう。
 
-**"Avoid using composite keys as much as possible and use surrogate keys unrelated to the business."**
+**「複合キーの使用をできるだけ避け、ビジネスに関連しない代替キーを使用する。」**
 
-## Reference
+## 参考文献
 
 - [Stack overflow](https://stackoverflow.com/questions/34110504/optimize-query-with-offset-on-large-table)
 
----	
+---
 
 [^fn-nth-1]: https://jojoldu.tistory.com/528
-
