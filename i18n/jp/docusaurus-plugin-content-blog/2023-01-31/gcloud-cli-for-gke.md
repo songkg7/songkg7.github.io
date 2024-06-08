@@ -1,38 +1,38 @@
 ---
-title: "Managing Google Kubernetes Engine through Local CLI"
+title: "ローカルCLIを使ったGoogle Kubernetes Engineの管理"
 date: 2023-01-31 10:38:00 +0900
 aliases: 
 tags: [gcp, kubernetes, cli, gcloud]
 categories: DevOps
 authors: haril
-description: "This article shares a method for quickly managing Google Cloud Kubernetes using a local CLI."
+description: "この記事では、ローカルCLIを使ってGoogle Cloud Kubernetesを迅速に管理する方法を紹介します。"
 ---
 
-## Overview
+## 概要
 
-While it is very convenient to be able to run `kubectl` through Google's Cloud Shell via the web from anywhere, there is a drawback of needing to go through the hassle of web access and authentication for simple query commands. This article shares a method for quickly managing Google Cloud Kubernetes using a local CLI.
+GoogleのCloud Shellを通じてウェブからどこでも`kubectl`を実行できるのは非常に便利ですが、簡単なクエリコマンドのためにウェブアクセスと認証を行う手間がかかるという欠点があります。この記事では、ローカルCLIを使ってGoogle Cloud Kubernetesを迅速に管理する方法を紹介します。
 
-## Contents
+## 目次
 
-### Installing GCP CLI
+### GCP CLIのインストール
 
-First, you need to install the GCP CLI. Refer to the [gcp-cli](https://cloud.google.com/sdk/gcloud?hl=ko) link to check for the appropriate operating system and install it.
+まず、GCP CLIをインストールする必要があります。適切なオペレーティングシステムを確認し、インストールするために[gcp-cli](https://cloud.google.com/sdk/gcloud?hl=ko)リンクを参照してください。
 
-### Connection
+### 接続
 
-Once the installation is complete, proceed with the authentication process using the following command:
+インストールが完了したら、以下のコマンドを使用して認証プロセスを進めます。
 
 ```bash
 gcloud init
 ```
 
-You need to access the GCP Kubernetes Engine and fetch the connection information for the cluster.
+GCP Kubernetes Engineにアクセスし、クラスターの接続情報を取得する必要があります。
 
 ![GKE-connect](./GKE-connect.webp)
 
 ![gke-cluster-connect-2](./gke-cluster-connect-2.webp)
 
-Copy the command for command-line access and execute it in the terminal.
+コマンドラインアクセス用のコマンドをコピーし、ターミナルで実行します。
 
 ```bash
 gcloud container clusters get-credentials sv-dev-cluster --zone asia-northeast3-a --project {projectId}
@@ -44,13 +44,13 @@ CRITICAL: ACTION REQUIRED: gke-gcloud-auth-plugin, which is needed for continued
 kubeconfig entry generated for sv-dev-cluster.
 ```
 
-### Plugin Installation
+### プラグインのインストール
 
-If the current Kubernetes version being used is below v1.26, you may encounter an error requesting the installation of `gke-gcloud-auth-plugin`. Install the plugin using the following command.
+現在使用しているKubernetesのバージョンがv1.26未満の場合、`gke-gcloud-auth-plugin`のインストールを要求するエラーが発生することがあります。以下のコマンドを使用してプラグインをインストールします。
 
 :::info
 
-Prior to v1.26, client-specific code for managing authentication between the client and Google Kubernetes Engine was included in the existing versions of kubectl and custom Kubernetes clients. Starting from v1.26, this code is no longer included in the OSS kubectl. GKE users need to download and use a separate authentication plugin to generate GKE-specific tokens. The new binary, gke-gcloud-auth-plugin, extends the kubectl authentication for GKE using the Kubernetes Client-go user authentication information plugin mechanism. Since the plugin is already supported in kubectl, you can switch to this new mechanism before v1.26 is provided. - Google
+v1.26以前では、クライアントとGoogle Kubernetes Engine間の認証を管理するためのクライアント固有のコードが既存のkubectlおよびカスタムKubernetesクライアントに含まれていました。v1.26以降、このコードはOSS kubectlに含まれなくなりました。GKEユーザーは、GKE固有のトークンを生成するために別の認証プラグインをダウンロードして使用する必要があります。新しいバイナリであるgke-gcloud-auth-pluginは、Kubernetes Client-goユーザー認証情報プラグインメカニズムを使用してkubectl認証をGKE用に拡張します。このプラグインはすでにkubectlでサポートされているため、v1.26が提供される前にこの新しいメカニズムに切り替えることができます。 - Google
 
 :::
 
@@ -90,7 +90,7 @@ Performing post processing steps...done.
 Update done!
 ```
 
-re-run the connection command, and you should see that the cluster is connected without any error messages.
+接続コマンドを再実行すると、エラーメッセージなしでクラスターが接続されることが確認できます。
 
 ```bash
 gcloud container clusters get-credentials sv-dev-cluster --zone asia-northeast3-a --project {projectId}
@@ -101,11 +101,11 @@ Fetching cluster endpoint and auth data.
 kubeconfig entry generated for sv-dev-cluster.
 ```
 
-Once the connection is successful, you will also notice changes in Docker Desktop. Specifically, new information will be displayed in the Kubernetes tab.
+接続が成功すると、Docker Desktopにも変化が見られます。具体的には、Kubernetesタブに新しい情報が表示されます。
 
 ![1.png](./gke-cluster-connect-3.webp)
 
-Afterwards, you can also directly check GKE resources locally using `kubectl`.
+その後、`kubectl`を使用してローカルで直接GKEリソースを確認することもできます。
 
 ```bash
 kubectl get deployments
@@ -113,10 +113,10 @@ NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
 my-application        1/1     1            1           20d
 ```
 
-## Conclusion
+## 結論
 
-We have briefly explored efficient ways to manage GKE resources locally. Using `kubectl` locally enables extended features like autocomplete, making Kubernetes management much more convenient. If you are new to using GKE, I strongly recommend giving it a try.
+GKEリソースをローカルで効率的に管理する方法を簡単に紹介しました。ローカルで`kubectl`を使用することで、オートコンプリートなどの拡張機能が利用でき、Kubernetesの管理が非常に便利になります。GKEの使用が初めての方は、ぜひ試してみてください。
 
-## Reference
+## 参考
 
 [k8s-plugin](https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke?hl=en)
