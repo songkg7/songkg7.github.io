@@ -99,7 +99,7 @@ flowchart TB
 
 :::info
 
-publish 에 관해서는 [이 글](https://songkg7.github.io/posts/Image-optimazation-for-SEO/)에서 확인하실 수 있습니다.
+publish 에 관해서는 [이 글](https://haril.dev/blog/2023/04/26/Image-optimazation-for-SEO)에서 확인하실 수 있습니다.
 
 :::
 

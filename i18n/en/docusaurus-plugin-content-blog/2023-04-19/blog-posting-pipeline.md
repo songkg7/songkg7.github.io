@@ -99,7 +99,7 @@ I briefly review the syntax and context, then run `npm run publish` to complete 
 
 :::info
 
-You can learn more about publishing in [this post](https://songkg7.github.io/posts/Image-optimazation-for-SEO/).
+You can learn more about publishing in [this post](https://haril.dev/blog/2023/04/26/Image-optimazation-for-SEO).
 
 :::
 

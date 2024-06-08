@@ -14,8 +14,8 @@ Fixture Monkey is a testing object creation library being developed as open sour
 
 Since I first encountered it about 2 years ago, it has become one of my favorite open source libraries. I even ended up writing two articles about it.
 
-- [Fixture Monkey Object Creation Strategy](https://songkg7.github.io/posts/Fixture-monkey-overview/)
-- [Fixture Monkey 0.4.x](https://songkg7.github.io/posts/labmonkey/)
+- [Fixture Monkey Object Creation Strategy](https://haril.dev/blog/2022/09/19/Fixture-monkey-overview)
+- [Fixture Monkey 0.4.x](https://haril.dev/blog/2022/12/05/labmonkey)
 
 I haven't written any additional articles as there were too many changes with each version update, but now that version 1.x has been released, I am revisiting it with a fresh perspective.
 

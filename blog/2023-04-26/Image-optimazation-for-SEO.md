@@ -12,7 +12,7 @@ authors: haril
 
 :::info
 
-코드는 [GitHub](https://github.com/songkg7/songkg7.github.io/tree/master/tools)에서 확인하실 수 있습니다.
+코드는 [GitHub](https://github.com/songkg7/songkg7.github.io-legacy/blob/master/tools/imagemin.js)에서 확인하실 수 있습니다.
 
 :::
 

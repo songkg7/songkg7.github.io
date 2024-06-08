@@ -145,4 +145,4 @@ Using Docker containers allows for convenient operations while solving issues th
 
 ---
 
-[^footnote]: [Kubernetes](https://songkg7.github.io/posts/kubernetes-start/)
+[^footnote]: [Kubernetes](https://haril.dev/en/blog/2022/07/22/kubernetes-start)

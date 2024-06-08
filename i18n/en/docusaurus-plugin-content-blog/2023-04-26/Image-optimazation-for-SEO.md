@@ -13,7 +13,7 @@ success, where we had to resort to Plan B.
 
 :::info
 
-You can check the code on [GitHub](https://github.com/songkg7/songkg7.github.io/tree/master/tools).
+You can check the code on [GitHub](https://github.com/songkg7/songkg7.github.io-legacy/blob/master/tools/imagemin.js).
 
 :::
 

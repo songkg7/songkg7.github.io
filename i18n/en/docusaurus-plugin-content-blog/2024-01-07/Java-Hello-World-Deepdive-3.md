@@ -285,7 +285,7 @@ You can use the following keywords to check JIT-related behaviors if needed:
 #### Garbage Collector
 
 The Garbage Collector is a critical component that deserves a separate document, and there is already
-a [document](https://songkg7.github.io/posts/Garbage-Collection/) on it, so it will be skipped this time.
+a [document](https://haril.dev/en/blog/2023/05/20/Garbage-Collection) on it, so it will be skipped this time.
 
 - Optimizing the GC is not common.
     - However, there are cases where a delay of over 500ms due to GC operations occurs, and in scenarios handling high

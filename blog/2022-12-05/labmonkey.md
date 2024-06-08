@@ -16,7 +16,7 @@ authors: haril
 
 ## Overview
 
-`FixtureMonkey` 가 `0.4.x` 으로 업데이트되면서 많은 기능의 변경이 있었다. [이전 글](https://songkg7.github.io/posts/Fixture-monkey-overview/)[^footnote]을 작성한지 채 한달도 되지 않았는데 많은 수정이 발생해서(ㅠ) 당황스러웠지만, 커뮤니티가 활발한 신호라는 점으로 마음을 위로하면서 업데이트된 부분을 반영하여 새로 글을 작성한다.
+`FixtureMonkey` 가 `0.4.x` 으로 업데이트되면서 많은 기능의 변경이 있었다. [이전 글](https://haril.dev/blog/2022/09/19/Fixture-monkey-overview)[^footnote]을 작성한지 채 한달도 되지 않았는데 많은 수정이 발생해서(ㅠ) 당황스러웠지만, 커뮤니티가 활발한 신호라는 점으로 마음을 위로하면서 업데이트된 부분을 반영하여 새로 글을 작성한다.
 
 ## Changes
 

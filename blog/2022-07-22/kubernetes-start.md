@@ -225,4 +225,4 @@ http localhost:8080/ping
 
 ---
 
-[^footnote]: [우아한 httpie](https://songkg7.github.io/posts/httpie/)
+[^footnote]: [우아한 httpie](https://haril.dev/blog/2022/06/25/httpie)

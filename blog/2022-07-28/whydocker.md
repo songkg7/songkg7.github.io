@@ -143,4 +143,4 @@ http localhost/ping
 
 ---
 
-[^footnote]: [kubernetes](https://songkg7.github.io/posts/kubernetes-start/)
+[^footnote]: [kubernetes](https://haril.dev/blog/2022/07/22/kubernetes-start)

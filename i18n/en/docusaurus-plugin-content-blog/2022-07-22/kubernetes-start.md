@@ -220,4 +220,4 @@ You can see that you receive a successful response.
 
 ---
 
-[^footnote]: [Elegant httpie](https://songkg7.github.io/posts/httpie/)
+[^footnote]: [Elegant httpie](https://haril.dev/blog/2022/06/25/httpie)
