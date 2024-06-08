@@ -8,15 +8,15 @@
     "description": "The alt text of navbar logo"
   },
   "item.label.Blog": {
-    "message": "Blog",
+    "message": "ブログ",
     "description": "Navbar item with label Blog"
   },
   "item.label.Products": {
-    "message": "Products",
+    "message": "プロダクト",
     "description": "Navbar item with label Products"
   },
   "item.label.Archive": {
-    "message": "Archive",
+    "message": "アーカイブ",
     "description": "Navbar item with label Archive"
   }
 }
