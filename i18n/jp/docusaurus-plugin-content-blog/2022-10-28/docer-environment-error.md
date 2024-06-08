@@ -5,6 +5,7 @@ aliases:
 tags: [error, docker]
 categories: [DevOps, Docker]
 authors: haril
+description: "This article explains how to resolve the 'Could not find a valid Docker environment' error in Docker Desktop on macOS."
 ---
 
 ## Overview
