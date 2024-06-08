@@ -1,32 +1,32 @@
 ---
-title: "Improving Code Productivity with Design Patterns in O2"
+title: "O2におけるデザインパターンを用いたコード生産性の向上"
 date: 2023-03-10 16:10:00 +0900
 aliases: 
 tags: [typescript, obsidian, o2, design-pattern]
 mermaid: true
 categories: 
 image: img/banner/og-image.webp
-description: "This article discusses the process of using design patterns to improve the structure of the O2 project for more flexible management."
+description: "この記事では、O2プロジェクトの構造をデザインパターンを用いて改善し、より柔軟な管理を実現するプロセスについて説明します。"
 authors: haril
 ---
 
-This article discusses the process of using design patterns to improve the structure of the [O2](https://github.com/songkg7/o2) project for more flexible management.
+この記事では、[O2](https://github.com/songkg7/o2)プロジェクトの構造をデザインパターンを用いて改善し、より柔軟な管理を実現するプロセスについて説明します。
 
-## Problem
+## 問題
 
-While diligently working on development, a sudden [Issue](https://github.com/songkg7/o2/issues/50) was raised one day.
+開発に勤しんでいると、ある日突然[Issue](https://github.com/songkg7/o2/issues/50)が提起されました。
 
 ![image](./o2-issue.webp)
 
-Reflecting the contents of the [Issue](https://github.com/songkg7/o2/issues/50) was not difficult. However, as I delved into the code, an issue that had been put off for a while started to surface.
+[Issue](https://github.com/songkg7/o2/issues/50)の内容を反映するのは難しくありませんでした。しかし、コードを掘り下げていくうちに、しばらく放置していた問題が浮上してきました。
 
 ![image](./324082748_894097992036709_3032529173365854440_n.webp)
 
-Below is the implementation of the Markdown syntax conversion code that had been previously written.
+以下は、以前に書かれたMarkdown構文変換コードの実装です。
 
 :::warning
 
-Due to the length of the code, a partial excerpt is provided. For the full code, please refer to O2 plugin [v1.1.1](https://github.com/songkg7/o2/releases/tag/1.1.1) 🙏
+コードが長いため、一部抜粋しています。完全なコードはO2プラグイン[v1.1.1](https://github.com/songkg7/o2/releases/tag/1.1.1)をご参照ください 🙏
 
 :::
 
@@ -36,29 +36,30 @@ export async function convertToChirpy(plugin: O2Plugin) {
         await backupOriginalNotes(plugin);
         const markdownFiles = await renameMarkdownFile(plugin);
         for (const file of markdownFiles) {
-            // remove double square brackets
+            // 二重角括弧を削除
             const title = file.name.replace('.md', '').replace(/\s/g, '-');
             const contents = removeSquareBrackets(await plugin.app.vault.read(file));
-            // change resource link to jekyll link
+            // リソースリンクをjekyllリンクに変換
             const resourceConvertedContents = convertResourceLink(plugin, title, contents);
 
-            // callout
+            // コールアウト
             const result = convertCalloutSyntaxToChirpy(resourceConvertedContents);
 
             await plugin.app.vault.modify(file, result);
         }
 
         await moveFilesToChirpy(plugin);
-        new Notice('Chirpy conversion complete.');
+        new Notice('Chirpy変換が完了しました。');
     } catch (e) {
         console.error(e);
-        new Notice('Chirpy conversion failed.');
+        new Notice('Chirpy変換に失敗しました。');
     }
 }
 ```
-Being unfamiliar with TypeScript and Obsidian usage, I had focused more on implementing features rather than the overall design. Now, trying to add new features, it became difficult to anticipate side effects, and the code implementation lacked clear communication of the developer's intent.
 
-To better understand the code flow, I created a graph of the current process as follows.
+TypeScriptやObsidianの使用に不慣れだったため、全体のデザインよりも機能の実装に重点を置いていました。新しい機能を追加しようとすると、副作用を予測するのが難しく、コードの実装が開発者の意図を明確に伝えることができませんでした。
+
+コードの流れをよりよく理解するために、現在のプロセスのグラフを作成しました。
 
 ```mermaid
 flowchart TD
@@ -71,15 +72,15 @@ resource --> callout[convert callout syntax]
 callout ==move==> move[(target folder)]
 ```
 
-Although I had separated functionalities into functions, the code was still procedurally written, where the order of code lines significantly impacted the overall operation. Adding a new feature in this state would require precise implementation to avoid breaking the entire conversion process. So, where would be the correct place to implement a new feature? Most likely, the answer would be 'I need to see the code.' Currently, with most of the code written in one large file, it was almost equivalent to needing to analyze the entire code. In object-oriented terms, one could say that the **Single Responsibility Principle (SRP)** was not being properly followed.
+機能を関数に分けたものの、コードは依然として手続き的に書かれており、コード行の順序が全体の動作に大きく影響していました。この状態で新しい機能を追加するには、全体の変換プロセスを壊さないように正確に実装する必要があります。新しい機能をどこに実装すればよいのか？その答えはおそらく「コードを見なければならない」でしょう。現在、ほとんどのコードが一つの大きなファイルに書かれているため、全体のコードを分析する必要があるのとほぼ同じです。オブジェクト指向の観点から言えば、**単一責任の原則 (SRP)** が適切に守られていないと言えます。
 
-This state, no matter how positively described, did not seem easy to maintain. Since the O2 plugin was created for my personal use, I could not justify producing spaghetti code that was difficult to maintain by rationalizing, 'It's because I'm not familiar with TS.'
+この状態は、どれだけ前向きに表現しても、メンテナンスが容易ではないように思えました。O2プラグインは個人的な使用のために作成されたものなので、「TSに不慣れだから」と合理化して、メンテナンスが難しいスパゲッティコードを生産することを正当化することはできませんでした。
 
-Before resolving the Issue, I decided to first improve the structure, putting the glory aside for a moment.
+Issueを解決する前に、まず構造を改善することにしました。
 
-## What Structure Should Be Implemented?
+## どのような構造を実装すべきか？
 
-The O2 plugin, as a syntax conversion plugin, must be capable of converting Obsidian's Markdown syntax into various formats, which is a clear requirement.
+O2プラグインは、構文変換プラグインとして、ObsidianのMarkdown構文をさまざまな形式に変換できる必要があります。これは明確な要件です。
 
 ```mermaid
 flowchart LR
@@ -89,22 +90,22 @@ o2 --> B[Docusaurus]
 o2 --> D[Others...]
 ```
 
-Therefore, the design should focus primarily on scalability.
+したがって、デザインは主に拡張性に焦点を当てるべきです。
 
-Each **platform logic should be modularized**, and the **conversion process abstracted** to implement it like a template. This way, when implementing new features for supporting different platform syntaxes, developers can focus only on the small unit of implementing syntax conversion without needing to reimplement the entire flow.
+各**プラットフォームロジックをモジュール化**し、**変換プロセスを抽象化**してテンプレートのように実装する必要があります。これにより、異なるプラットフォームの構文をサポートする新しい機能を実装する際に、開発者は構文変換の小さな単位の実装に集中でき、全体のフローを再実装する必要がなくなります。
 
-Based on this, the design requirements are as follows:
+これに基づいて、デザイン要件は次のようになります：
 
-1. Strings (content of Markdown files) should be converted in order (or not) as needed.
-2. Specific conversion logic should be skippable or dynamically controllable based on external settings.
-3. Implementing new features should be simple and should have minimal or no impact on existing code.
+1. 文字列（Markdownファイルの内容）は必要に応じて順番に（または順番に）変換されるべきです。
+2. 特定の変換ロジックはスキップ可能であり、外部設定に基づいて動的に制御可能であるべきです。
+3. 新しい機能の実装は簡単であり、既存のコードに最小限の影響しか与えないべきです。
 
-As there is a sequence of execution, and the ability to add features in between, the Chain of Responsibility pattern seemed appropriate for this purpose.
+実行の順序があり、機能を追加する能力があるため、責任の連鎖パターンがこの目的に適しているように思えました。
 
-### Applying Design Patterns
+### デザインパターンの適用
 
-Process->Process->Process->Done!
-: Summary of Chain of Responsibility
+プロセス->プロセス->プロセス->完了！
+: 責任の連鎖の要約
 
 ```typescript
 export interface Converter {
@@ -129,9 +130,9 @@ export abstract class AbstractConverter implements Converter {
 }
 ```
 
-The `Converter` interface plays a role in converting specific strings through `convert(input)`. By specifying the next `Converter` to be processed with `setNext`, and returning the `Converter` again, method chaining can be used.
+`Converter`インターフェースは、`convert(input)`を通じて特定の文字列を変換する役割を果たします。`setNext`で次に処理する`Converter`を指定し、再び`Converter`を返すことで、メソッドチェーンを使用できます。
 
-With the abstraction in place, the conversion logic that was previously implemented in one file was separated into individual `Converter` implementations, assigning responsibility for each feature. Below is an example of the `CalloutConverter` that separates the Callout syntax conversion logic.
+抽象化が行われたことで、以前は一つのファイルに実装されていた変換ロジックが、各機能に責任を持つ個々の`Converter`実装に分離されました。以下は、コールアウト構文変換ロジックを分離した`CalloutConverter`の例です。
 
 ```typescript
 export class CalloutConverter extends AbstractConverter {
@@ -150,7 +151,7 @@ function convertCalloutSyntaxToChirpy(content: string) {
 }
 ```
 
-Now, the relationships between the classes are as follows.
+現在、クラス間の関係は次のようになっています。
 
 ```mermaid
 classDiagram
@@ -198,32 +199,32 @@ class CalloutConverter {
 AbstractConverter <-- CalloutConverter
 ```
 
-Now, by combining the smallest units of functionality implemented in each `Converter`, a chain is created to perform operations in sequence. This is why this pattern is called Chain of Responsibility.
+現在、各`Converter`に実装された最小単位の機能を組み合わせることで、順番に操作を行うチェーンが作成されます。これが、このパターンが責任の連鎖と呼ばれる理由です。
 
 ```typescript
 export async function convertToChirpy(plugin: O2Plugin) {
     // ...
-    // Create conversion chain
+    // 変換チェーンを作成
     frontMatterConverter.setNext(bracketConverter)
         .setNext(resourceLinkConverter)
         .setNext(calloutConverter);
 
-    // Request the frontMatterConverter at the head to perform the conversion, and the connected converters will operate sequentially.
+    // 先頭のfrontMatterConverterに変換を依頼し、接続されたコンバータが順次動作します。
     const result = frontMatterConverter.convert(await plugin.app.vault.read(file));
     await plugin.app.vault.modify(file, result);
     // ...
 }
 ```
 
-Now that the logic has been separated into appropriate responsibilities, reading the code has become much easier. When needing to add a new feature, only the necessary `Converter` needs to be implemented. Additionally, without needing to know how other `Converter`s work, new features can be added through `setNext`. Each `Converter` operates independently, following the principle of encapsulation.
+現在、ロジックが適切な責任に分離されているため、コードの読み取りが非常に簡単になりました。新しい機能を追加する必要がある場合は、必要な`Converter`を実装するだけで済みます。また、他の`Converter`がどのように動作するかを知る必要がなく、`setNext`を通じて新しい機能を追加できます。各`Converter`は独立して動作し、カプセル化の原則に従います。
 
-Finally, I checked if all tests passed and created a [PR](https://github.com/songkg7/o2/pull/51).
+最後に、すべてのテストが通過したことを確認し、[PR](https://github.com/songkg7/o2/pull/51)を作成しました。
 
 ![image](./test-result.webp)
 
-### Next Step
+### 次のステップ
 
-Although the structure has improved significantly, there is one remaining drawback. In the structure linked through `setNext`, calling the `Converter` at the very front is necessary for proper operation. If a different `Converter` is called instead of the one at the front, the result may be different from the intended one. If, for example, a `NewConverter` is implemented before `frontMatterConverter` but `frontMatterConverter.convert(input)` is not modified, `NewConverter` will not be applied.
+構造が大幅に改善されたものの、まだ一つの欠点が残っています。`setNext`でリンクされた構造では、正しく動作するためには最前の`Converter`を呼び出す必要があります。最前の`Converter`ではなく、別の`Converter`を呼び出すと、意図した結果とは異なる結果になる可能性があります。例えば、`NewConverter`が`frontMatterConverter`の前に実装されているが、`frontMatterConverter.convert(input)`が変更されていない場合、`NewConverter`は適用されません。
 
 ```mermaid
 flowchart LR
@@ -232,13 +233,13 @@ fm --> bc[BracketConverter]
 call(convert) -.call.-> fm
  ```
 
-This is one of the aspects that developers need to pay attention to, as there is room for error, and it is one of the areas that needs improvement in the future. For instance, implementing a kind of `Context` to contain the `Converter`s and executing the conversion process without directly calling the `Converter`s could be a way to improve. This is something I plan to implement in the next version.
+これは開発者が注意を払う必要がある点であり、エラーの余地があるため、将来的に改善が必要な領域の一つです。例えば、`Converter`を含む`Context`のようなものを実装し、直接`Converter`を呼び出すことなく変換プロセスを実行する方法が考えられます。これは次のバージョンで実装する予定です。
 
 ---
 
-### 2023-03-12 Update
+### 2023-03-12 アップデート
 
-Thanks to [PR](https://github.com/songkg7/o2/pull/61), the same functionality was performed, but with a more flexible structure using composition instead of inheritance.
+[PR](https://github.com/songkg7/o2/pull/61)のおかげで、同じ機能が継承ではなくコンポジションを使用して、より柔軟な構造で実行されました。
 
 ```mermaid
 classDiagram
@@ -279,12 +280,12 @@ class CalloutConverter {
 Converter <|-- CalloutConverter
 ```
 
-## Conclusion
+## 結論
 
-In this article, I described the process of redistributing roles and responsibilities through design patterns from a procedurally written, monolithic file to a more object-oriented and maintainable code.
+この記事では、手続き的に書かれたモノリシックなファイルから、デザインパターンを通じて役割と責任を再分配し、よりオブジェクト指向でメンテナンスしやすいコードに改善するプロセスを説明しました。
 
 :::info
 
-The complete code can be found on [GitHub](https://github.com/songkg7/o2).
+完全なコードは[GitHub](https://github.com/songkg7/o2)で確認できます。
 
 :::
