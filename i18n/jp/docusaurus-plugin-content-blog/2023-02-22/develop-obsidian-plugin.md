@@ -1,80 +1,70 @@
 ---
-title: "[O2] Developing an Obsidian Plugin"
+title: "[O2] Obsidianプラグインの開発"
 date: 2023-02-22 15:40:00 +0900
 aliases:
 tags: [ obsidian, plugin, side-project, typescript, o2 ]
-description: "This post describes the process of developing an Obsidian plugin to convert Obsidian syntax to Jekyll syntax."
+description: "この投稿では、ObsidianのシンタックスをJekyllのシンタックスに変換するプラグインの開発プロセスについて説明します。"
 authors: haril
 ---
 
-## Overview
+## 概要
 
-Obsidian provides a graph view through links between Markdown files, making it convenient to store and navigate
-information. However, to achieve this, Obsidian enforces its own unique syntax in addition to the original Markdown
-syntax. This can lead to areas of incompatibility when reading Markdown documents from Obsidian on other platforms.
+ObsidianはMarkdownファイル間のリンクを通じてグラフビューを提供し、情報の保存とナビゲーションが便利です。しかし、これを実現するために、Obsidianは独自のシンタックスを元のMarkdownシンタックスに加えて強制します。これにより、他のプラットフォームでObsidianのMarkdownドキュメントを読む際に互換性の問題が生じることがあります。
 
-Currently, I use a Jekyll blog for posting, so when I write in Obsidian, I have to manually adjust the syntax later for
-blog publishing. Specifically, the workflow involves:
+現在、私はJekyllブログを使用して投稿しているため、Obsidianで書いた後、ブログ公開のためにシンタックスを手動で調整する必要があります。具体的なワークフローは以下の通りです：
 
-- Using [[]] for file links, which is Obsidian's unique syntax
-- Resetting attachment paths, including image files
-- Renaming `title.md` to `yyyy-MM-dd-title.md`
-- Callout syntax
+- ファイルリンクに[[ ]]を使用する（これはObsidianの独自シンタックス）
+- 画像ファイルを含む添付ファイルのパスをリセットする
+- `title.md`を`yyyy-MM-dd-title.md`にリネームする
+- コールアウトシンタックス
 
 ![image](./O2---Page-3.webp)
-_Double-dashed arrows crossing layer boundaries require manual intervention._
+_レイヤー境界を越える二重矢印は手動での介入が必要です。_
 
-As I use both Obsidian and Jekyll concurrently, there was a need to automate this syntax conversion process and
-attachment copying process.
+ObsidianとJekyllを併用しているため、このシンタックス変換プロセスと添付ファイルのコピーを自動化する必要がありました。
 
-Since Obsidian allows for functionality extension through community plugins unlike Notion, I decided to try creating one
-myself. After reviewing the official documentation, I found that Obsidian guides plugin development based on NodeJS.
-While the language options were limited, I had an interest in TypeScript, so I set up a NodeJS/TS environment to study.
+ObsidianはNotionとは異なり、コミュニティプラグインを通じて機能拡張が可能なので、自分でプラグインを作成してみることにしました。公式ドキュメントを確認したところ、ObsidianはNodeJSをベースにしたプラグイン開発をガイドしていることがわかりました。言語の選択肢は限られていましたが、TypeScriptに興味があったので、NodeJS/TS環境をセットアップして学習を始めました。
 
-## Implementation Process
+## 実装プロセス
 
-### Naming
+### ネーミング
 
-I first tackled the most important part of development.
+まず、開発の最も重要な部分に取り組みました。
 
-It didn't take as long as I thought, as I came up with the project name 'O2' based on a sudden idea while writing a
-description, 'convert Obsidian syntax to Jekyll,' for the plugin.
+思ったよりも時間はかからず、プラグインの説明「ObsidianのシンタックスをJekyllに変換する」を書いているうちに突然「O2」というプロジェクト名が思い浮かびました。
 
 ![image](./4os943vzlf061.png.webp)
 
-### Preparation for Conversion
+### 変換の準備
 
-With a suitable name in place, the next step was to determine how to convert which files.
+適切な名前が決まったので、次にどのファイルをどのように変換するかを決定しました。
 
-The workflow for blog posting is as follows:
+ブログ投稿のワークフローは以下の通りです：
 
-1. Write drafts in a folder named `ready`.
-2. Once the manuscript is complete, copy the files, including attachments, to the Jekyll project, appropriately
-   converting Obsidian syntax to Jekyll syntax in the process.
-3. Move the manuscript from the `ready` folder to `published` to indicate that it has been published.
+1. `ready`というフォルダに下書きを書く。
+2. 原稿が完成したら、添付ファイルを含むファイルをJekyllプロジェクトにコピーし、その過程でObsidianシンタックスをJekyllシンタックスに適切に変換する。
+3. 原稿を`ready`フォルダから`published`に移動し、公開済みであることを示す。
 
-I decided to program this workflow as is. However, instead of editing the original files in a Jekyll project open in
-VScode, I opted to create and modify copies internally in the plugin workspace to prevent modification of the original
-files and convert them to Jekyll syntax.
+このワークフローをそのままプログラムすることにしました。ただし、VScodeで開いているJekyllプロジェクトのオリジナルファイルを編集する代わりに、プラグインワークスペース内でコピーを作成して変更し、オリジナルファイルを変更せずにJekyllシンタックスに変換することにしました。
 
-To summarize this step briefly:
+このステップを簡単にまとめると：
 
-1. Copy the manuscript `A.md` from `/ready` to `/published` without modifying `/published/A.md`.
-2. Convert the title and syntax of `/ready/A.md`.
-3. Move `/ready/yyyy-MM-dd-A.md` to the path for Jekyll publishing.
+1. `/ready`から原稿`A.md`をコピーして`/published`に移動し、`/published/A.md`を変更しない。
+2. `/ready/A.md`のタイトルとシンタックスを変換する。
+3. `/ready/yyyy-MM-dd-A.md`をJekyll公開用のパスに移動する。
 
-Let's start the implementation.
+では、実装を始めましょう。
 
-### Copying Original Files
+### オリジナルファイルのコピー
 
 ```typescript
-// Get only Markdown files in the ready folder
+// readyフォルダ内のMarkdownファイルのみを取得
 function getFilesInReady(plugin: O2Plugin): TFile[] {
     return this.app.vault.getMarkdownFiles()
         .filter((file: TFile) => file.path.startsWith(plugin.settings.readyDir))
 }
 
-// Copy files to the published folder
+// ファイルをpublishedフォルダにコピー
 async function copyToPublishedDirectory(plugin: O2Plugin) {
     const readyFiles = getFilesInReady.call(this, plugin)
     readyFiles.forEach((file: TFile) => {
@@ -83,10 +73,9 @@ async function copyToPublishedDirectory(plugin: O2Plugin) {
 }
 ```
 
-By fetching Markdown files inside the `/ready` folder and replacing `file.path` with `publishedDir`, copying can be done
-easily.
+`/ready`フォルダ内のMarkdownファイルを取得し、`file.path`を`publishedDir`に置き換えることで、簡単にコピーができます。
 
-### Copying Attachments and Resetting Paths
+### 添付ファイルのコピーとパスのリセット
 
 ```typescript
 function convertResourceLink(plugin: O2Plugin, title: string, contents: string) {
@@ -96,7 +85,7 @@ function convertResourceLink(plugin: O2Plugin, title: string, contents: string) 
 
     const relativeResourcePath = plugin.settings.jekyllRelativeResourcePath
 
-    // Copy resourceDir/image.png to assets/img/<title>/image.png before changing
+    // resourceDir/image.pngをassets/img/<title>/image.pngにコピーする前に変更
     extractImageName(contents)?.forEach((resourceName) => {
         fs.copyFile(
             `${absolutePath}/${plugin.settings.resourceDir}/${resourceName}`,
@@ -108,48 +97,42 @@ function convertResourceLink(plugin: O2Plugin, title: string, contents: string) 
             }
         )
     })
-    // Syntax conversion
+    // シンタックス変換
     return contents.replace(ObsidianRegex.IMAGE_LINK, `![image](/${relativeResourcePath}/${title}/$1)`)
 } 
 ```
 
-Attachments require moving files outside the vault, which cannot be achieved using Obsidian's default APIs. Therefore,
-direct file system access using `fs` is necessary.
+添付ファイルはボルト外に移動する必要があり、これはObsidianのデフォルトAPIでは実現できません。そのため、`fs`を使用して直接ファイルシステムにアクセスする必要があります。
 
 :::info
 
-Direct file system access implies difficulty in mobile usage, so the
-Obsidian [official documentation](https://github.com/obsidianmd/obsidian-releases/blob/master/plugin-review.md#nodejs-and-electron-api)
-guides specifying `isDesktopOnly` as `true` in `manifest.json` in such cases.
+ファイルシステムへの直接アクセスはモバイルでの使用が難しいことを意味するため、Obsidianの[公式ドキュメント](https://github.com/obsidianmd/obsidian-releases/blob/master/plugin-review.md#nodejs-and-electron-api)では、そのような場合に`manifest.json`で`isDesktopOnly`を`true`に指定することをガイドしています。
 
 :::
 
-Before moving Markdown files to the Jekyll project, the Obsidian image link syntax is parsed to identify image
-filenames, which are then moved to Jekyll's `resource` folder so that the Markdown default image links are converted
-correctly, allowing attachments to be found.
+MarkdownファイルをJekyllプロジェクトに移動する前に、Obsidianの画像リンクシンタックスを解析して画像ファイル名を特定し、それらをJekyllの`resource`フォルダに移動してMarkdownデフォルトの画像リンクが正しく変換されるようにします。これにより、添付ファイルが見つかるようになります。
 
-### Callout Syntax Conversion
+### コールアウトシンタックスの変換
 
-#### Obsidian callout
+#### Obsidianのコールアウト
 
 ```
 > [!NOTE] callout title
 > callout contents
 ```
 
-Supported keywords: tip, info, note, warning, danger, error, etc.
+サポートされるキーワード: tip, info, note, warning, danger, errorなど。
 
-#### Jekyll chirpy callout
+#### Jekyll chirpyのコールアウト
 
 ```
 > callout contents
 {: .promt-info}
 ```
 
-Supported keywords: tip, info, warning, danger
+サポートされるキーワード: tip, info, warning, danger
 
-As the syntax of the two differs, regular expressions are used to substitute this part, requiring implementation of a
-replacer.
+シンタックスが異なるため、この部分を置換するために正規表現を使用し、リプレーサーを実装する必要があります。
 
 ```typescript
 export function convertCalloutSyntaxToChirpy(content: string) {
@@ -167,21 +150,19 @@ export function convertCalloutSyntaxToChirpy(content: string) {
 }
 ```
 
-Unsupported keywords in Jekyll are converted to other keywords with similar roles.
+Jekyllでサポートされていないキーワードは、類似の役割を持つ他のキーワードに変換されます。
 
-### Moving Completed Files
+### 完了したファイルの移動
 
-The Jekyll-based blog I currently use has a specific path where posts need to be located for publishing. Since the
-Jekyll project location may vary per client, custom path handling is required. I decided to set this up through a
-settings tab and created an input form like the one below.
+現在使用しているJekyllベースのブログには、投稿を公開するために特定のパスに配置する必要があります。Jekyllプロジェクトの場所はクライアントごとに異なる可能性があるため、カスタムパスの処理が必要です。設定タブを通じてこれを設定することにし、以下のような入力フォームを作成しました。
 
 ![image](./jekyll-path-setting-input.webp)
 
-Once all conversions are done, moving the files to the `_post` path in Jekyll completes the conversion process.
+すべての変換が完了したら、Jekyllの`_post`パスにファイルを移動することで変換プロセスが完了します。
 
 ```typescript
 async function moveFilesToChirpy(plugin: O2Plugin) {
-    // Absolute path is needed to move files outside the vault
+    // ボルト外のファイルを移動するためには絶対パスが必要
     const absolutePath = this.app.vault.adapter.getBasePath()
     const sourceFolderPath = `${absolutePath}/${plugin.settings.readyDir}`
     const targetFolderPath = plugin.settings.targetPath()
@@ -205,7 +186,7 @@ async function moveFilesToChirpy(plugin: O2Plugin) {
 }
  ```
 
-### Regular Expressions
+### 正規表現
 
 ```typescript
 export namespace ObsidianRegex {
@@ -215,66 +196,53 @@ export namespace ObsidianRegex {
 }
 ```
 
-Special syntax unique to Obsidian was handled using regular expressions for parsing. By using groups, specific parts
-could be extracted for conversion, making the process more convenient.
+Obsidian独自の特別なシンタックスは、正規表現を使用して解析しました。グループを使用することで、特定の部分を抽出して変換することができ、プロセスが便利になりました。
 
-### Creating a PR for Community Plugin Release
+### コミュニティプラグインリリースのためのPR作成
 
-Finally, to register the plugin in the community plugin repository, I conclude by creating
-a [PR](https://github.com/obsidianmd/obsidian-releases/pull/1678). It is essential to adhere to community guidelines;
-otherwise, the PR may be rejected. Obsidian provides guidance on what to be mindful of when developing plugins, so it's
-crucial to follow these guidelines as closely as possible.
+最後に、コミュニティプラグインリポジトリにプラグインを登録するために、[PR](https://github.com/obsidianmd/obsidian-releases/pull/1678)を作成して締めくくります。コミュニティガイドラインに従わないとPRが拒否される可能性があるため、Obsidianはプラグイン開発時に注意すべき点をガイドしているので、これらのガイドラインにできるだけ従うことが重要です。
 
 ![image](./Obsidian-releases-pr.webp)
 
-Based on previous PRs, it seems that merging takes approximately 2-4 weeks. If feedback is received later, I will make
-the necessary adjustments and patiently wait for the merge.
+過去のPRに基づくと、マージには約2〜4週間かかるようです。後でフィードバックがあれば、必要な調整を行い、マージを待ちます。
 
-## Conclusion
+## 結論
 
-I thought, 'This should be a quick job, maybe done in 3 days,' but trying to implement the plugin while traveling abroad
-ended up taking about a week, including creating the release PR 😂
+「これは簡単な作業で、3日で終わるだろう」と思っていましたが、海外旅行中にプラグインを実装しようとしたため、リリースPRの作成を含めて約1週間かかりました😂
 
 ![image](./coding-in-plane.webp)
-_I wonder if Kent Beck and Erich Gamma, who developed JUnit, coded like this on a plane..._
+_JUnitを開発したKent BeckとErich Gammaも飛行機でこんな風にコーディングしていたのだろうか..._
 
-Switching to TypeScript from Java or Kotlin made things challenging, as I wasn't familiar with it, and I wasn't
-confident if the code I was writing was best practice. However, thanks to this, I delved into JS syntax
-like `async-await` in detail, adding another technology stack to my repertoire. It's a proud feeling. This also gave me
-a new topic to write about.
+JavaやKotlinからTypeScriptに切り替えるのは難しく、慣れていなかったため、書いているコードがベストプラクティスかどうか自信がありませんでした。しかし、このおかげで`async-await`のようなJSシンタックスを詳しく掘り下げることができ、新しい技術スタックを自分のレパートリーに追加することができました。これは誇らしい気持ちです。また、新しいトピックを書く機会も得られました。
 
-The best part is that there's almost no need for manual work in blog posting anymore! After converting the syntax with
-the plugin, I only need to do a spell check before pushing to GitHub. ~~Of course, there are still many bugs...~~
+最も良い点は、ブログ投稿にほとんど手作業が必要なくなったことです！プラグインでシンタックスを変換した後、スペルチェックを行ってGitHubにプッシュするだけです。~~もちろん、まだ多くのバグがありますが...~~
 
-Moving forward, I plan to continue studying TypeScript gradually to eliminate anti-patterns in the plugin and improve
-the design for cleaner modules.
+今後は、プラグインのアンチパターンを排除し、モジュールをよりクリーンにするためにTypeScriptの学習を続けていく予定です。
 
-If you're facing similar dilemmas, contributing to the project or collaborating in other ways to build it together would
-be great! You're welcome anytime 😄
+同じようなジレンマに直面している方は、プロジェクトに貢献したり、他の方法で協力して一緒に構築するのも良いでしょう！いつでも歓迎です😄
 
 :::info
 
-You can check out the complete code on [GitHub](https://github.com/songkg7/o2).
+完全なコードは[GitHub](https://github.com/songkg7/o2)で確認できます。
 
 :::
 
-## Next Steps 🤔
+## 次のステップ 🤔
 
-- Fix minor bugs
-- Support footnote syntax
-- Support image resize syntax
-- Implement transaction handling for rollback in case of errors during conversion
-- Abstract processing for adding other modules
+- 軽微なバグの修正
+- 脚注シンタックスのサポート
+- 画像リサイズシンタックスのサポート
+- 変換中にエラーが発生した場合のロールバック処理の実装
+- 他のモジュールを追加するための処理の抽象化
 
 ---
 
-## Release 🚀
+## リリース 🚀
 
-After about 6 days of code review, the PR was merged. The plugin is now available for use in the Obsidian Community
-plugin repository. 🎉
+約6日間のコードレビューの後、PRがマージされました。プラグインは現在、Obsidianコミュニティプラグインリポジトリで利用可能です。🎉
 
 ![image](./released-plugin.webp)
 
-## Reference
+## 参考
 
 - [Obsidian plugins](https://marcus.se.net/obsidian-plugin-docs/getting-started/create-your-first-plugin)
