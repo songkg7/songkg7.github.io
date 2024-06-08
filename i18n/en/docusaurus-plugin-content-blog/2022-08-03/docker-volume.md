@@ -1,5 +1,5 @@
 ---
-title: "Docker volume"
+title: "Docker Volume"
 date: 2022-08-03 13:38:00 +0900
 tags: [devops, docker, volume]
 categories: [DevOps]
@@ -8,45 +8,45 @@ authors: haril
 
 ## Overview
 
-**도커 컨테이너는 기본적으로 완전 격리상태**이기 때문에 기본적으로는 컨테이너 내부의 데이터를 호스트 머신에서 사용할 수 없다. 이 말은 곧, 컨테이너의 라이프 사이클에 내부 데이터가 완전히 의존하는 상태라는 것이다. 좀 더 쉽게 말하면 컨테이너가 사라지는 순간 데이터도 같이 사라지게 된다.
+**Docker containers are completely isolated by default**, which means that data inside a container cannot be accessed from the host machine. This implies that the container's lifecycle is entirely dependent on its internal data. In simpler terms, when a container is removed, its data is also lost.
 
-그럼 로그나 데이터베이스의 중요한 정보 등 컨테이너의 데이터를 컨테이너의 라이프사이클과는 관계없이 영구적으로 보관해야할 필요가 있는 경우에는 어떻게 해야할까?
+So, what should you do if you need to permanently store important data like logs or database information, independent of the container's lifecycle?
 
-바로 이럴 때 `volume` 을 사용할 수 있다.
+This is where `volumes` come into play.
 
-## PostgreSQL local 에 설치해보기
+## Installing PostgreSQL Locally
 
-간단하게 postgres 를 설치하고 사용해보는 예제를 통해 volume 에 대해서 살펴보자.
+Let's explore volumes by installing and using PostgreSQL in a simple example.
 
-### volume 을 사용하지 않는 경우
+### Without Using Volumes
 
-#### 1. Image pull
+#### 1. Pull the Image
 
 ```bash
 docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=1234 -d postgres
 ```
 
-#### 2. connect postgres
+#### 2. Connect to PostgreSQL
 
 ```bash
 docker exec -it postgres psql -U postgres
 ```
 
-#### 3. create user
+#### 3. Create a User
 
 ```sql
 create user testuser password '1234' superuser;
 ```
 
-#### 4. create database
+#### 4. Create a Database
 
 ```sql
 create database testdb owner testuser;
 ```
 
-유저와 DB 를 생성하는 과정은 `DBeaver` 나 `DataGrip` 같은 툴을 사용해도 무방하다.
+You can also use tools like `DBeaver` or `DataGrip` to create users and databases.
 
-사용이 끝나면 `docker stop postgres` 를 통해서 정지상태로 만들 수 있다. `docker ps -a` 로 컨테이너 리스트를 확인해보면 정지 상태가 되었을 뿐 아직 컨테이너가 제거된 상태는 아니다.
+When you're done, you can stop the container with `docker stop postgres`. Checking the container list with `docker ps -a` will show that the container is stopped but not removed.
 
 ```bash
 $ docker ps -a
@@ -54,11 +54,11 @@ CONTAINER ID   IMAGE      COMMAND                  CREATED          STATUS      
 5c72a3d21021   postgres   "docker-entrypoint.s…"   54 seconds ago   Exited (0) 43 seconds ago             postgres
 ```
 
-이 상태에서는 `docker start postgres` 를 통해서 언제든지 다시 사용할 수 있고 데이터가 사라지지도 않는다.
+In this state, you can restart the container with `docker start postgres` and the data will still be there.
 
-직접 확인해보자.
+Let's verify this.
 
-`\list` 명령어를 통해 PostgreSQL 의 모든 database 를 출력해보면 직접 만든 `testdb` 가 여전히 존재하는 것을 확인할 수 있다.
+Using the `\list` command in PostgreSQL will show that the `testdb` database still exists.
 
 ```sql
 postgres=# \list
@@ -74,9 +74,9 @@ postgres=# \list
 (4 rows)
 ```
 
-그럼 `docker rm` 옵션을 사용하여 container 를 완전히 제거한다면 데이터는 어떻게 될까?
+But what happens if you completely remove the container using the `docker rm` option?
 
-`docker rm postgres` 를 한 후, 다시 `docker run` 를 해보면 새로운 컨테이너가 생성되는 것을 확인할 수 있고, 데이터를 확인해보면 `testdb` 및 user 가 초기화되어 존재하지 않는 것을 알 수 있다.
+After running `docker rm postgres` and then `docker run` again, a new container is created, and you'll see that the `testdb` and user are gone.
 
 ```bash
 $ docker rm postgres
@@ -104,16 +104,16 @@ postgres=# \list
 postgres=#
 ```
 
-### volume 을 사용하는 경우
+### Using Volumes
 
-우선 volume 을 만들어줘야한다.
+First, create a volume.
 
 ```bash
 $ docker volume create postgres
 postgres
 ```
 
-볼륨 생성을 확인하려면 `ls` 명령을 사용한다.
+You can verify the volume creation with the `ls` command.
 
 ```bash
 $ docker volume ls
@@ -121,20 +121,20 @@ DRIVER    VOLUME NAME
 local     postgres
 ```
 
-이번엔 postgres 컨테이너를 실행할 때 생성한 볼륨을 마운트해준다.
+Now, run the PostgreSQL container with the created volume mounted.
 
 ```bash
 $ docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=1234 -v postgres:/var/lib/postgresql/data -d postgres
 002c552fe092da485ee30235d809c835eeb08bd7c00e6f91a2f172618682c48e
 ```
 
-이후 과정은 volume 을 사용하지 않는 경우와 같다. 이제 `docker rm` 을 사용하여 컨테이너를 완전 삭제하는 경우에도 데이터는 volume 에 남아있기 때문에 사라지지 않는다.
+The subsequent steps are the same as those without using volumes. Now, even if you completely remove the container using `docker rm`, the data will remain in the volume and won't be lost.
 
-위에서 잠깐 언급했듯이, 장기간 보관해야하는 로그 파일이라던지 백업 데이터의 같은 경우 volume 을 사용하여 컨테이너의 라이프 사이클에 의존하지 않는 영속화 처리를 할 수 있다.
+As mentioned earlier, for long-term storage of log files or backup data, you can use volumes to ensure data persistence independent of the container's lifecycle.
 
 ## Conclusion
 
-지금까지 Docker 에서 volume 은 무엇이고 어떻게 활용해야하는지에 대해 PostgreSQL 을 통해 살펴보았다. volume 은 Docker 컨테이너에서 사용되는 데이터 관리의 핵심 메커니즘이고, 사용하려는 컨테이너의 성격에 따라서 적절하게 volume 을 활용해줄 수 있다면 데이터를 안전하고 쉽게 관리할 수 있으니 익숙해지기만 한다면 개발 생산성 향상에 큰 도움이 될 것이다. 자세한 정보는 [공식 문서](https://docs.docker.com/storage/volumes/)를 참고하자.
+We have explored what Docker volumes are and how to use them through a PostgreSQL example. Volumes are a key mechanism for data management in Docker containers. By appropriately using volumes based on the nature of the container, you can manage data safely and easily, which can significantly enhance development productivity once you get accustomed to it. For more detailed information, refer to the [official documentation](https://docs.docker.com/storage/volumes/).
 
 ## Reference
 
