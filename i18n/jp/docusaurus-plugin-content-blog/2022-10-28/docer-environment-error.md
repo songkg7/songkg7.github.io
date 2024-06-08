@@ -2,7 +2,7 @@
 title: "有効なDocker環境が見つかりませんでした"
 date: 2022-10-28 11:26:00 +0900
 aliases:
-tags: [エラー, docker]
+tags: [error, docker]
 categories: [DevOps, Docker]
 authors: haril
 description: "この記事では、macOS上のDocker Desktopで発生する「有効なDocker環境が見つかりませんでした」エラーの解決方法を説明します。"
