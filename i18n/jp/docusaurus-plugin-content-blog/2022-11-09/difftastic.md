@@ -2,9 +2,10 @@
 title: "より直感的な 'diff' を実現する、Difftastic"
 date: 2022-11-09 12:53:00 +0900
 aliases:
-tags: [ツール, git, diff, difftastic]
-categories: [ツール]
+tags: [tool, git, diff, difftastic]
+categories: [tool]
 authors: haril
+description: "Difftasticは、`git diff`の使用をより便利にするためのツールです。ターミナルで頻繁に`git diff`コマンドを使用する人にとって非常に役立ちます。"
 ---
 
 ## 概要
