@@ -1,0 +1,22 @@
+{
+  "title": {
+    "message": "Haril Dev",
+    "description": "The title in the navbar"
+  },
+  "logo.alt": {
+    "message": "Haril profile Logo",
+    "description": "The alt text of navbar logo"
+  },
+  "item.label.Blog": {
+    "message": "ブログ",
+    "description": "Navbar item with label Blog"
+  },
+  "item.label.Products": {
+    "message": "プロダクト",
+    "description": "Navbar item with label Products"
+  },
+  "item.label.Archive": {
+    "message": "アーカイブ",
+    "description": "Navbar item with label Archive"
+  }
+}

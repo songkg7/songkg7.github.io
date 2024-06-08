@@ -29,7 +29,7 @@ const config: Config = {
     // may want to replace "en" with "zh-Hans".
     i18n: {
         defaultLocale: 'kr',
-        locales: ['kr', 'en'],
+        locales: ['kr', 'en', 'jp'],
         localeConfigs: {
             kr: {
                 label: '한국어',
@@ -37,6 +37,9 @@ const config: Config = {
             en: {
                 label: 'English',
                 htmlLang: 'en-GB',
+            },
+            jp: {
+                label: '日本語',
             },
         },
     },
