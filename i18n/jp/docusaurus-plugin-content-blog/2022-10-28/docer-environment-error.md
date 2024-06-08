@@ -1,26 +1,26 @@
 ---
-title: "Could not find a valid Docker environment"
+title: "有効なDocker環境が見つかりませんでした"
 date: 2022-10-28 11:26:00 +0900
 aliases:
-tags: [error, docker]
+tags: [エラー, docker]
 categories: [DevOps, Docker]
 authors: haril
-description: "This article explains how to resolve the 'Could not find a valid Docker environment' error in Docker Desktop on macOS."
+description: "この記事では、macOS上のDocker Desktopで発生する「有効なDocker環境が見つかりませんでした」エラーの解決方法を説明します。"
 ---
 
-## Overview
+## 概要
 
-After updating my Mac and finding that Docker was not working properly, I had to reinstall it. However, I encountered an error where the container was not running properly when running tests.
+Macをアップデートした後、Dockerが正常に動作しなくなり、再インストールする必要がありました。しかし、テストを実行するとコンテナが正常に動作しないエラーに遭遇しました。
 
-It turned out that there was an issue with the `/var/run/docker.sock` not being properly configured. Here, I will share the solution to resolve this issue.
+調べてみると、`/var/run/docker.sock`が正しく設定されていないことが原因でした。ここでは、この問題を解決する方法を共有します。
 
-## Description
+## 説明
 
-This problem occurs in Docker desktop version `4.13.0`.
+この問題はDocker Desktopバージョン`4.13.0`で発生します。
 
-> _By default Docker will not create the /var/run/docker.sock symlink on the host and use the docker-desktop CLI context instead._ (see: [https://docs.docker.com/desktop/release-notes/](https://docs.docker.com/desktop/release-notes/))
+> _デフォルトでは、Dockerはホスト上に/var/run/docker.sockシンボリックリンクを作成せず、代わりにdocker-desktop CLIコンテキストを使用します。_ (参照: [https://docs.docker.com/desktop/release-notes/](https://docs.docker.com/desktop/release-notes/))
 
-You can check the current Docker context using `docker context ls`, which will display something like this:
+現在のDockerコンテキストは`docker context ls`コマンドで確認できます。以下のように表示されます：
 
 ```console
 NAME                TYPE                DESCRIPTION                               DOCKER ENDPOINT                                KUBERNETES ENDPOINT                                 ORCHESTRATOR
@@ -28,22 +28,22 @@ default             moby                Current DOCKER_HOST based configuration 
 desktop-linux *     moby                                                          unix:///Users/<USER>/.docker/run/docker.sock
 ```
 
-To fix the issue, either set the default context or connect to `unix:///Users/<USER>/.docker/run/docker.sock`.
+問題を解決するには、デフォルトのコンテキストを設定するか、`unix:///Users/<USER>/.docker/run/docker.sock`に接続します。
 
-## Solution
+## 解決方法
 
-Try running the following command to switch to the default context and check if Docker works properly:
+以下のコマンドを実行してデフォルトのコンテキストに切り替え、Dockerが正常に動作するか確認してください：
 
 ```bash
 docker context use default
 ```
 
-If the issue persists, you can manually create a symbolic link to resolve it with the following command:
+問題が解決しない場合は、以下のコマンドでシンボリックリンクを手動で作成して解決できます：
 
 ```bash
 sudo ln -svf /Users/<USER>/.docker/run/docker.sock /var/run/docker.sock
 ```
 
-## Reference
+## 参考
 
-- [Stack overflow](https://stackoverflow.com/questions/74173489/docker-socket-is-not-found-while-using-intellij-idea-and-docker-desktop-on-macos)
+- [Stack Overflow](https://stackoverflow.com/questions/74173489/docker-socket-is-not-found-while-using-intellij-idea-and-docker-desktop-on-macos)
