@@ -1,20 +1,20 @@
 ---
-title: "Precautions when using ZonedDateTime - Object.equals vs Assertions.isEqualTo"
+title: "ZonedDateTimeを使用する際の注意点 - Object.equals vs Assertions.isEqualTo"
 date: 2022-11-21 16:51:00 +0900
 aliases:
 tags: [java, zoneddatetime, equals, compare, assertj]
 categories: Java
 authors: haril
-description: "This article discusses the differences between Object.equals and Assertions.isEqualTo when comparing ZonedDateTime objects."
+description: "この記事では、ZonedDateTimeオブジェクトを比較する際のObject.equalsとAssertions.isEqualToの違いについて説明します。"
 ---
 
-## Overview
+## 概要
 
-In Java, there are several objects that can represent time. In this article, we will discuss how time comparison is done with `ZonedDateTime`, which is one of the objects that contains the most information.
+Javaには時間を表現するためのオブジェクトがいくつか存在します。この記事では、その中でも最も情報量が多い`ZonedDateTime`を使用した時間の比較方法について説明します。
 
-## Different but the same time?
+## 異なるが同じ時間？
 
-Let's write a simple test code to find any peculiarities.
+まず、簡単なテストコードを書いて、何か特異な点がないか確認してみましょう。
 
 ```java
 ZonedDateTime seoulZonedTime = ZonedDateTime.parse("2021-10-10T10:00:00+09:00[Asia/Seoul]");
@@ -24,35 +24,35 @@ assertThat(seoulZonedTime.equals(utcTime)).isFalse();
 assertThat(seoulZonedTime).isEqualTo(utcTime);
 ```
 
-This code passes the test. Although `equals` returns `false`, `isEqualTo` passes. Why is that?
+このコードはテストに合格します。`equals`が`false`を返す一方で、`isEqualTo`は合格します。なぜでしょうか？
 
-In reality, the two `ZonedDateTime` objects in the above code represent the same time. However, since `ZonedDateTime` internally contains `LocalDateTime`, `ZoneOffset`, and `ZoneId`, when compared using `equals`, it checks if the objects have the same values rather than an absolute time.
+実際には、上記のコードにおける2つの`ZonedDateTime`オブジェクトは同じ時間を表しています。しかし、`ZonedDateTime`は内部的に`LocalDateTime`、`ZoneOffset`、および`ZoneId`を含んでいるため、`equals`を使用して比較すると、絶対時間ではなくオブジェクトの値が同じかどうかをチェックします。
 
-Therefore, `equals` returns `false`.
+そのため、`equals`は`false`を返します。
 
 ![image1](./1.webp)
 _ZonedDateTime#equals_
 
-However, it seems that `isEqualTo` works differently in terms of how it operates in time objects.
+しかし、`isEqualTo`は時間オブジェクトの操作に関して異なる動作をするようです。
 
-In fact, when comparing `ZonedDateTime`, `isEqualTo` calls `ChronoZonedDateTimeByInstantComparator#compare` instead of invoking `ZonedDateTime`'s `equals`.
+実際、`ZonedDateTime`を比較する際、`isEqualTo`は`ZonedDateTime`の`equals`を呼び出すのではなく、`ChronoZonedDateTimeByInstantComparator#compare`を呼び出します。
 
 ![image2](./2.webp)
 
 ![image3](./3.webp)
-_Comparator#compare is called._
+_Comparator#compareが呼び出される。_
 
-By looking at the internal implementation, it can be seen that the comparison is done by converting to seconds using `toEpochSecond()`. This means that it compares absolute time through `compare` rather than comparing objects through `equals`.
+内部実装を見ると、`toEpochSecond()`を使用して秒に変換することで比較が行われていることがわかります。つまり、`equals`を通じてオブジェクトを比較するのではなく、`compare`を通じて絶対時間を比較しています。
 
-Based on this, the comparison of `ZonedDateTime` can be summarized as follows:
+これに基づいて、`ZonedDateTime`の比較を以下のようにまとめることができます：
 
 `equals`
-: Compares objects
+: オブジェクトを比較
 
 `isEqualTo`
-: Compares absolute time
+: 絶対時間を比較
 
-Therefore, when comparing objects that include `ZonedDateTime` indirectly, `equals` is called, so if you want to compare based on the absolute value of `ZonedDateTime`, you need to override the `equals` method inside the object.
+したがって、`ZonedDateTime`を間接的に含むオブジェクトを比較する場合、`equals`が呼び出されるため、`ZonedDateTime`の絶対値に基づいて比較したい場合は、オブジェクト内で`equals`メソッドをオーバーライドする必要があります。
 
 ```java
 public record Event(
@@ -92,8 +92,8 @@ void equals() {
 }
 ```
 
-## Conclusion
+## 結論
 
-- If you want to compare absolute time when `equals` is called between `ZonedDateTime`, you need to convert it, such as using `toEpochSecond()`.
-- When directly comparing `ZonedDateTime` with `isEqualTo` in test code or similar scenarios, `equals` is not called, and internal conversion is performed, so no separate conversion is needed.
-- If there is a `ZonedDateTime` inside an object, you may need to override the object's `equals` method as needed.
+- `ZonedDateTime`間で`equals`が呼び出される際に絶対時間を比較したい場合は、`toEpochSecond()`などを使用して変換する必要があります。
+- テストコードや類似のシナリオで`isEqualTo`を使用して直接`ZonedDateTime`を比較する場合、`equals`は呼び出されず、内部変換が行われるため、別途変換する必要はありません。
+- オブジェクト内に`ZonedDateTime`が含まれている場合、必要に応じてオブジェクトの`equals`メソッドをオーバーライドする必要があります。
