@@ -1,20 +1,20 @@
 ---
-title: "Operating Jenkins with Docker"
+title: "DockerでJenkinsを運用する"
 date: 2022-11-17 00:47:00 +0900
 aliases: 
 tags: [ci, cd, devops, jenkins]
 categories: DevOps
 authors: haril
-description: "This article explains how to install and operate Jenkins using Docker."
+description: "この記事では、Dockerを使用してJenkinsをインストールおよび運用する方法について説明します。"
 ---
 
-## Overview
+## 概要
 
-This article explains how to install and operate Jenkins using Docker.
+この記事では、Dockerを使用してJenkinsをインストールおよび運用する方法について説明します。
 
-## Contents
+## 目次
 
-### Install
+### インストール
 
 #### Docker
 
@@ -22,52 +22,52 @@ This article explains how to install and operate Jenkins using Docker.
 docker run --name jenkins-docker -d -p 8080:8080 -p 50000:50000 -v /home/jenkins:/var/jenkins_home -u root jenkins/jenkins:lts 
 ```
 
-Mount a volume to persist Jenkins data on the host machine. Unlike TeamCity, Jenkins manages all configurations in files. Setting up a mount makes authentication information and data management much more convenient, so be sure to configure it. Common target paths are `/home/jenkins` or `/var/lib/jenkins`.
+ホストマシン上にJenkinsデータを永続化するためにボリュームをマウントします。TeamCityとは異なり、Jenkinsはすべての設定をファイルで管理します。マウントを設定することで、認証情報やデータ管理が非常に便利になるため、必ず設定してください。一般的なターゲットパスは`/home/jenkins`または`/var/lib/jenkins`です。
 
-For the purpose of this article, it is assumed that the path `/home/jenkins` has been created.
+この記事の目的のために、`/home/jenkins`パスが作成されていると仮定します。
 
-### Authentication
+### 認証
 
-To ensure security and access control for both the master and nodes, create a user named 'jenkins' and proceed as follows.
+マスターとノードの両方に対するセキュリティとアクセス制御を確保するために、'jenkins'という名前のユーザーを作成し、以下の手順に従います。
 
-#### Setting User Access Permissions
+#### ユーザーアクセス権の設定
 
 ```bash
 chown -R jenkins /var/lib/jenkins
 ```
 
-#### Managing SSH Keys
+#### SSHキーの管理
 
-If you don't have keys, generate one using `ssh-keygen` to prepare a private key and a public key.
+キーがない場合は、`ssh-keygen`を使用してプライベートキーとパブリックキーを生成します。
 
-When prompted for a path, enter `/home/jenkins/.ssh/id_rsa` to ensure the key is created under `/home/jenkins/.ssh`.
+パスの入力を求められたら、`/home/jenkins/.ssh/id_rsa`と入力して、キーが`/home/jenkins/.ssh`に作成されるようにします。
 
 #### GitLab
 
-In GitLab's personal settings, there is an SSH setting tab. Add the public key.
+GitLabの個人設定にはSSH設定タブがあります。そこにパブリックキーを追加します。
 
-When selecting Git in the pipeline, a repository path input field is displayed. Entering an SSH path starting with git@~ will show a red error. To resolve this, create a credential. Choose SSH credential to create one, and the ID value can be a useful value, so it is recommended to enter it.
+パイプラインでGitを選択すると、リポジトリパスの入力フィールドが表示されます。git@~で始まるSSHパスを入力すると赤いエラーが表示されます。これを解決するために、資格情報を作成します。SSH資格情報を選択して作成し、ID値には有用な値を入力することをお勧めします。
 
-#### Node Configuration
+#### ノード設定
 
-Nodes are a way to efficiently distribute Jenkins roles.
+ノードはJenkinsの役割を効率的に分散する方法です。
 
-To communicate with the node, generate a key on the master using `ssh-keygen`. If you already have one that you are using, you can reuse it.
+ノードと通信するために、マスターで`ssh-keygen`を使用してキーを生成します。既に使用しているキーがある場合は、それを再利用できます。
 
 ![image](./jenkins-credentials-provider.webp)
 
-- `ID`: This value allows Jenkins to identify the SSH key internally, making it easier to use credentials in Jenkinsfiles, so it's best to set a meaningful value. If not set, a UUID value will be generated.
-- `Username`: The Linux user. Typically, 'jenkins' is used as the user, so enter 'jenkins'. **Be cautious as not entering this may result in a reject key error**.
+- `ID`: この値はJenkinsが内部でSSHキーを識別するために使用され、Jenkinsfileで資格情報を使用しやすくするため、意味のある値を設定するのがベストです。設定しない場合はUUID値が生成されます。
+- `Username`: Linuxユーザー。通常、'jenkins'がユーザーとして使用されるため、'jenkins'と入力します。**これを入力しないと、キーエラーが発生する可能性があるので注意してください**。
 
-#### Docker Access Permissions
+#### Dockerアクセス権限
 
-If the docker group does not exist, create it. Usually, it is automatically created when installing Docker.
+dockerグループが存在しない場合は、作成します。通常、Dockerをインストールすると自動的に作成されます。
 
 ```bash
 sudo groupadd docker
 ```
 
-Grant Jenkins user permission to run Docker by running the following command.
+以下のコマンドを実行して、JenkinsユーザーにDockerを実行する権限を付与します。
 
 ```bash
 sudo gpasswd -a jenkins docker
@@ -78,28 +78,28 @@ sudo gpasswd -a jenkins docker
 sudo chmod 666 /var/run/docker.sock
 ```
 
-Restart the Docker daemon to apply the changes.
+変更を適用するためにDockerデーモンを再起動します。
 
 ```bash
 systemctl restart docker
 ```
 
-You should now be able to run the `docker ps` command.
+これで`docker ps`コマンドを実行できるようになります。
 
-### Restart
+### 再起動
 
-When updating Jenkins version or installing, removing, or updating plugins, Jenkins restarts. However, if you are managing it with Docker, the container goes down, preventing Jenkins from starting. To enable restart, you need to set a restart policy on the container.
+Jenkinsのバージョンを更新したり、プラグインをインストール、削除、更新したりすると、Jenkinsが再起動します。しかし、Dockerで管理している場合、コンテナがダウンし、Jenkinsが起動できなくなります。再起動を有効にするには、コンテナに再起動ポリシーを設定する必要があります。
 
 ```bash
 docker update --restart=always jenkins-docker
 ```
 
-After this, the jenkins-docker container will always remain in a running state.
+これにより、jenkins-dockerコンテナは常に実行状態に保たれます。
 
-## Caution
+## 注意
 
-When updating plugins, carefully check if they are compatible with the current version of Jenkins in operation. Mismatched versions between Jenkins and plugins can often lead to pipeline failures.
+プラグインを更新する際には、現在運用中のJenkinsのバージョンと互換性があるかどうかを慎重に確認してください。Jenkinsとプラグインのバージョンが一致しないと、パイプラインの失敗につながることがよくあります。
 
-## Reference
+## 参考
 
 [Managing Jenkins with Docker](https://dev-overload.tistory.com/40)
