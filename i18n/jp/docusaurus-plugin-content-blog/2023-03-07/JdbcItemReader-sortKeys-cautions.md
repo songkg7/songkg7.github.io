@@ -1,18 +1,18 @@
 ---
-title: "Caution when setting sortKeys in JdbcItemReader"
+title: "JdbcItemReaderでsortKeysを設定する際の注意点"
 date: 2023-03-06 16:46:00 +0900
 aliases: 
 tags: [postgresql, rdb, spring, batch]
 categories: 
 authors: haril
-description: "When using the Spring Batch JdbcPagingItemReader, be cautious when setting the sortKeys parameter. If the order of the sorting conditions is not maintained, an Index scan may not occur as intended."
+description: "Spring BatchのJdbcPagingItemReaderを使用する際、sortKeysパラメータを設定する際には注意が必要です。ソート条件の順序が維持されない場合、意図した通りにインデックススキャンが行われない可能性があります。"
 ---
 
-I would like to share an issue I encountered while retrieving large amounts of data in PostgreSQL.
+PostgreSQLで大量のデータを取得する際に遭遇した問題について共有したいと思います。
 
-## Problem
+## 問題
 
-While using the Spring Batch `JdbcPagingItemReader`, I set the `sortKeys` as follows:
+Spring Batchの`JdbcPagingItemReader`を使用している際、以下のように`sortKeys`を設定しました：
 
 ```java
 ...
@@ -27,42 +27,42 @@ While using the Spring Batch `JdbcPagingItemReader`, I set the `sortKeys` as fol
 ...
 ```
 
-Although the current table's index is set as a composite index with `timestamp`, `mmsi`, and `imo_no`, I expected an Index scan to occur during the retrieval. However, in reality, a Seq scan occurred. The target table contains around 200 million records, causing the batch process to show no signs of completion. Eventually, I had to forcibly shut down the batch. **Why did a Seq scan occur even when querying with index conditions? 🤔**
+現在のテーブルのインデックスは`timestamp`、`mmsi`、`imo_no`の複合インデックスとして設定されているため、データ取得時にインデックススキャンが行われると期待していました。しかし、実際にはSeqスキャンが発生しました。対象のテーブルには約2億件のレコードが含まれており、バッチ処理が完了する兆しが見えなかったため、最終的にバッチを強制終了する必要がありました。**なぜインデックス条件でクエリを実行しているのにSeqスキャンが発生したのでしょうか？🤔**
 
-In PostgreSQL, Seq scans occur in the following cases:
+PostgreSQLでは、以下のような場合にSeqスキャンが発生します：
 
-- When the optimizer determines that a Seq scan is faster due to the table having a small amount of data
-- When the data being queried is too large (more than 10% of the table), and the optimizer deems Index scan less efficient than Seq scan
-	- In such cases, you can use `limit` to adjust the amount of data and execute an Index scan
+- テーブルのデータ量が少ないため、オプティマイザがSeqスキャンの方が速いと判断した場合
+- クエリ対象のデータ量が多すぎる（テーブルの10%以上）場合、オプティマイザがインデックススキャンよりもSeqスキャンの方が効率的だと判断した場合
+	- このような場合、`limit`を使用してデータ量を調整し、インデックススキャンを実行することができます
 
-In this case, since `select *` was used, there was a possibility of a Seq scan due to the large amount of data being queried. However, due to the `chunk size`, the query was performed with `limit`, so I thought that **Index scan would occur continuously**.
+このケースでは、`select *`を使用していたため、大量のデータをクエリすることでSeqスキャンが発生する可能性がありました。しかし、`chunk size`のためにクエリは`limit`付きで実行されていたため、**インデックススキャンが連続して発生する**と考えていました。
 
-## Debugging
+## デバッグ
 
-To identify the exact cause, let's check the actual query being executed. By slightly modifying the YAML configuration, we can observe the queries executed by the `JdbcPagingItemReader`.
+正確な原因を特定するために、実際に実行されているクエリを確認しましょう。YAML設定を少し変更することで、`JdbcPagingItemReader`が実行するクエリを観察できます。
 
 ```yaml
 logging:
   level.org.springframework.jdbc.core.JdbcTemplate: DEBUG
  ```
 
-I reran the batch process to directly observe the queries.
+バッチプロセスを再実行して、クエリを直接観察しました。
 
 ```sql
 SELECT * FROM big_partitioned_table_202301 ORDER BY imo_no ASC, mmsi ASC, timestamp ASC LIMIT 1000
 ```
 
-The order of the `order by` clause seemed odd, so I ran it again.
+`order by`句の順序が奇妙に見えたので、再度実行しました。
 
 ```sql
 SELECT * FROM big_partitioned_table_202301 ORDER BY timestamp ASC, mmsi ASC, imo_no ASC LIMIT 1000
 ```
 
-It was evident that the order by condition was changing with each execution.
+実行ごとに`order by`条件の順序が変わっていることが明らかでした。
 
-To ensure the correct order for an Index scan, the sorting conditions must be specified in the correct order. Passing a general `Map` to `sortKeys` does not guarantee the order, leading to the SQL query not executing as intended.
+インデックススキャンを確実に行うためには、ソート条件を正しい順序で指定する必要があります。一般的な`Map`を`sortKeys`に渡すと順序が保証されないため、SQLクエリが意図した通りに実行されません。
 
-To maintain order, you can use a `LinkedHashMap` to create the `sortKeys`.
+順序を維持するためには、`LinkedHashMap`を使用して`sortKeys`を作成することができます。
 
 ```java
 Map<String, Order> sortKeys = new LinkedHashMap<>();
@@ -71,16 +71,16 @@ sortKeys.put("mmsi", Order.ASCENDING);
 sortKeys.put("imo_no", Order.ASCENDING);
 ```
 
-After making this adjustment and rerunning the batch, we could confirm that the sorting conditions were specified in the correct order.
+この調整を行い、バッチを再実行したところ、ソート条件が正しい順序で指定されていることを確認できました。
 
 ```sql
 SELECT * FROM big_partitioned_table_202301 ORDER BY timestamp ASC, mmsi ASC, imo_no ASC LIMIT 1000
 ```
 
-## Conclusion
+## 結論
 
-The issue of Seq scan occurring instead of an Index scan was not something that could be verified with the application's test code, so we were unaware of any potential bugs. It was only when we observed a significant slowdown in the batch process in the production environment that we realized something was amiss. During development, I had not anticipated that the order of sorting conditions could change due to the `Map` data structure.
+Seqスキャンがインデックススキャンの代わりに発生する問題は、アプリケーションのテストコードでは検証できないため、潜在的なバグに気づくことができませんでした。実際の運用環境でバッチ処理の大幅な遅延を観察して初めて、何かが間違っていることに気づきました。開発中には、`Map`データ構造によってソート条件の順序が変わる可能性を予想していませんでした。
 
-Fortunately, if an Index scan does not occur due to the large amount of data being queried, the batch process would slow down significantly with the `LIMIT` query, making it easy to notice the issue. However, if the data volume was low and the execution speeds of Index scan and Seq scan were similar, it might have taken a while to notice the problem.
+幸いにも、大量のデータをクエリするためにインデックススキャンが発生しない場合、`LIMIT`クエリでバッチ処理が大幅に遅くなるため、問題に気づきやすくなります。しかし、データ量が少なく、インデックススキャンとSeqスキャンの実行速度が似ている場合、問題に気づくまでに時間がかかるかもしれません。
 
-Further consideration is needed on how to anticipate and address this issue in advance. Since the order of the `order by` condition is often crucial, it is advisable to use `LinkedHashMap` over `HashMap` whenever possible.
+この問題を事前に予測し対処する方法について、さらに検討が必要です。`order by`条件の順序が重要な場合が多いため、可能な限り`HashMap`ではなく`LinkedHashMap`を使用することをお勧めします。
