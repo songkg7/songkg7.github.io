@@ -1,22 +1,22 @@
 ---
-title: "Speeding up Test Execution, Spring Context Mocking"
+title: "テスト実行の高速化、Springコンテキストのモッキング"
 date: 2023-01-25 11:33:00 +0900
 aliases: 
-tags: [test, spring, mockito, junit, java, mock]
+tags: [テスト, spring, mockito, junit, java, mock]
 categories: Spring
 authors: haril
-description: "Sharing methods to speed up test execution by eliminating Context loading in a Spring environment."
+description: "Spring環境でのコンテキスト読み込みを排除することでテスト実行を高速化する方法を共有します。"
 ---
 
-## Overview
+## 概要
 
-Writing test code in every project has become a common practice. As projects grow, the number of tests inevitably increases, leading to longer overall test execution times. Particularly in projects based on the Spring framework, test execution can significantly slow down due to the loading of Spring Bean contexts. This article introduces methods to address this issue.
+プロジェクトごとにテストコードを書くことは一般的になっています。プロジェクトが成長するにつれて、テストの数も増え、全体のテスト実行時間が長くなります。特にSpringフレームワークに基づいたプロジェクトでは、Spring Beanコンテキストの読み込みによってテスト実行が大幅に遅くなることがあります。この記事では、この問題に対処する方法を紹介します。
 
-## Write All Tests as Unit Tests
+## すべてのテストをユニットテストとして書く
 
-Tests need to be fast. The faster they are, the more frequently they can be run without hesitation. If running all tests once takes 10 minutes, it means feedback will only come after 10 minutes.
+テストは速くなければなりません。テストが速ければ速いほど、頻繁に実行することに躊躇しなくなります。すべてのテストを一度に実行するのに10分かかる場合、フィードバックは10分後にしか得られません。
 
-To achieve faster tests in Spring, it is essential to avoid using `@SpringBootTest`. Loading all Beans causes the time to load necessary Beans to be overwhelmingly longer than executing the code for testing business logic.
+Springでテストを高速化するためには、`@SpringBootTest`を使用しないことが重要です。すべてのBeanを読み込むと、必要なBeanを読み込む時間が圧倒的に長くなり、ビジネスロジックをテストするコードの実行時間よりも長くなります。
 
 ```java
 @SpringBootTest
@@ -28,30 +28,30 @@ class SpringApplicationTest {
 }
 ```
 
-The above code is a basic test code for running a Spring application. All Beans configured by `@SpringBootTest` are loaded. How can we inject only the necessary Beans for testing?
+上記のコードは、Springアプリケーションを実行するための基本的なテストコードです。`@SpringBootTest`によって構成されたすべてのBeanが読み込まれます。では、テストに必要なBeanだけをどのように注入するのでしょうか？
 
-## Utilizing Annotations or Mockito
+## アノテーションやMockitoの活用
 
-By using specific annotations, only the necessary Beans for related tests are automatically loaded. This way, instead of loading all Beans through Context loading, only the truly needed Beans are loaded, minimizing test execution time.
+特定のアノテーションを使用することで、関連するテストに必要なBeanだけが自動的に読み込まれます。これにより、コンテキスト読み込みを通じてすべてのBeanを読み込むのではなく、本当に必要なBeanだけを読み込むことで、テスト実行時間を最小限に抑えることができます。
 
-Let's briefly look at a few annotations.
+いくつかのアノテーションを簡単に見てみましょう。
 
-- `@WebMvcTest`: Loads only Web MVC related Beans.
-- `@WebFluxTest`: Loads only Web Flux related Beans. Allows the use of `WebTestClient`.
-- `@DataJpaTest`: Loads only JPA repository related Beans.
-- `@WithMockUser`: When using Spring Security, creates a fake User, skipping unnecessary authentication processes.
+- `@WebMvcTest`: Web MVC関連のBeanのみを読み込みます。
+- `@WebFluxTest`: Web Flux関連のBeanのみを読み込みます。`WebTestClient`を使用できます。
+- `@DataJpaTest`: JPAリポジトリ関連のBeanのみを読み込みます。
+- `@WithMockUser`: Spring Securityを使用する場合、偽のユーザーを作成し、不要な認証プロセスをスキップします。
 
-Additionally, by using Mockito, complex dependencies can be easily resolved to write tests. By appropriately utilizing these two concepts, most unit tests are not overly difficult.
+さらに、Mockitoを使用することで、複雑な依存関係を簡単に解決してテストを書くことができます。これらの2つの概念を適切に活用することで、ほとんどのユニットテストはそれほど難しくありません。
 
 :::warning
 
-If excessive mocking is required, there is a high possibility that the dependency design is flawed. Be cautious not to overuse mocking.
+過度なモッキングが必要な場合、依存関係の設計に問題がある可能性が高いです。モッキングの多用には注意が必要です。
 
 :::
 
-## What about SpringApplication?
+## SpringApplicationはどうする？
 
-For SpringApplication to run, `SpringApplication.run()` must be executed. Instead of inefficiently loading all Spring contexts to verify the execution of this method, we can mock the `SpringApplication` where context loading occurs and verify only if `run()` is called without using `@SpringBootTest`.
+SpringApplicationを実行するには、`SpringApplication.run()`を実行する必要があります。このメソッドの実行を確認するためにすべてのSpringコンテキストを非効率的に読み込むのではなく、コンテキスト読み込みが発生する`SpringApplication`をモックし、`run()`が呼び出されるかどうかだけを確認することができます。
 
 ```java
 class DemoApplicationTests {  
@@ -71,14 +71,14 @@ class DemoApplicationTests {
 }
 ```
 
-## Conclusion
+## 結論
 
-In Robert C. Martin's Clean Code, Chapter 9 discusses the 'FIRST principle'.
+ロバート・C・マーティンの『Clean Code』の第9章では「FIRST原則」について議論しています。
 
-Reflecting on the first letter, F, for Fast, as mentioned in this article, we briefly introduced considerations on speed. Once again, emphasizing the importance of fast tests, we conclude with the quote:
+この記事で述べたように、最初の文字FはFast（速い）を意味します。テストの速さの重要性を再度強調し、次の引用で締めくくります。
 
-> Tests must be fast enough. - Robert C. Martin
+> テストは十分に速くなければならない。 - ロバート・C・マーティン
 
-## Reference
+## 参考
 
 - [Toss](https://www.youtube.com/watch?v=jdlBu2vFv58)
