@@ -5,6 +5,7 @@ aliases:
 tags: [java, zoneddatetime, equals, compare, assertj]
 categories: Java
 authors: haril
+description: "This article discusses the differences between Object.equals and Assertions.isEqualTo when comparing ZonedDateTime objects."
 ---
 
 ## Overview
