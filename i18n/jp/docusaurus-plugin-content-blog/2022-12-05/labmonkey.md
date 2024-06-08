@@ -5,6 +5,7 @@ aliases:
 tags: [fixture, test, naver, open-source]
 categories:
 authors: haril
+draft: true
 ---
 
 :::warning
