@@ -4,7 +4,7 @@ date: 2022-08-25 22:38:00 +0900
 fc-calendar: グレゴリオ暦
 fc-date: 2022-08-25
 aliases:
-tags: [vim, mac, 設定]
+tags: [vim, mac, configuration]
 categories:
 authors: haril
 ---
