@@ -1,7 +1,7 @@
 ---
-title: "Enable Keyboard Key Repeat on Mac"
+title: "Macでキーボードのキーリピートを有効にする"
 date: 2022-08-25 22:38:00 +0900
-fc-calendar: Gregorian Calendar
+fc-calendar: グレゴリオ暦
 fc-date: 2022-08-25
 aliases:
 tags: [vim, mac, configuration]
@@ -9,10 +9,10 @@ categories:
 authors: haril
 ---
 
-On a Mac, when you press and hold a specific key for a while, a special character input window like umlauts may appear. This can be quite disruptive when using editors like Vim for code navigation.
+Macでは、特定のキーをしばらく押し続けると、ウムラウトなどの特殊文字入力ウィンドウが表示されることがあります。これは、Vimのようなエディタでコードナビゲーションを行う際に非常に邪魔になることがあります。
 
 ```bash
 defaults write -g ApplePressAndHoldEnabled -bool false
 ```
 
-After running the above command and restarting the application, the special character input window, such as umlauts, will no longer appear and key repetition will be enabled.
+上記のコマンドを実行し、アプリケーションを再起動すると、ウムラウトなどの特殊文字入力ウィンドウが表示されなくなり、キーリピートが有効になります。

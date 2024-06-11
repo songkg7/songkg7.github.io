@@ -1,36 +1,36 @@
 ---
-title: "Docker Network"
+title: "Dockerネットワーク"
 date: 2022-08-09 22:27:00 +0900
 tags: [devops, docker, network]
 categories: [DevOps]
 authors: haril
 ---
 
-## Overview
+## 概要
 
-Since Docker containers run in isolated environments, they cannot communicate with each other by default. However, connecting multiple containers to a single Docker network enables them to communicate. In this article, we will explore how to configure networks for communication between different containers.
+Dockerコンテナは隔離された環境で実行されるため、デフォルトでは互いに通信できません。しかし、複数のコンテナを1つのDockerネットワークに接続することで、相互に通信が可能になります。この記事では、異なるコンテナ間の通信を実現するためのネットワーク設定方法について探ります。
 
-## Types of Networks
+## ネットワークの種類
 
-Docker networks support various types of network drivers such as `bridge`, `host`, and `overlay` based on their purposes.
+Dockerネットワークは、目的に応じて`bridge`、`host`、`overlay`などのさまざまなネットワークドライバーをサポートしています。
 
-- `bridge`: Allows multiple containers within a single host to communicate with each other.
-- `host`: Used to run containers in the same network as the host computer.
-- `overlay`: Used for networking between containers running on multiple hosts.
+- `bridge`: 単一ホスト内の複数のコンテナ間で通信を可能にします。
+- `host`: コンテナをホストコンピュータと同じネットワークで実行するために使用されます。
+- `overlay`: 複数のホスト上で実行されるコンテナ間のネットワーキングに使用されます。
 
-## Creating a Network
+## ネットワークの作成
 
-Let's create a new Docker network using the `docker network create` command.
+`docker network create`コマンドを使用して、新しいDockerネットワークを作成しましょう。
 
 ```bash
 docker network create my-net
 ```
 
-The newly added network can be verified using the `docker network ls` command, which confirms that it was created as a default `bridge` network since the `-d` option was not specified.
+新しく追加されたネットワークは、`docker network ls`コマンドを使用して確認できます。`-d`オプションを指定しなかったため、デフォルトの`bridge`ネットワークとして作成されたことが確認できます。
 
-## Network Details
+## ネットワークの詳細
 
-Let's inspect the details of the newly added network using the `docker network inspect` command.
+`docker network inspect`コマンドを使用して、新しく追加されたネットワークの詳細を確認しましょう。
 
 ```bash
 docker network inspect my-net
@@ -66,22 +66,22 @@ docker network inspect my-net
 ]
 ```
 
-By checking the `Containers` section, we can see that no containers are connected to this network.
+`Containers`セクションを確認すると、このネットワークに接続されているコンテナがないことがわかります。
 
-## Connecting Containers to the Network
+## コンテナをネットワークに接続する
 
-Let's first run a container named `one`.
+まず、`one`という名前のコンテナを実行しましょう。
 
 ```bash
 docker run -it -d --name one busybox
 # af588368c67b8a273cf63a330ee5191838f261de1f3e455de39352e0e95deac4
 ```
 
-If the `--network` option is not specified when running a container, it will by default connect to the `bridge` network.
+コンテナを実行する際に`--network`オプションを指定しない場合、デフォルトで`bridge`ネットワークに接続されます。
 
 :::info
 
-`busybox` is a lightweight command-line library ideal for testing purposes, officially provided by Docker.
+`busybox`は、テスト目的に最適な軽量のコマンドラインライブラリであり、Dockerが公式に提供しています。
 
 :::
 
@@ -101,13 +101,13 @@ docker network inspect bridge
 ]
 ```
 
-Now, let's connect the `one` container to the `my-net` network using the `docker network connect` command.
+次に、`docker network connect`コマンドを使用して、`one`コンテナを`my-net`ネットワークに接続しましょう。
 
 ```bash
 docker network connect my-net one
 ```
 
-Upon rechecking the details of the `my-net` network, we can see that the `one` container has been added to the `Containers` section with the IP `172.18.0.2`.
+`my-net`ネットワークの詳細を再確認すると、`one`コンテナが`Containers`セクションに追加され、IPアドレス`172.18.0.2`が割り当てられていることがわかります。
 
 ```bash
 docker network inspect my-net
@@ -151,28 +151,28 @@ docker network inspect my-net
 ]
 ```
 
-## Disconnecting a Container from the Network
+## コンテナをネットワークから切断する
 
-A container can be connected to multiple networks simultaneously. Since the `one` container was initially connected to the `bridge` network, it is currently connected to both the `my-net` and `bridge` networks.
+コンテナは同時に複数のネットワークに接続できます。`one`コンテナは最初に`bridge`ネットワークに接続されていたため、現在は`my-net`と`bridge`の両方のネットワークに接続されています。
 
-Let's disconnect the `one` container from the `bridge` network using the `docker network disconnect` command.
+`docker network disconnect`コマンドを使用して、`one`コンテナを`bridge`ネットワークから切断しましょう。
 
 ```bash
 docker network disconnect bridge one
 ```
 
-## Connecting a Second Container
+## 2つ目のコンテナを接続する
 
-Let's connect another container named `two` to the `my-net` network.
+次に、`two`という名前のコンテナを`my-net`ネットワークに接続しましょう。
 
-This time, let's specify the network to connect to while running the container using the `--network` option.
+今回は、コンテナを実行する際に`--network`オプションを使用して接続するネットワークを指定します。
 
 ```bash
 docker run -it -d --name two --network my-net busybox
 # b1509c6fcdf8b2f0860902f204115017c3e2cc074810b330921c96e88ffb408e
 ```
 
-Upon inspecting the details of the `my-net` network, we can see that the `two` container has been assigned the IP `172.18.0.3` and connected.
+`my-net`ネットワークの詳細を確認すると、`two`コンテナがIPアドレス`172.18.0.3`を割り当てられて接続されていることがわかります。
 
 ```bash
 docker network inspect my-net
@@ -223,11 +223,11 @@ docker network inspect my-net
 ]
 ```
 
-## Container Networking
+## コンテナ間のネットワーキング
 
-Let's test if the two containers can communicate with each other over the network.
+2つのコンテナがネットワーク上で通信できるかどうかをテストしましょう。
 
-First, let's use the `ping` command from the `one` container to ping the `two` container. Container names can be used as hostnames.
+まず、`one`コンテナから`two`コンテナに`ping`コマンドを使用してpingを送ります。コンテナ名をホスト名として使用できます。
 
 ```bash
 docker exec one ping two
@@ -236,7 +236,7 @@ docker exec one ping two
 # 64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.915 ms
 ```
 
-Next, let's ping the `one` container from the `two` container.
+次に、`two`コンテナから`one`コンテナにpingを送ります。
 
 ```bash
 docker exec two ping one
@@ -248,20 +248,20 @@ docker exec two ping one
 # 64 bytes from 172.18.0.2: seq=4 ttl=64 time=0.371 ms
 ```
 
-Both containers can communicate smoothly.
+両方のコンテナがスムーズに通信できることが確認できました。
 
-## Removing the Network
+## ネットワークの削除
 
-Finally, let's remove the `my-net` network using the `docker network rm` command.
+最後に、`docker network rm`コマンドを使用して`my-net`ネットワークを削除しましょう。
 
 ```bash
 docker network rm my-net
 # Error response from daemon: error while removing network: network my-net id 05f28107caa4fc699ea71c07a0cb7a17f6be8ee65f6001ed549da137e555b648 has active endpoints
 ```
 
-If there are active containers running on the network you are trying to remove, it will not be deleted.
+削除しようとしているネットワークにアクティブなコンテナが存在する場合、ネットワークは削除されません。
 
-In such cases, you need to stop all containers connected to that network before deleting the network.
+その場合、ネットワークを削除する前に、そのネットワークに接続されているすべてのコンテナを停止する必要があります。
 
 ```bash
 docker stop one two
@@ -271,9 +271,9 @@ docker network rm my-net
 # my-net
 ```
 
-## Network Cleanup
+## ネットワークのクリーンアップ
 
-When running multiple containers on a host, you may end up with networks that have no containers connected to them. In such cases, you can use the `docker network prune` command to remove all unnecessary networks at once.
+ホスト上で複数のコンテナを実行していると、コンテナが接続されていないネットワークが残ることがあります。そのような場合、`docker network prune`コマンドを使用して、不要なネットワークを一度にすべて削除できます。
 
 ```bash
 docker network prune
@@ -281,9 +281,9 @@ WARNING! This will remove all custom networks not used by at least one container
 Are you sure you want to continue? [y/N] y
 ```
 
-## Conclusion
+## 結論
 
-In this article, we explored various `docker network` commands:
+この記事では、さまざまな`docker network`コマンドについて探りました：
 
 - `ls`
 - `create`
@@ -293,9 +293,9 @@ In this article, we explored various `docker network` commands:
 - `rm`
 - `prune`
 
-Understanding networks is essential when working with Docker containers, whether for containerizing databases or implementing container clustering. It is crucial to have a good grasp of networking as a key skill for managing multiple containers effectively.
+ネットワークの理解は、Dockerコンテナを扱う際に重要です。データベースのコンテナ化やコンテナクラスタリングの実装など、複数のコンテナを効果的に管理するための重要なスキルです。
 
-## Reference
+## 参考文献
 
 - [Docker Docs - Network](https://docs.docker.com/engine/reference/commandline/network/)
 - [Docker Network Usage](https://www.daleseo.com/docker-networks/)
