@@ -1,16 +1,16 @@
 ---
-title: "Easily Perform Static Code Analysis with Qodana"
+title: "Qodanaで簡単に静的コード解析を行う方法"
 date: 2022-05-11 16:42:00 +0900
 tags: [qodana, jetbrains]
 categories: [Tools]
 authors: haril
 ---
 
-## What is Qodana?
+## Qodanaとは？
 
-Qodana is a code quality improvement tool provided by JetBrains. It is very easy to use, so I would like to introduce it briefly.
+Qodanaは、JetBrainsが提供するコード品質向上ツールです。非常に使いやすいので、簡単に紹介したいと思います。
 
-First, you need an environment with Docker installed.
+まず、Dockerがインストールされた環境が必要です。
 
 ```bash
 docker run --rm -it -p 8080:8080 \
@@ -19,28 +19,28 @@ docker run --rm -it -p 8080:8080 \
 jetbrains/qodana-jvm --show-report
 ```
 
-I am analyzing a Java application, so I used the jvm image. If you are using a different language, you can find the appropriate image on [Qodana's website](https://www.jetbrains.com/ko-kr/qodana/).
+私はJavaアプリケーションを解析しているので、jvmイメージを使用しました。別の言語を使用している場合は、[Qodanaのウェブサイト](https://www.jetbrains.com/ko-kr/qodana/)で適切なイメージを見つけることができます。
 
-- Replace `<source-directory>` with the path to the project you want to analyze.
-- Enter the path where the analysis results will be stored in `<output-directory>`. I will explain this further below.
+- `<source-directory>`には解析したいプロジェクトのパスを置き換えてください。
+- `<output-directory>`には解析結果を保存するパスを入力してください。これについては後ほど説明します。
 
-To store the analysis results, I created a folder named qodana in the root directory.
+解析結果を保存するために、ルートディレクトリにqodanaというフォルダを作成しました。
 
 ```bash
 mkdir ~/qodana
-# Then replace <output-directory> with ~/qobana.
+# そして<output-directory>を~/qodanaに置き換えます。
 ```
 
-Now, execute the `docker run ~` command written above and wait for a while to see the results as shown below.
+次に、上記の`docker run ~`コマンドを実行し、しばらく待つと以下のような結果が表示されます。
 
-I used a simple Java application for testing.
+私はテスト用にシンプルなJavaアプリケーションを使用しました。
 
 ![image](./1.webp)
 
-Now, if you access http://localhost:8080, you can see the code analysis results.
+今、http://localhost:8080 にアクセスすると、コード解析の結果を見ることができます。
 
 ![image1](./2.webp)
 
-If you have Docker installed, you can easily obtain the code analysis results of your current project.
+Dockerがインストールされていれば、現在のプロジェクトのコード解析結果を簡単に取得できます。
 
-Such analysis tools serve as a form of code review, reducing the reviewer's fatigue and allowing them to focus on more detailed reviews. Actively utilizing code quality management tools like this can lead to a very convenient development experience.
+このような解析ツールはコードレビューの一形態として機能し、レビュアーの疲労を軽減し、より詳細なレビューに集中できるようにします。このようなコード品質管理ツールを積極的に活用することで、非常に便利な開発体験を得ることができます。
