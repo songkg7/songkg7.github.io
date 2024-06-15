@@ -6,6 +6,7 @@ tags: [blog, posting]
 categories: 
 mermaid: true
 authors: haril
+description: "글을 잘 쓴다는 것은 무엇일까요? 글쓰기 파이프라인을 소개합니다."
 ---
 
 저는 대부분의 글은 마크다운 에디터인 Obsidian 을 사용하고, GitHub page 로 블로그를 호스팅하고 있습니다. 두 가지 서로 다른 플랫폼에서 흐름이 끊기지 않고 글 쓰는 습관을 유지하려면 어떻게 해야하는지, 제가 사용하고 있는 방법을 소개합니다.
@@ -75,6 +76,7 @@ flowchart LR
 :::
 
 ![gif](./ezgif.com-video-to-gif.gif)
+
 _image link 들이 자동으로 변환되는 모습을 확인할 수 있습니다._
 
 ready 에 있던 노트들은 Jekyll 프로젝트로 옮겨지기 전 published 디렉토리로 복사되고, 백업을 위해 보관됩니다. Obsidian 고유 문법을 모두 기본 마크다운 문법으로 변환하고, 첨부파일이 있다면 Jekyll 프로젝트 폴더로 노트와 함께 복사합니다. 첨부파일 경로가 변하면서, Obsidian 에서는 잘 되었던 마크다운 링크가 깨지겠지만 걱정할 필요는 없습니다. 이 모든 과정은 O2 에 의해 자동화[^fn-nth-2]되어 있으므로, 어떤 수작업도 필요하지 않습니다. 😄 [^fn-nth-3]
