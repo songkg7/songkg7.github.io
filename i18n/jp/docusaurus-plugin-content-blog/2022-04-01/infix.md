@@ -1,16 +1,16 @@
 ---
-title: "[Kotlin] Infix Functions"
+title: "[Kotlin] 中置関数"
 categories: [Kotlin]
 date: 2022-04-01 22:23:00 +0900
 tags: [kotlin, infix-functions]
 authors: haril
 ---
 
-In Kotlin, there is a method of defining functions called Infix functions, which is a syntax that was unimaginable while using Java as the primary language. Let's introduce this for those who are starting with Kotlin.
+Kotlinでは、中置関数と呼ばれる関数の定義方法があります。これは、Javaを主要な言語として使用していた時には想像もできなかった構文です。Kotlinを始めたばかりの方に向けて、これを紹介しましょう。
 
-Member functions with a single parameter can be converted into Infix functions.
+単一のパラメータを持つメンバー関数は、中置関数に変換することができます。
 
-One of the prominent examples of Infix functions is the `to` function included in the standard library.
+中置関数の代表的な例の一つに、標準ライブラリに含まれている `to` 関数があります。
 
 ```kotlin
 val pair = "Ferrari" to "Katrina"
@@ -18,7 +18,7 @@ println(pair)
 // (Ferrari, Katrina)
 ```
 
-You can define new Infix functions like `to` as needed. For example, you can extend `Int` as follows:
+必要に応じて、`to` のような新しい中置関数を定義することもできます。例えば、`Int` を次のように拡張することができます：
 
 ```kotlin
 infix fun Int.times(str: String) = str.repeat(this)
@@ -26,7 +26,7 @@ println(2 times "Hello ")
 // Hello Hello
 ```
 
-If you want to redefine `to` as a new Infix function called `onto`, you can write it as follows:
+`to` を新しい中置関数 `onto` として再定義したい場合は、次のように書くことができます：
 
 ```kotlin
 infix fun String.onto(other: String) = Pair(this, other)
@@ -35,7 +35,7 @@ println(myPair)
 // (McLaren, Lucas)
 ```
 
-Such Kotlin syntax enables quite unconventional coding methods.
+このようなKotlinの構文により、非常に独特なコーディング方法が可能になります。
 
 ```kotlin
 class Person(val name: String) {
@@ -56,6 +56,6 @@ fun main() {
 
 ---
 
-### Reference
+### 参考
 
 [Kotlin Docs](https://play.kotlinlang.org/byExample/01_introduction/02_Functions)
