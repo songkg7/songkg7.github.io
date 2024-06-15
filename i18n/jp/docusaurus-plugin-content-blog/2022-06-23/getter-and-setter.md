@@ -1,30 +1,30 @@
 ---
-title: The Truth and Misconceptions about Getters and Setters
+title: ゲッターとセッターに関する真実と誤解
 date: 2022-06-23 10:22:00 +0900
 tags: [java, getter, setter, oop, encapsulation]
 categories: [Java]
 authors: haril
 ---
 
-When you search for `getter/setter` on Google, you'll find a plethora of articles. Most of them explain the reasons for using `getter/setter`, often focusing on keywords like encapsulation and information hiding.
+Googleで「getter/setter」を検索すると、数多くの記事が見つかります。その多くは、カプセル化や情報隠蔽といったキーワードに焦点を当てて、`getter/setter`を使用する理由を説明しています。
 
-The common explanation is that by declaring field variables as `private` to prevent external access and only exposing them through `getter/setter`, encapsulation is achieved.
+一般的な説明では、フィールド変数を`private`として宣言し、外部からのアクセスを防ぎ、`getter/setter`を通じてのみ公開することでカプセル化が達成されるとされています。
 
-However, does using `getter/setter` truly encapsulate data?
+しかし、`getter/setter`を使用することで本当にデータをカプセル化できるのでしょうか？
 
-In reality, **`getter/setter` cannot achieve encapsulation at all.** To achieve encapsulation, one should avoid using getters and setters. To understand this, it is necessary to have a clear understanding of encapsulation.
+実際には、**`getter/setter`ではカプセル化を全く達成できません。** カプセル化を達成するためには、ゲッターとセッターの使用を避けるべきです。これを理解するためには、カプセル化の明確な理解が必要です。
 
-## What is Encapsulation?
+## カプセル化とは？
 
-> Encapsulation in object-oriented programming has two aspects: bundling an object's attributes (data fields) and behaviors (methods) together and hiding some of the object's implementation details internally. - Wikipedia
+> オブジェクト指向プログラミングにおけるカプセル化には、オブジェクトの属性（データフィールド）と動作（メソッド）を一緒にまとめることと、オブジェクトの実装の詳細を内部に隠すことの二つの側面があります。 - Wikipedia
 
-**Encapsulation means that the external entities should not have complete knowledge of an object's internal attributes.**
+**カプセル化とは、外部のエンティティがオブジェクトの内部属性を完全に知ることができないようにすることを意味します。**
 
-## Why Getters and Setters Fail to Encapsulate
+## なぜゲッターとセッターはカプセル化を達成できないのか
 
-As we have learned, encapsulation dictates that external entities should not know the internal attributes of an object. However, `getter/setter` blatantly exposes the fact that a specific field exists to the outside world. Let's look at an example.
+学んだように、カプセル化は外部のエンティティがオブジェクトの内部属性を知ることができないようにすることを指します。しかし、`getter/setter`は特定のフィールドが存在することを外部に露呈しています。例を見てみましょう。
 
-### Example
+### 例
 
 ```java
 public class Student {
@@ -49,7 +49,7 @@ public class Student {
     }
 
     public String introduce() {
-        return String.format("My name is %s and I am %d years old.", name, age);
+        return String.format("私の名前は%sで、年齢は%d歳です。", name, age);
     }
 }
 ```
@@ -60,24 +60,24 @@ class StudentTest {
     @Test
     void student() {
         Student student = new Student();
-        student.setName("John");
+        student.setName("ジョン");
         student.setAge(20);
         String introduce = student.introduce();
 
-        assertThat(student.getName()).isEqualTo("John");
+        assertThat(student.getName()).isEqualTo("ジョン");
         assertThat(student.getAge()).isEqualTo(20);
-        assertThat(introduce).isEqualTo("My name is John and I am 20 years old.");
+        assertThat(introduce).isEqualTo("私の名前はジョンで、年齢は20歳です。");
     }
 }
 ```
 
-From outside the `Student` class, it is evident that it has attributes named `name` and `age`. Can we consider this state as encapsulated?
+`Student`クラスの外部から、そのクラスには`name`と`age`という属性があることが明らかです。この状態をカプセル化されていると考えられるでしょうか？
 
-If the `age` attribute were to be removed from `Student`, changes would need to be made everywhere `getter/setter` is used. This creates strong coupling.
+もし`Student`から`age`属性を削除した場合、`getter/setter`を使用しているすべての場所で変更が必要になります。これにより強い結合が生じます。
 
-True encapsulation means that modifications to an object's internal structure should not affect the external entities, except for the public interface.
+真のカプセル化とは、オブジェクトの内部構造の変更が外部のエンティティに影響を与えないことを意味します。公開インターフェースを除いて。
 
-Let's try to hide the internal implementation.
+内部実装を隠してみましょう。
 
 ```java
 public class Student {
@@ -91,7 +91,7 @@ public class Student {
     }
 
     public String introduce() {
-        return String.format("My name is %s and I am %d years old.", name, age);
+        return String.format("私の名前は%sで、年齢は%d歳です。", name, age);
     }
 }
 ```
@@ -101,26 +101,26 @@ class StudentTest {
 
     @Test
     void student() {
-        Student student = new Student("John", 20);
+        Student student = new Student("ジョン", 20);
         String introduce = student.introduce();
 
-        assertThat(introduce).isEqualTo("My name is John and I am 20 years old.");
+        assertThat(introduce).isEqualTo("私の名前はジョンで、年齢は20歳です。");
     }
 }
 ```
 
-Now, the object does not expose its internal implementation through the public interface. It is not possible to know what data it holds, prevent it from being modified, and only communicate through messages.
+このように、オブジェクトは公開インターフェースを通じて内部実装を露呈しません。どのようなデータを保持しているかを知ることができず、変更も防ぎ、メッセージを通じてのみ通信します。
 
-## Conclusion
+## 結論
 
-Encapsulation is a crucial topic in object-oriented design, emphasizing designs that are not dependent on external factors. Opinions vary on the level of encapsulation, with some advocating against using both `getter` and `setter` and others suggesting that using `getter` is acceptable.
+カプセル化はオブジェクト指向設計において重要なトピックであり、外部要因に依存しない設計を強調します。カプセル化のレベルについては意見が分かれ、`getter`と`setter`の両方を使用しないことを推奨する人もいれば、`getter`の使用は許容されるとする人もいます。
 
-Personally, I believe in avoiding `getter` usage as much as possible, but there are situations, especially in testing, where having getters or setters can make writing test code easier. Deciding on the level of encapsulation depends on the current situation and the purpose of the code being developed.
+個人的には、可能な限り`getter`の使用を避けるべきだと考えていますが、特にテストにおいては、ゲッターやセッターがあるとテストコードの記述が容易になる場合があります。カプセル化のレベルを決定するには、現在の状況や開発中のコードの目的に依存します。
 
-Good design always emerges through the process of trade-offs.
+良い設計は常にトレードオフの過程を経て生まれます。
 
 :::info
 
-All example codes can be found on [GitHub](https://github.com/songkg7/java-practice/blob/main/basic-syntax/src/main/java/basicsyntax/getterandsetter/Student.java).
+すべてのサンプルコードは[GitHub](https://github.com/songkg7/java-practice/blob/main/basic-syntax/src/main/java/basicsyntax/getterandsetter/Student.java)で確認できます。
 
 :::
