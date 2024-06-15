@@ -1,31 +1,31 @@
 ---
-title: "Resolving 'Cannot Find sitemap.xml' Issue"
+title: "「sitemap.xmlが見つかりません」問題の解決方法"
 date: 2022-06-20 20:11:00 +0900
 tags: [google-search-console, sitemap]
 categories: [ETC]
 authors: haril
 ---
 
-I had registered the `sitemap.xml` for my blog to ensure it gets indexed by Google, but all I was getting was an error message saying 'sitemap not found'. Finally, I managed to resolve it, and I am sharing the method I used.
+ブログのインデックスをGoogleに登録するために`sitemap.xml`を登録していましたが、「sitemapが見つかりません」というエラーメッセージばかりが表示されていました。最終的に解決方法を見つけたので、ここで共有します。
 
-While this method may not solve every case, it seems worth a try.
+この方法がすべてのケースで解決するわけではありませんが、試してみる価値はあると思います。
 
-Simply run the following command:
+以下のコマンドを実行するだけです：
 
 ```bash
-curl https://www.google.com/ping\?sitemap\={path to your submitted sitemap}
+curl https://www.google.com/ping\?sitemap\={あなたのsitemapのパス}
 ```
 
-And then, when you check the search console again...!
+そして、再度サーチコンソールを確認すると...！
 
 ![sitemap-success](./sitemap-success.webp)
-_Finally resolved after almost a month...😢_
+_ほぼ1ヶ月かかってやっと解決しました...😢_
 
-The sitemap is finally being recognized.
+ついにsitemapが認識されました。
 
-Hope this helps!
+お役に立てれば幸いです！
 
-### Reference
+### 参考
 
 - [sitemap.org](https://www.sitemaps.org/protocol.html#submit_ping)
 
