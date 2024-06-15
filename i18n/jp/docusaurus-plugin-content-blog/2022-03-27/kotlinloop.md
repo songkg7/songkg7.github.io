@@ -1,14 +1,14 @@
 ---
-title: "[Kotlin] Enhanced Loops"
+title: "[Kotlin] 拡張されたループ"
 date: 2022-03-26 10:22:00 +0900
 tags: [kotlin, loop]
 categories: [Kotlin]
 authors: haril
 ---
 
-In Kotlin, you can write much simpler and more convenient loops compared to Java. Let's see how you can use them.
+Kotlinでは、Javaに比べてはるかにシンプルで便利なループを書くことができます。どのように使うか見てみましょう。
 
-### 1. `..` operator
+### 1. `..` 演算子
 
 ```kotlin
 val fruits = listOf("Apple", "Banana", "Cherry", "Durian")
@@ -21,7 +21,7 @@ fun main() {
 }
 ```
 
-Using `..` creates a traditional loop that increments by 1.
+`..` を使うと、1ずつインクリメントする従来のループが作成されます。
 
 ### 2. `downTo`
 
@@ -36,7 +36,7 @@ fun main() {
 }
 ```
 
-Using `downTo` creates a loop that decrements as expected.
+`downTo` を使うと、期待通りにデクリメントするループが作成されます。
 
 ### 3. `step`
 
@@ -51,7 +51,7 @@ fun main() {
 }
 ```
 
-With the `step` keyword, you can implement a loop that skips a specific number of elements. This also applies to `downTo`.
+`step` キーワードを使うと、特定の数の要素をスキップするループを実装できます。これは `downTo` にも適用されます。
 
 ### 4. `until`
 
@@ -66,7 +66,7 @@ fun main() {
 }
 ```
 
-Using `until` creates a loop that does not include the last number, eliminating the need for `-1`.
+`until` を使うと、最後の数を含まないループが作成され、`-1` を使う必要がなくなります。
 
 ### 5. lastIndex
 
@@ -81,7 +81,7 @@ fun main() {
 }
 ```
 
-Now, using the `lastIndex` property, loops start to become easier to read. But of course, there's more to explore.
+`lastIndex` プロパティを使うと、ループが読みやすくなります。しかし、もちろんまだ他にも方法があります。
 
 ### 6. indices
 
@@ -96,7 +96,7 @@ fun main() {
 }
 ```
 
-`indices` returns the index range of the collection.
+`indices` はコレクションのインデックス範囲を返します。
 
 ### 7. `withIndex()`
 
@@ -110,7 +110,7 @@ fun main() {
 }
 ```
 
-By using `withIndex()`, extracting both index and value simultaneously simplifies the code, resembling Python's simplicity. This should be sufficient for most loop scenarios, but there's one more method left.
+`withIndex()` を使うと、インデックスと値を同時に抽出でき、コードがシンプルになります。これはPythonのシンプルさに似ています。これでほとんどのループシナリオに対応できますが、もう一つ方法があります。
 
 ### 8. forEachIndexed
 
@@ -124,10 +124,10 @@ fun main() {
 }
 ```
 
-Using a lambda function with `forEachIndexed` can make the code more concise, intuitive, and straightforward. Choose the appropriate method that suits your needs.
+`forEachIndexed` にラムダ関数を使うと、コードがより簡潔で直感的になります。ニーズに合った適切な方法を選びましょう。
 
 ---
 
-## Reference
+## 参考
 
 [Kotlin Tips: Loops](https://www.youtube.com/watch?v=i-kyPp1qFBA)
