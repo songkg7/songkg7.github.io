@@ -1,24 +1,24 @@
 ---
-title: "[Java] Making First Collection More Collection-like - Iterable"
+title: "[Java] コレクションをよりコレクションらしくする - Iterable"
 date: 2022-07-15 20:00:00 +0900
 tags: [java, iterable, iterator]
 categories: [Java]
 authors: haril
-description: "In this article, we introduce a way to make first-class collections more like a real Collection using Iterable."
+description: "この記事では、ファーストクラスコレクションをIterableを使ってより実際のコレクションに近づける方法を紹介します。"
 ---
 
-## Overview
+## 概要
 
 ```java
-// Java Collection that implements Iterable.
+// Iterableを実装するJavaのコレクション。
 public interface Collection<E> extends Iterable<E>
 ```
 
-First-class collections are a very useful way to handle objects. However, despite the name "first-class collection," it only holds `Collection` as a field and is not actually a `Collection`, so you cannot use the various methods provided by `Collection`. In this article, we introduce a way to make first-class collections more like a real `Collection` using `Iterable`.
+ファーストクラスコレクションはオブジェクトを扱う上で非常に便利な方法です。しかし、「ファーストクラスコレクション」という名前にもかかわらず、実際には`Collection`をフィールドとして保持しているだけで、実際には`Collection`ではないため、`Collection`が提供するさまざまなメソッドを使用することはできません。この記事では、`Iterable`を使用してファーストクラスコレクションをより実際の`Collection`に近づける方法を紹介します。
 
-Let's look at a simple example.
+簡単な例を見てみましょう。
 
-## Example
+## 例
 
 ```java
 @Value
@@ -44,16 +44,16 @@ public class LottoNumbers {
         return new LottoNumbers(List.of(numbers));
     }
 
-    // Delegates isEmpty() method to use List's methods.
+    // Listのメソッドを使用するためにisEmpty()メソッドを委譲します。
     public boolean isEmpty() {
         return lottoNumbers.isEmpty();
     }
 }
 ```
 
-`LottoNumbers` is a first-class collection that holds `LottoNumber` as a list. To check if the list is empty, we have implemented `isEmpty()`.
+`LottoNumbers`は`LottoNumber`をリストとして保持するファーストクラスコレクションです。リストが空かどうかを確認するために、`isEmpty()`を実装しています。
 
-Let's write a simple test for `isEmpty()`.
+`isEmpty()`の簡単なテストを書いてみましょう。
 
 ```java
 @Test
@@ -65,17 +65,17 @@ void isEmpty() {
 }
 ```
 
-It's not bad, but `AssertJ` provides various methods to test collections.
+悪くはありませんが、`AssertJ`はコレクションをテストするためのさまざまなメソッドを提供しています。
 
 - `has..`
 - `contains...`
 - `isEmpty()`
 
-You cannot use these convenient assert methods with first-class collections because they do not have access to them due to not being a `Collection`.
+ファーストクラスコレクションは`Collection`ではないため、これらの便利なアサートメソッドを使用することはできません。
 
-More precisely, you cannot use them because **you cannot iterate over the elements** without `iterator()`. To use `iterator()`, you just need to implement `Iterable`.
+より正確には、**`iterator()`がないと要素を反復処理できない**ため、これらを使用することができません。`iterator()`を使用するには、`Iterable`を実装するだけです。
 
-The implementation is very simple.
+実装は非常に簡単です。
 
 ```java
 public class LottoNumbers implements Iterable<LottoNumber> {
@@ -89,7 +89,7 @@ public class LottoNumbers implements Iterable<LottoNumber> {
 }
 ```
 
-Since first-class collections already have `Collection`, you can simply return it just like you delegated `isEmpty()`.
+ファーストクラスコレクションはすでに`Collection`を持っているので、`isEmpty()`を委譲したのと同じように、単にそれを返すだけです。
 
 ```java
 @Test
@@ -103,9 +103,9 @@ void isEmpty_iterable() {
 }
 ```
 
-Now you can use various test methods.
+これでさまざまなテストメソッドを使用できるようになりました。
 
-Not only in tests but also in functionality implementation, you can conveniently use it.
+テストだけでなく、機能の実装においても便利に使用できます。
 
 ```java
 for (LottoNumber lottoNumber : lottoNumbers) {
@@ -113,8 +113,8 @@ for (LottoNumber lottoNumber : lottoNumbers) {
 }
 ```
 
-This is possible because the `for` loop uses `iterator()`.
+これは`for`ループが`iterator()`を使用するため可能です。
 
-## Conclusion
+## 結論
 
-By implementing `Iterable`, you can use much richer functionality. The implementation is not difficult, and it is close to extending functionality, so if you have a first-class collection, actively utilize `Iterable`.
+`Iterable`を実装することで、より豊富な機能を使用することができます。実装は難しくなく、機能拡張に近いので、ファーストクラスコレクションを持っている場合は積極的に`Iterable`を活用しましょう。
