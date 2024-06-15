@@ -1,31 +1,31 @@
 ---
-title: "[Jacoco] Aggregating Jacoco Reports for Multi-Module Projects"
+title: "[Jacoco] マルチモジュールプロジェクトのためのJacocoレポートの集約"
 date: 2022-07-29 23:04:00 +0900
 tags: [jacoco, java, gradle, test, aggregation-report]
 categories: [Java]
 authors: haril
 ---
 
-## Overview
+## 概要
 
-Starting from Gradle 7.4, a feature has been added that allows you to aggregate multiple Jacoco test reports into a single, unified report. In the past, it was very difficult to view the test results across multiple modules in one file, but now it has become much more convenient to merge these reports.
+Gradle 7.4から、複数のJacocoテストレポートを1つの統合レポートに集約する機能が追加されました。以前は、複数のモジュールにまたがるテスト結果を1つのファイルで見るのは非常に困難でしたが、今ではこれらのレポートを統合することが非常に便利になりました。
 
-## Usage
+## 使用方法
 
-### Creating a Submodule Solely for Collecting Reports
+### レポートを収集するためのサブモジュールの作成
 
-The current project structure consists of a module named `application` and other modules like `list` and `utils` that are used by the `application` module.
+現在のプロジェクト構成は、`application`というモジュールと、`application`モジュールで使用される`list`や`utils`といった他のモジュールで構成されています。
 
-By adding a `code-coverage-report` module, we can collect the test reports from the `application`, `list`, and `utils` modules.
+`code-coverage-report`モジュールを追加することで、`application`、`list`、`utils`モジュールからテストレポートを収集できます。
 
-The project structure will then look like this:
+プロジェクト構成は次のようになります：
 
 - application
 - utils
 - list
 - code-coverage-report
 
-### Adding the jacoco-report-aggregation Plugin
+### jacoco-report-aggregationプラグインの追加
 
 ```gradle
 // code-coverage-report/build.gradle
@@ -43,21 +43,21 @@ dependencies {
 }
 ```
 
-Now, by running `./gradlew testCodeCoverageReport`, you can generate a Jacoco report that aggregates the test results from all modules.
+これで、`./gradlew testCodeCoverageReport`を実行することで、すべてのモジュールのテスト結果を集約したJacocoレポートを生成できます。
 
 ![jacoco-directory](./jacoco-aggregation-directory.webp)
 
 :::warning
 
-To use the aggregation feature, a jar file is required. If you have set `jar { enable = false }`, you need to change it to true.
+集約機能を使用するには、jarファイルが必要です。`jar { enable = false }`と設定している場合は、trueに変更する必要があります。
 
 :::
 
-### Update 22-09-28
+### 更新 22-09-28
 
-In the case of a Gradle multi-project setup, there is an issue where packages that were properly excluded in a single project are not excluded in the aggregate report.
+Gradleのマルチプロジェクトセットアップの場合、単一プロジェクトで正しく除外されたパッケージが集約レポートでは除外されない問題があります。
 
-By adding the following configuration, you can generate a report that excludes specific packages.
+次の設定を追加することで、特定のパッケージを除外したレポートを生成できます。
 
 ```gradle
 testCodeCoverageReport {
@@ -77,10 +77,10 @@ testCodeCoverageReport {
 }
 ```
 
-## Next Step
+## 次のステップ
 
-The `jvm-test-suite` plugin, which is introduced alongside `jacoco-aggregation-report` in Gradle, also seems very useful. Since these plugins are complementary, it would be beneficial to use them together.
+Gradleで`jacoco-aggregation-report`と一緒に導入された`jvm-test-suite`プラグインも非常に有用です。これらのプラグインは補完的な関係にあるため、一緒に使用することをお勧めします。
 
-## Reference
+## 参考
 
-- [Gradle 7.4 Release Notes](https://docs.gradle.org/7.4/release-notes.html)
+- [Gradle 7.4 リリースノート](https://docs.gradle.org/7.4/release-notes.html)

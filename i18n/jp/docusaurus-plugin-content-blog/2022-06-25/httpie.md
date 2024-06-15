@@ -1,35 +1,35 @@
 ---
-title: "Elegant HTTP CLI, HTTPie"
+title: "エレガントなHTTP CLI、HTTPie"
 date: 2022-06-25 21:51:00 +0900
 tags: [tools, extension, cli, useful, httpie, curl]
 categories: [Tools]
 authors: haril
 ---
 
-## Overview
+## 概要
 
-> CLI tool that can replace the curl command
+> curlコマンドを置き換えることができるCLIツール
 
-If you are a developer who frequently uses Linux, you probably use the `curl` command often. It is an essential command for sending external API requests from a server, but it has the disadvantage of poor readability in the output. HTTPie is an interesting tool that can alleviate this drawback, so let's introduce it.
+Linuxを頻繁に使用する開発者であれば、`curl`コマンドをよく使うでしょう。サーバーから外部APIリクエストを送信するための必須コマンドですが、出力の可読性が低いという欠点があります。HTTPieはこの欠点を解消できる興味深いツールなので、紹介しましょう。
 
-## Install
+## インストール
 
-For Mac users, you can easily install it using brew.
+Macユーザーの場合、brewを使って簡単にインストールできます。
 
 ```bash
 brew install httpie
 ```
 
-For CentOS, you can install it using yum.
+CentOSの場合、yumを使ってインストールできます。
 
 ```bash
 yum install epel-release
 yum install httpie
 ```
 
-## Usage
+## 使用方法
 
-First, here is how you would send a GET request using `curl`.
+まず、`curl`を使ってGETリクエストを送信する方法です。
 
 ```bash
 curl https://httpie.io/hello
@@ -37,7 +37,7 @@ curl https://httpie.io/hello
 
 ![curl-get](./2.webp)
 
-Now, let's compare it with `HTTPie`.
+次に、`HTTPie`を使って比較してみましょう。
 
 ```bash
 https httpie.io/hello
@@ -45,22 +45,22 @@ https httpie.io/hello
 
 ![get](./1.webp)
 
-The readability is much better in every aspect of the command. The response and header values are included by default, so you can get various information at a glance without using separate commands.
+コマンドのあらゆる面で可読性が大幅に向上しています。レスポンスとヘッダーの値がデフォルトで含まれているため、別のコマンドを使用せずに一目でさまざまな情報を得ることができます。
 
-Note that `https` and `http` are distinguished in the command.
+コマンドでは`https`と`http`が区別されることに注意してください。
 
 ```bash
 http localhost:8080
 ```
 
-You can send a POST request as described on the official website.
+公式サイトに記載されているように、POSTリクエストを送信することもできます。
 
 ```bash
 http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
 
-Various other features are explained on [GitHub](https://github.com/httpie/httpie), so if you make good use of them, you can greatly improve productivity.
+その他のさまざまな機能については[GitHub](https://github.com/httpie/httpie)で説明されているので、うまく活用すれば生産性を大幅に向上させることができます。
 
-## Reference
+## 参考
 
 - [httpie](https://github.com/httpie/httpie)

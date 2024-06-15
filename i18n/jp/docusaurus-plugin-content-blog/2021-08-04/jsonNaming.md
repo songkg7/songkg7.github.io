@@ -1,12 +1,12 @@
 ---
-title: "How to Use @JsonNaming"
+title: "＠JsonNamingの使い方"
 categories: [Java, SpringBoot]
 date: 2021-08-04 12:17:00 +0900
 tags: [java, json, json-naming]
 authors: haril
 ---
 
-Sometimes, the JSON naming conventions used in an API may differ from the naming strategy within your application.
+APIで使用されるJSONの命名規則が、アプリケーション内の命名戦略と異なる場合があります。
 
 ```json
 {
@@ -26,17 +26,17 @@ private String type;
 private String poster;
 ```
 
-If the variable names do not match the JSON keys, the data will not be populated.
+変数名がJSONのキーと一致しない場合、データは正しくマッピングされません。
 
-In such cases, you can use `@JsonProperty(value)` to map the data without changing the variable names in the project. However, if there are many fields with different naming strategies, using `@JsonProperty(value)` on each field can clutter the code with too many annotations.
+このような場合、プロジェクト内の変数名を変更せずにデータをマッピングするために`@JsonProperty(value)`を使用できます。しかし、多くのフィールドが異なる命名戦略を持つ場合、各フィールドに`@JsonProperty(value)`を使用すると、コードが多くのアノテーションで乱雑になります。
 
-This is where the `@JsonNaming` annotation comes in handy, allowing you to change the naming strategy of a class at once.
+ここで`@JsonNaming`アノテーションが役立ちます。クラス全体の命名戦略を一度に変更することができます。
 
 ## @JsonNaming
 
-### Before v2.12
+### v2.12以前
 
-You can elegantly solve this as follows:
+以下のようにエレガントに解決できます：
 
 ```java
 @Data
@@ -46,7 +46,7 @@ public class Movie {
     private String title;
     private String year;
 
-    @JsonProperty("imdbID")  // Only where needed!
+    @JsonProperty("imdbID")  // 必要な場合のみ！
     private String imdbId;
     private String type;
     private String poster;
@@ -55,22 +55,22 @@ public class Movie {
 ```
 
 ![image](./jsonnaming1.webp)
-_This method is deprecated and marked with a strikethrough._
+_この方法は非推奨で、取り消し線が引かれています。_
 
-However, this method has been deprecated since Jackson 2.12, so let's explore the newer approach.
+しかし、この方法はJackson 2.12以降非推奨となったため、新しいアプローチを見てみましょう。
 
-### After v2.12
+### v2.12以降
 
-Starting from version 2.12, you should use `PropertyNamingStrategies`.
+バージョン2.12以降では、`PropertyNamingStrategies`を使用する必要があります。
 
 ```java
 @JsonNaming(value = PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 ```
 
-While a detailed explanation of the internal implementation may be too lengthy and off-topic, it is recommended to take a look as it is quite interestingly implemented!
+内部実装の詳細な説明は長くなりすぎるため割愛しますが、非常に興味深い実装となっているので、一度見てみることをお勧めします！
 
 :::info
 
-In brief, the updated internal implementation involves an abstract class called `NamingBase`, which inherits the original `PropertyNamingStrategy`, and then the naming strategy inherits from `NamingBase`. `NamingBase` is used as a kind of intermediate implementation class.
+簡単に言うと、更新された内部実装には`NamingBase`という抽象クラスが含まれており、これは元の`PropertyNamingStrategy`を継承し、その後命名戦略が`NamingBase`を継承します。`NamingBase`は中間実装クラスとして使用されます。
 
 :::
