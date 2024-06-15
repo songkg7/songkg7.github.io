@@ -1,145 +1,145 @@
 ---
-title: "Why Docker?"
+title: "なぜDockerなのか？"
 date: 2022-07-28 19:29:00 +0900
-tags: [Infra, docker]
+tags: [インフラ, docker]
 categories: [DevOps]
 authors: haril
-description: "Docker is a containerization technology that allows you to create and use Linux containers. This article explains the benefits of using Docker containers and when to use them."
+description: "DockerはLinuxコンテナを作成・使用するためのコンテナ技術です。この記事では、Dockerコンテナを使用する利点とその使用タイミングについて説明します。"
 ---
 
 :::info
 
-This article is written for internal information sharing and is explained based on a Java development environment.
+この記事は社内情報共有のために書かれており、Java開発環境を基に説明しています。
 
 :::
 
-## What is Docker?
+## Dockerとは？
 
 :::info
 
-A containerization technology that allows you to create and use Linux containers, and also the name of the largest company supporting this technology as well as the name of the open-source project.
+Linuxコンテナを作成・使用するためのコンテナ技術であり、この技術をサポートする最大の企業の名前でもあり、オープンソースプロジェクトの名前でもあります。
 
 :::
 
 ![deploy-history](./deploy-history.webp)
-_The image everyone has seen at least once when searching for Docker_
+_誰もが一度はDockerを検索したときに見たことがある画像_
 
-Introduced in 2013, Docker has transformed the infrastructure world into a container-centric one. Many applications are now deployed using containers, with Dockerfiles created to build images and deploy containers, becoming a common development process. In the 2019 DockerCon presentation, it was reported that there were a staggering 105.2 billion container image pulls.
+2013年に導入されたDockerは、インフラの世界をコンテナ中心のものに変革しました。多くのアプリケーションがコンテナを使用してデプロイされ、Dockerfileを作成してイメージをビルドし、コンテナをデプロイすることが一般的な開発プロセスとなりました。2019年のDockerConプレゼンテーションでは、1052億回ものコンテナイメージのプルが報告されました。
 
-Using Docker allows you to handle containers like very lightweight modular virtual machines. Additionally, containers can be built, deployed, copied, and moved from one environment to another flexibly, supporting the optimization of applications for the cloud.
+Dockerを使用することで、非常に軽量なモジュール型の仮想マシンのようにコンテナを扱うことができます。さらに、コンテナは柔軟にビルド、デプロイ、コピー、移動が可能で、クラウド向けのアプリケーション最適化をサポートします。
 
-## Benefits of Docker Containers
+## Dockerコンテナの利点
 
-### Consistent Behavior Everywhere
+### どこでも一貫した動作
 
-As long as the container runtime is installed, Docker containers guarantee the same behavior anywhere. For example, team member A using Windows OS and team member B using MacOS are working on different OSs, but by sharing the image through a Dockerfile, they can see the same results regardless of the OS. The same goes for deployment. If the container has been verified to work correctly, it will operate normally without additional configuration wherever it is run.
+コンテナランタイムがインストールされている限り、Dockerコンテナはどこでも同じ動作を保証します。例えば、チームメンバーAがWindows OSを使用し、チームメンバーBがMacOSを使用している場合でも、Dockerfileを通じてイメージを共有することで、OSに関係なく同じ結果を確認できます。デプロイの場合も同様です。コンテナが正常に動作することが確認されていれば、追加の設定なしでどこでも正常に動作します。
 
-### Modularity
+### モジュール性
 
-Docker's containerization approach focuses on the ability to decompose, update, or recover parts of an application without needing to break down the entire application. Users can share processes among multiple applications in a microservices-based approach, similar to how service-oriented architecture (SOA) operates.
+Dockerのコンテナ化アプローチは、アプリケーションの一部を分解、更新、または回復する能力に焦点を当てています。サービス指向アーキテクチャ（SOA）のように、複数のアプリケーション間でプロセスを共有するマイクロサービスベースのアプローチを採用できます。
 
-### Layering and Image Version Control
+### レイヤリングとイメージバージョン管理
 
-Each Docker image file consists of a series of layers, which are combined into a single image.
+各Dockerイメージファイルは一連のレイヤーで構成されており、これらが一つのイメージに結合されます。
 
-Docker reuses these layers when building new containers, making the build process much faster. Intermediate changes are shared between images, improving speed, scalability, and efficiency.
+Dockerは新しいコンテナをビルドする際にこれらのレイヤーを再利用するため、ビルドプロセスが非常に速くなります。中間の変更はイメージ間で共有され、速度、スケーラビリティ、効率が向上します。
 
-### Rapid Deployment
+### 高速なデプロイ
 
-Docker-based containers can reduce deployment time to mere seconds. Since there is no need to boot the OS to add or move containers, deployment time is significantly reduced. Moreover, the fast deployment speed allows for cost-effective and easy creation and deletion of data generated by containers, without users needing to worry about whether it was done correctly.
+Dockerベースのコンテナはデプロイ時間を数秒に短縮できます。OSを起動してコンテナを追加または移動する必要がないため、デプロイ時間が大幅に短縮されます。さらに、高速なデプロイ速度により、コンテナによって生成されたデータの作成と削除がコスト効率よく簡単に行え、ユーザーはそれが正しく行われたかどうかを心配する必要がありません。
 
-In short, **Docker technology emphasizes efficiency and offers a more granular and controllable microservices-based approach**.
+要するに、**Docker技術は効率性を強調し、より細かく制御可能なマイクロサービスベースのアプローチを提供します**。
 
-### Rollback
+### ロールバック
 
-When deploying with Docker, images are used with tags. For example, if you deploy using version 1.2 of an image, and version 1.1 of the image is still in the repository, you can simply run the command without needing to prepare the jar file again.
+Dockerを使用してデプロイする際、イメージはタグ付きで使用されます。例えば、バージョン1.2のイメージを使用してデプロイし、リポジトリにバージョン1.1のイメージがまだある場合、jarファイルを再準備することなくコマンドを実行するだけで済みます。
 
 ```bash
 docker run --name app image:1.2
 docker stop app
 
-## Run version 1.1
+## バージョン1.1を実行
 docker run --name app image:1.1
 ```
 
-## Comparing Before and After Using Docker
+## Docker使用前後の比較
 
-Using Docker containers allows for much faster and more flexible deployment compared to traditional methods.
+Dockerコンテナを使用することで、従来の方法に比べてはるかに迅速かつ柔軟なデプロイが可能になります。
 
-### Deployment Without Docker Containers
+### Dockerコンテナを使用しないデプロイ
 
-1. Package the `jar` file to be deployed on the local machine.
-2. Transfer the `jar` file to the production server using file transfer protocols like `scp`.
-3. Write a service file using `systemctl` for status management.
-4. Run the application with `systemctl start app`.
+1. ローカルマシンでデプロイする`jar`ファイルをパッケージ化。
+2. `scp`などのファイル転送プロトコルを使用して`jar`ファイルを本番サーバーに転送。
+3. ステータス管理のために`systemctl`を使用してサービスファイルを作成。
+4. `systemctl start app`でアプリケーションを実行。
 
-If multiple apps are running on a single server, the complexity increases significantly in finding stopped apps. The process is similarly cumbersome when running multiple apps on multiple servers, requiring commands to be executed on each server, making it a tiring process.
+複数のアプリが1つのサーバーで実行されている場合、停止したアプリを見つけるのは非常に複雑になります。複数のサーバーで複数のアプリを実行する場合も同様で、各サーバーでコマンドを実行する必要があり、非常に疲れるプロセスです。
 
-### Deployment With Docker Containers
+### Dockerコンテナを使用したデプロイ
 
-1. Use a `Dockerfile` to create an image of the application. → Build ⚒️
-2. Push the image to a repository like Dockerhub or Gitlab registry. → Shipping🚢
-3. Run the application on the production server with `docker run image`.
+1. `Dockerfile`を使用してアプリケーションのイメージを作成。→ ビルド ⚒️
+2. DockerhubやGitlabレジストリなどのリポジトリにイメージをプッシュ。→ シッピング🚢
+3. 本番サーバーで`docker run image`を使用してアプリケーションを実行。
 
-You don't need to waste time on complex path settings and file transfer processes. Docker works in any environment, ensuring it runs anywhere and uses resources efficiently.
+複雑なパス設定やファイル転送プロセスに時間を浪費する必要はありません。Dockerはどの環境でも動作し、どこでも実行され、リソースを効率的に使用します。
 
-Docker is designed to manage single containers effectively. However, as you start using hundreds of containers and containerized apps, management and orchestration can become very challenging. To provide services like networking, security, and telemetry across all containers, you need to step back and group them. This is where Kubernetes[^footnote] comes into play.
+Dockerは単一のコンテナを効果的に管理するように設計されています。しかし、数百のコンテナやコンテナ化されたアプリを使用し始めると、管理とオーケストレーションが非常に困難になります。すべてのコンテナにネットワーキング、セキュリティ、テレメトリなどのサービスを提供するためには、一歩引いてそれらをグループ化する必要があります。ここでKubernetes[^footnote]が登場します。
 
-## When Should You Use It?
+## いつ使用すべきか？
 
-Developers can find Docker extremely useful in almost any situation. In fact, Docker often proves superior to traditional methods in development, deployment, and operations, so Docker containers should always be a top consideration.
+開発者はほぼすべての状況でDockerを非常に有用と感じるでしょう。実際、Dockerは開発、デプロイ、運用において従来の方法よりも優れていることが多いため、Dockerコンテナは常に最優先で検討すべきです。
 
-1. When you need a development database like PostgreSQL on your local machine.
-2. When you want to test or quickly adopt new technologies.
-3. When you have software that is difficult to install or uninstall directly on your local machine (e.g., reinstalling Java on Windows can be a nightmare).
-4. When you want to run the latest deployment version from another team, like the front-end team, on your local machine.
-5. When you need to switch your production server from NCP to AWS.
+1. ローカルマシンでPostgreSQLのような開発データベースが必要なとき。
+2. 新しい技術をテストまたは迅速に採用したいとき。
+3. ローカルマシンに直接インストールまたはアンインストールが難しいソフトウェアがあるとき（例：WindowsでJavaを再インストールするのは悪夢です）。
+4. フロントエンドチームなど、他のチームから最新のデプロイバージョンをローカルマシンで実行したいとき。
+5. 本番サーバーをNCPからAWSに切り替える必要があるとき。
 
-## Example
+## 例
 
-A simple API server:
+シンプルなAPIサーバー：
 
 ```bash
 docker run --name rest-server -p 80:8080 songkg7/rest-server
 ```
 
 ```bash
-# Using curl
+# curlを使用
 curl http://localhost/ping
 
-# Using httpie
+# httpieを使用
 http localhost/ping
 ```
 
-Since port 80 is mapped to the container's port 8080, you can see that communication with the container works well.
+ポート80がコンテナのポート8080にマッピングされているため、コンテナとの通信がうまくいくことが確認できます。
 
-:::tip[**Commonly Used Docker Run Options**]
+:::tip[**よく使われるDocker Runオプション**]
 
 `--name`
-: Assign a name to the container
+: コンテナに名前を付ける
 
 `-p`
-: Publish a container's port(s) to the host
+: コンテナのポートをホストに公開する
 
 `--rm`
-: Automatically remove the container when it exits
+: コンテナが終了したときに自動的に削除する
 
 `-i`
-: Interactive, keep STDIN open even if not attached
+: インタラクティブモード、アタッチされていなくてもSTDINを開いたままにする
 
 `-t`
-: Allocate a pseudo-TTY, creating an environment similar to a terminal
+: 擬似TTYを割り当て、ターミナルに似た環境を作成する
 
 `-v`
-: Bind mount a volume
+: ボリュームをバインドマウントする
 
 :::
 
-## Conclusion
+## 結論
 
-Using Docker containers allows for convenient operations while solving issues that arise with traditional deployment methods. Next, we'll look into the `Dockerfile`, which creates an image of your application.
+Dockerコンテナを使用することで、従来のデプロイ方法で発生する問題を解決しながら、便利な操作が可能になります。次回は、アプリケーションのイメージを作成する`Dockerfile`について見ていきます。
 
-## Reference
+## 参考文献
 
 - [Redhat - What is Docker?](https://www.redhat.com/ko/topics/containers/what-is-docker)
 
