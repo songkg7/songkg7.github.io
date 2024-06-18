@@ -145,4 +145,4 @@ Dockerコンテナを使用することで、従来のデプロイ方法で発�
 
 ---
 
-[^footnote]: [Kubernetes](https://songkg7.github.io/posts/kubernetes-start/)
+[^footnote]: [Kubernetes](https://haril.dev/jp/blog/2022/07/22/kubernetes-start)

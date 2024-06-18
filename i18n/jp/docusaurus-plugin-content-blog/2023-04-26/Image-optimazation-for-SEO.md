@@ -13,7 +13,7 @@ description: "ブログ投稿の自動化プロセスにおいて、SEOのため
 
 :::info
 
-コードは[GitHub](https://github.com/songkg7/songkg7.github.io/tree/master/tools)で確認できます。
+コードは[GitHub](https://github.com/songkg7/songkg7.github.io-legacy/blob/master/tools/imagemin.js)で確認できます。
 
 :::
 

@@ -14,8 +14,8 @@ Fixture Monkeyは、Naverがオープンソースとして開発しているテ�
 
 約2年前に初めて出会って以来、私のお気に入りのオープンソースライブラリの一つとなりました。これまでに2つの記事も書きました。
 
-- [Fixture Monkey オブジェクト生成戦略](https://songkg7.github.io/posts/Fixture-monkey-overview/)
-- [Fixture Monkey 0.4.x](https://songkg7.github.io/posts/labmonkey/)
+- [Fixture Monkey オブジェクト生成戦略](https://haril.dev/blog/2022/09/19/Fixture-monkey-overview/)
+- [Fixture Monkey 0.4.x](https://haril.dev/jp/blog/2022/12/05/labmonkeyposts/labmonkey/)
 
 バージョンアップごとに変更が多く、追加の記事は書いていませんでしたが、バージョン1.xがリリースされた今、新たな視点で再訪することにしました。
 

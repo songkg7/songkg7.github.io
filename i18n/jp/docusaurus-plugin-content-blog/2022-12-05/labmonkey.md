@@ -17,7 +17,7 @@ Instead, please refer to [Making Testing Easy and Convenient with Fixture Monkey
 
 ## Overview
 
-With the update to `FixtureMonkey` version `0.4.x`, there have been significant changes in functionality. It has only been a month since the [previous post](https://songkg7.github.io/posts/Fixture-monkey-overview)[^footnote], and there have been many modifications (ㅠ) which was a bit overwhelming, but taking comfort in the active community, I am writing a new post reflecting the updated features.
+With the update to `FixtureMonkey` version `0.4.x`, there have been significant changes in functionality. It has only been a month since the [previous post](https://haril.dev/jp/blog/2022/09/19/Fixture-monkey-overview)[^footnote], and there have been many modifications (ㅠ) which was a bit overwhelming, but taking comfort in the active community, I am writing a new post reflecting the updated features.
 
 ## Changes
 

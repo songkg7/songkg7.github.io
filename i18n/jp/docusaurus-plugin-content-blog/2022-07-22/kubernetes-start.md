@@ -220,4 +220,4 @@ http localhost:8080/ping
 
 ---
 
-[^footnote]: [Elegant httpie](https://songkg7.github.io/posts/httpie/)
+[^footnote]: [Elegant httpie](https://haril.dev/jp/blog/2022/06/25/httpie)

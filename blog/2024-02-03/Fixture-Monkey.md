@@ -14,7 +14,7 @@ authors: haril
 
 약 2년 전 처음 접한 이후, 가장 좋아하는 오픈소스 라이브러리 중 하나가 되었다. 어쩌다보니 글도 2편이나 썼다.
 
-- [Fixture Monkey 객체 생성 전략](https://haril.dev/blog/2022/09/19/Fixture-monkey-overview)
+- [Fixture Monkey 객체 생성 전략](https://haril.dev/blog/2022/09/19/Fixture-monkey-overview/)
 - [Fixture Monkey 0.4.x](https://haril.dev/blog/2022/12/05/labmonkey)
 
 이후로 버전이 변할 때마다 변경점이 너무 많아 추가적인 글을 안적고 있다가, 최근 1.x 가 릴리즈되었기에 새로운 마음으로 다시 소개글을 써본다.
