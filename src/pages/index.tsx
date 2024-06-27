@@ -5,6 +5,7 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
 
 import styles from './index.module.scss';
+import CardView from "@site/src/components/CardView";
 
 function HomepageHeader() {
     const {siteConfig} = useDocusaurusContext();
@@ -29,6 +30,7 @@ export default function Home(): JSX.Element {
             <HomepageHeader/>
             <main>
                 <HomepageFeatures/>
+                <CardView/>
             </main>
         </Layout>
     );
