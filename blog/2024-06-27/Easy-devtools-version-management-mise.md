@@ -16,7 +16,7 @@ mise 를 사용하면 어떤 언어, 도구를 사용하더라도 정확하게 �
 
 지금까지 이 분야에서 가장 유명한건 asdf 였어요[^fn-nth-1]. 하지만 최근 mise 를 사용하기 시작한 뒤로는 mise 가 UX 측면에서 조금 더 괜찮다는 생각이 들었어요. 이번 글에서는 간단한 사용 용례를 소개해드려보려고 해요.
 
-![](https://i.imgur.com/9gGGfot.png)
+![mise vs asdf](https://i.imgur.com/9gGGfot.png)
 
 _의도적인지는 모르겠으나 웹페이지조차 비슷하다._
 
@@ -68,7 +68,7 @@ echo 'eval "$(~/.local/bin/mise activate zsh)"' >> ~/.zshrc
 mise ls-remote java
 ```
 
-![](https://i.imgur.com/8kzA8dE.png)
+![mise version list](https://i.imgur.com/8kzA8dE.png)
 
 :::tip[fuzzy finder, fzf]
 
@@ -82,9 +82,9 @@ mise ls-remote java
 mise use --global java@corretto-11.0.18.10.1
 ```
 
-![](https://i.imgur.com/PT7UxD1.png)
+![languege select 1](https://i.imgur.com/PT7UxD1.png)
 
-![](https://i.imgur.com/Arqxubw.png)
+![languege select 2](https://i.imgur.com/Arqxubw.png)
 
 글 작성 기준 Java 의 LTS 는 21 입니다. 21 을 설치해주면서, 자주 쓰고 있는 17 도 함께 설치해볼게요.
 
@@ -92,7 +92,7 @@ mise use --global java@corretto-11.0.18.10.1
 mise install java@17 java@21
 ```
 
-![](https://i.imgur.com/pdBt4or.png)
+![mise install java](https://i.imgur.com/pdBt4or.png)
 
 설치가 완료된 이후, `mise ls` 명령을 사용해보면 어떤 언어들이 설치되어 있는지 확인할 수 있습니다.
 
@@ -100,7 +100,7 @@ mise install java@17 java@21
 mise ls
 ```
 
-![](https://i.imgur.com/lecwTLv.png)
+![mise list](https://i.imgur.com/lecwTLv.png)
 
 마침 팀장님이 새로운 프로젝트는 Java 21 로 해보자고 합니다. 우선 **해당 프로젝트에서만 Java 21 을 사용**해보면 좋을 것 같네요.
 
@@ -120,9 +120,9 @@ java = "21"
 
 다시 `mise ls` 를 실행해보면 `Config Source` 의 변경과 함께 적용 중인 Java 버전이 변경된 것을 확인할 수 있습니다.
 
-![](https://i.imgur.com/HVX9ASk.png)
+![mise list 2](https://i.imgur.com/HVX9ASk.png)
 
-![](https://i.imgur.com/kNLORwK.png)
+![check languege version](https://i.imgur.com/kNLORwK.png)
 
 :::tip
 
@@ -180,7 +180,7 @@ python = "3.12.3"
 mise install
 ```
 
-![](https://i.imgur.com/jmFlah3.png)
+![install all langueges](https://i.imgur.com/jmFlah3.png)
 
 물론 그냥 명령어로 한 번에 처리해도 무방합니다. `~/.config/mise/config.toml` 에 명시되어 있지 않은 언어는 알아서 append 처리될거에요.
 
@@ -188,9 +188,9 @@ mise install
 mise use --global node@lts python@3.12.3 go@latest
 ```
 
-![](https://i.imgur.com/I9KtmEi.png)
+![install multi languege one command](https://i.imgur.com/I9KtmEi.png)
 
-![](https://i.imgur.com/46FKxVA.png)
+![install multi languege one command 2](https://i.imgur.com/46FKxVA.png)
 
 :::tip
 
@@ -204,7 +204,7 @@ mise use --global node@lts python@3.12.3 go@latest
 
 ## Reference
 
-- https://github.com/jdx/mise
+- [mise](https://github.com/jdx/mise)
 
 ---
 
