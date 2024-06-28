@@ -141,7 +141,7 @@ mise uninstall java@corretto-11.0.18.10.1
 
 자, 이제 업무에 사용할 언어 설치는 끝났으니 개인적으로 자주 사용하는 언어들을 좀 더 설치해야겠네요.
 
-저는 옵시디언의 플러그인인 O2 를 TypeScript 를 사용하여 개발 중이에요. node 의 최신 안정화 버전을 설치해줍니다.
+저는 옵시디언의 플러그인인 [O2](https://github.com/songkg7/o2) 를 TypeScript 를 사용하여 개발 중이에요. node 의 최신 안정화 버전을 설치해줍니다.
 
 ```bash
 mise use node@lts
