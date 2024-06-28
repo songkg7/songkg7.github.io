@@ -29,7 +29,7 @@ _의도적인지는 모르겠으나 웹페이지조차 비슷하다._
 <!-- truncate -->
 
 - 거의 대부분의 개발 언어 및 도구들을 지원하는 패키지 매니저
-    - 플러그인 형태로 추가도 가능
+- 플러그인 형태로 추가도 가능
 - Shell 로 작성된 asdf 와 다르게 Rust 로 작성
 - asdf 기능 외에도 direnv 처럼 환경변수를 설정하는 기능도 제공
 
@@ -209,5 +209,5 @@ mise use --global node@lts python@3.12.3 go@latest
 ---
 
 [^fn-nth-1]: 24년 6월 기준 GitHub Star 21k
-[^fn-nth-2]: https://mise.jdx.dev/configuration.html
+[^fn-nth-2]: [mise configuration](https://mise.jdx.dev/configuration.html)
 [^fn-nth-3]: 예시로 Java 를 사용했을 뿐이고, Java 는 IntelliJ 에서 설정하는걸 더 선호합니다.
